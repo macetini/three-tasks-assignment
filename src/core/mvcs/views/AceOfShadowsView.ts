@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from 'pixi.js';
+import { Color, Container, Sprite, Texture } from 'pixi.js';
 import type { AssetService } from '../service/AssetService';
 
 export class AceOfShadowsView extends Container {
@@ -20,22 +20,41 @@ export class AceOfShadowsView extends Container {
 
     private createDeck(): void {
         for (let i = 0; i < 144; i++) {
-            // Get one of our baked Voronoi textures
-            const texture = this.assetService.getRandomCardTexture(i);
-            const card = new Sprite(texture);
+            const cardUnit = new Container();
 
-            card.anchor.set(0.5);
+            // Get one of our baked Voronoi textures
+            const patternTexture = this.assetService.getRandomCardTexture(i);
+            const pattern = new Sprite(patternTexture);
+            pattern.anchor.set(0.5);
+            pattern.tint = this.getRandomVibrantColor(i);
+
+            const outline = new Sprite(this.assetService.getOutlineTexture());
+            outline.anchor.set(0.5);
 
             // Positioning for Stack A (Bottom to Top)
-            card.x = this.STACK_A_X;
-            card.y = this.STACK_Y - (i * this.Y_OFFSET);
+            //pattern.x = outline.x = this.STACK_A_X;
+            //pattern.y = outline.y = this.STACK_Y - (i * this.Y_OFFSET);
+
+            // Stack them: Outline on top of Pattern
+            cardUnit.addChild(pattern);
+            cardUnit.addChild(outline);
 
             // Playfulness: Add a tiny random rotation to each card
-            card.rotation = (Math.random() - 0.5) * 0.5;
+            cardUnit.x = this.STACK_A_X;
+            cardUnit.y = this.STACK_Y - (i * this.Y_OFFSET);
+            cardUnit.rotation = (Math.random() - 0.5) * 0.5;
 
-            this._stackA.push(card);
-            this.addChild(card); // Added to container: higher index = visually on top
+            //this._stackA.push(cardUnit);
+            this.addChild(cardUnit); // Added to container: higher index = visually on top
         }
+    }
+
+    /**
+     * Generates a unique, high-vibrancy color for each card.
+     */
+    private getRandomVibrantColor(index: number): number {
+        const hue = (index * 137.508) % 360;
+        return new Color({ h: hue, s: 80, v: 100 }).toNumber();
     }
 
     /**

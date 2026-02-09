@@ -2,14 +2,16 @@
 import { Assets, Graphics, Texture, type Renderer } from 'pixi.js';
 
 export class AssetService {
-    private readonly _cardTextures: Texture[] = [];
     private readonly POOL_SIZE = 10; // Generate 10 variations to keep memory low but variety high
 
-    /**
-     * Returns a texture from the pool. 
-     */
+    private readonly _cardTextures: Texture[] = [];
     public getRandomCardTexture(index: number): Texture {
         return this._cardTextures[index % this.POOL_SIZE];
+    }
+
+    private _outlineTexture: Texture | null = null;
+    public getOutlineTexture(): Texture {
+        return this._outlineTexture!;
     }
 
     /**
@@ -18,7 +20,25 @@ export class AssetService {
      */
     public async init(renderer: Renderer): Promise<void> {
         await Assets.init();
+
+        this.generateOutlineTexture(renderer);
         this.generateDeckTextures(renderer);
+    }
+
+    private generateOutlineTexture(renderer: Renderer): void {
+        const width = 200;
+        const height = 280;
+        const g = new Graphics();
+        
+        g.roundRect(0, 0, width, height, 10)
+            .stroke({ width: 4, color: 0x000000, alignment: 0 });        
+        g.roundRect(0, 0, width, height, 10)
+            .stroke({ width: 3, color: 0xffffff, alignment: 0 });
+
+        const texture = renderer.generateTexture(g);
+        g.destroy();
+
+        this._outlineTexture = texture;
     }
 
     /**
@@ -43,7 +63,7 @@ export class AssetService {
         const height = 280;
         const g = new Graphics();
 
-        this.drawCardBase(g, width, height);
+        //this.drawCardBase(g, width, height);
 
         const points = this.generatePatternPoints(seed, width, height);
         this.drawVoronoiPattern(g, points, width, height);
@@ -59,8 +79,8 @@ export class AssetService {
      */
     private drawCardBase(g: Graphics, width: number, height: number): void {
         g.roundRect(0, 0, width, height, 10)
-            .fill({ color: 0x1a1a1a }) // Deep charcoal
-            .stroke({ width: 2, color: 0x333333 });
+            .fill({ color: 0x1a1a1a }); // Deep charcoal
+        //.stroke({ width: 2, color: 0xffffff, alignment: 0 });
     }
 
     /**
@@ -88,6 +108,7 @@ export class AssetService {
     private drawVoronoiPattern(g: Graphics, points: any[], width: number, height: number): void {
         // 1. Solid Background
         g.rect(0, 0, width, height).fill({ color: 0x222222 });
+        //g.rect(0, 0, width, height).fill({ color: 0x1a1a1a });
 
         const centerX = width / 2;
         const centerY = height / 2;
