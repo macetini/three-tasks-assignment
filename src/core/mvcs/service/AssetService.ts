@@ -2,11 +2,11 @@
 import { Assets, Graphics, Texture, type Renderer } from 'pixi.js';
 
 export class AssetService {
-    private readonly POOL_SIZE = 10; // Generate 10 variations to keep memory low but variety high
+    private readonly CARDS_POOL_SIZE = 10; // Generate 10 variations to keep memory low but variety high
 
     private readonly _cardTextures: Texture[] = [];
     public getRandomCardTexture(index: number): Texture {
-        return this._cardTextures[index % this.POOL_SIZE];
+        return this._cardTextures[index % this.CARDS_POOL_SIZE];
     }
 
     private _outlineTexture: Texture | null = null;
@@ -29,9 +29,9 @@ export class AssetService {
         const width = 200;
         const height = 280;
         const g = new Graphics();
-        
+
         g.roundRect(0, 0, width, height, 10)
-            .stroke({ width: 4, color: 0x000000, alignment: 0 });        
+            .stroke({ width: 4, color: 0x000000, alignment: 0 });
         g.roundRect(0, 0, width, height, 10)
             .stroke({ width: 3, color: 0xffffff, alignment: 0 });
 
@@ -46,11 +46,11 @@ export class AssetService {
      * stack looks organic and "limited edition."
      */
     private generateDeckTextures(renderer: Renderer): void {
-        console.log(`[AssetService] Generating '${this.POOL_SIZE}' card textures.`);
-        for (let i = 0; i < this.POOL_SIZE; i++) {
-            // We use 'i' as a seed to vary the pattern
-            const tex = this.createVoronoiTexture(renderer, i);
-            this._cardTextures.push(tex);
+        console.log(`[AssetService] Generating '${this.CARDS_POOL_SIZE}' card textures.`);
+        for (let i = 0; i < this.CARDS_POOL_SIZE; i++) {
+            const seed: number = i * Math.random();
+            const voronoiTex = this.createVoronoiTexture(renderer, seed);
+            this._cardTextures.push(voronoiTex);
         }
         console.log(`[AssetService] Generated '${this._cardTextures.length}' card textures.`);
     }
@@ -63,8 +63,6 @@ export class AssetService {
         const height = 280;
         const g = new Graphics();
 
-        //this.drawCardBase(g, width, height);
-
         const points = this.generatePatternPoints(seed, width, height);
         this.drawVoronoiPattern(g, points, width, height);
 
@@ -75,18 +73,8 @@ export class AssetService {
     }
 
     /**
-     * Draws the physical boundary and background of the card.
-     */
-    private drawCardBase(g: Graphics, width: number, height: number): void {
-        g.roundRect(0, 0, width, height, 10)
-            .fill({ color: 0x1a1a1a }); // Deep charcoal
-        //.stroke({ width: 2, color: 0xffffff, alignment: 0 });
-    }
-
-    /**
- * Creates deterministic "attractor" points with a vibrant, multi-color palette.
- */
-    // Inside AssetService.ts
+    * Creates deterministic "attractor" points with a vibrant, multi-color palette.
+    */
     private generatePatternPoints(seed: number, width: number, height: number) {
         const points = [];
         const pointCount = 10;
@@ -108,10 +96,9 @@ export class AssetService {
     private drawVoronoiPattern(g: Graphics, points: any[], width: number, height: number): void {
         // 1. Solid Background
         g.rect(0, 0, width, height).fill({ color: 0x222222 });
-        //g.rect(0, 0, width, height).fill({ color: 0x1a1a1a });
 
-        const centerX = width / 2;
-        const centerY = height / 2;
+        const centerX = width * 0.5;
+        const centerY = height * 0.5;
 
         points.forEach((p, i) => {
             // Draw colorful triangles radiating from the center to the edges
@@ -124,8 +111,7 @@ export class AssetService {
         });
 
         // 2. Add a high-contrast border to make the card "pop"
-        g.roundRect(0, 0, width, height, 10)
-            .stroke({ width: 3, color: 0xffffff, alignment: 0 });
+        //g.roundRect(0, 0, width, height, 10).stroke({ width: 3, color: 0xffffff, alignment: 0 });
     }
 
     /**
