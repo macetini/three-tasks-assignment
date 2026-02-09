@@ -1,0 +1,26 @@
+/* 1. Remove all margins and padding from the root elements */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* no the scrollbars/sliders */
+  background-color: #1099bb; /* TODO - This does not work */
+}
+
+/* 2. Ensure the #app container doesn't restrict the game size */
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* 3. Make the canvas behave like a background layer */
+canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}

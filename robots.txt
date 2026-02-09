@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Sitemaps can be added here once deployed
