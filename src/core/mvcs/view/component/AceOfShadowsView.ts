@@ -14,6 +14,8 @@ export class AceOfShadowsView extends AbstractView {
     public override init(): void {
         super.init();
         this.addChild(this.content);
+        this.stackA.position.set(-275, 100);
+        this.stackB.position.set(275, 100);
         this.content.addChild(this.stackA, this.stackB);
     }
 
