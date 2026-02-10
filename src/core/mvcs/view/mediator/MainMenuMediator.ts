@@ -19,7 +19,7 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
             console.warn('[MainMenuMediator] Suppressing impossible dimensions.');
             return false;
         }
-
+        
         // Sanity check: CSS aspect-ratio ensures width < height for portrait
         // If height is impossible, skip this update to prevent jumping
         // I had some issues with this in the past

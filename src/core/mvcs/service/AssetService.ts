@@ -13,7 +13,7 @@ export class AssetService {
         await Assets.init();
 
         const outlineTexture: Texture = this.generateOutlineTexture(renderer);
-        const cardTextures: Texture[] = this.generateDeckTextures(renderer);
+        const cardTextures: Texture[] = this.generateMainTextures(renderer);
         return this.bakeCardTextures(renderer, outlineTexture, cardTextures);
     }
 
@@ -40,7 +40,7 @@ export class AssetService {
      * Creates a pool of different card textures to ensure the 144-card 
      * stack looks organic and "limited edition."
      */
-    private generateDeckTextures(renderer: Renderer): Texture[] {
+    private generateMainTextures(renderer: Renderer): Texture[] {
         console.log(`[AssetService] Generating '${this.cfg.TEMPLATES_COUNT}' card textures.`);
         const cardTextures: Texture[] = [];
         for (let i = 0; i < this.cfg.TEMPLATES_COUNT; i++) {
@@ -107,47 +107,39 @@ export class AssetService {
 
     public bakeCardTextures(renderer: Renderer, outlineTexture: Texture, textures: Texture[]): Sprite[] {
         const bakedSprites: Sprite[] = [];
-        const bakeContainer = new Container();
+        const bakedContainer = new Container();
 
         const pattern = new Sprite({ anchor: 0.5 });
         const outline = new Sprite({ texture: outlineTexture, anchor: 0.5 });
 
         const width = this.cfg.WIDTH;
         const height = this.cfg.HEIGHT;
-
         pattern.position.set(width * 0.5, height * 0.5);
         outline.position.set(width * 0.5, height * 0.5);
 
-        bakeContainer.addChild(pattern, outline);
+        bakedContainer.addChild(pattern, outline);
 
         for (let i = 0; i < this.cfg.TOTAL_COUNT; i++) {
             pattern.texture = textures[i % this.cfg.TEMPLATES_COUNT];
-            pattern.tint = this.getVibrantColor(i);
+            pattern.tint = this.getTint(i);
 
-            const texture = renderer.generateTexture({
-                target: bakeContainer,
+            const bakedTexture = renderer.generateTexture({
+                target: bakedContainer,
                 resolution: 1,
                 antialias: true
             });
 
-            const card = new Sprite(texture);
+            const card = new Sprite(bakedTexture);
             card.anchor.set(0.5);
             bakedSprites.push(card);
         }
 
-        bakeContainer.destroy({ children: true });
+        bakedContainer.destroy({ children: true });
         return bakedSprites;
     }
 
-    private getVibrantColor(index: number): number {
+    private getTint(index: number): number {
         const hue = (index * 137.508) % 360;
         return new Color({ h: hue, s: 80, v: 100 }).toNumber();
-    }
-
-    /**
-     * For Task 2: We can use this to load specific fonts
-     */
-    public async loadFont(name: string, url: string): Promise<void> {
-        await Assets.load({ alias: name, src: url });
     }
 }
