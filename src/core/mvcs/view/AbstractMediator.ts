@@ -21,7 +21,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * Call this after the view is added to the stage.
      */
     public onRegister(): void {
-        console.log(`[${this.constructor.name}] ${this.view.constructor.name} is registered.`);
+        console.log(`[${this.constructor.name}] Mediator registered.`);
         this.setupResponsiveLayout();
     }
 
@@ -30,7 +30,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * Destructor to clean up listeners, intervals, tweens etc..
      */
     public onRemove(): void {
-        console.log(`[${this.constructor.name}] ${this.view.constructor.name} is removed.`);
+        console.log(`[${this.constructor.name}] Mediator removed.`);
         this.app.renderer.off('resize', this.onResize)
     }
 

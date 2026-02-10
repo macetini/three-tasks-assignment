@@ -15,10 +15,6 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         // [TaskType.FIRE]: MagicFireView,
     };
 
-    constructor(view: RootView) {
-        super(view);
-    }
-
     public override onRegister(): void {
         super.onRegister();
 
@@ -36,42 +32,37 @@ export class RootViewMediator extends AbstractMediator<RootView> {
     }
 
     private initMenu(): void {
-        this.addAndRegister(new MainMenuView(), this.view.uiLayer);
+        this.addAndRegister(new MainMenuView());
     }
 
-    private addAndRegister<T extends AbstractView>(view: T, layer: Container): void {
+    private addAndRegister<T extends AbstractView>(view: T): void {
         console.log(`[RootViewMediator] Registering: ${view.constructor.name}`);
-        layer.addChild(view);
+        this.viewComponent.setView(view);
         this.mediatorMap.register(view);
         view.init();
     }
 
     private readonly onSwitchTask = (taskType: string): void => {
-        console.log(`[RootViewMediator] Executing switch to: ${taskType}`);
-
+        // Find the new class from our map
         const ViewClass = RootViewMediator.TASK_MAP[taskType];
-
-        const currentTaskView = this.viewComponent.activeTask;
-        if (currentTaskView) {
-            this.mediatorMap.unregister(currentTaskView);
+        if (!ViewClass) {
+            return;
         }
 
-        this.showTask(ViewClass);
-    }
-
-    private showTask(ViewClass: new () => AbstractView): void {
-        // Instantiate with the service required by the View
-        const viewInstance = new ViewClass();
-
-        // RootView handles taskLayer cleanup and adding the new view
-        this.viewComponent.setTaskView(viewInstance);
-
-        // MediatorMap registers and calls onRegister()
-        this.mediatorMap.register(viewInstance);
-
-        // Manual init for internal view setup
-        viewInstance.init();
-    }
+        // Unregister the mediator of the view currently on screen
+        const currentView = this.viewComponent.activeView;
+        if (currentView) {
+            this.mediatorMap.unregister(currentView);
+        }
+        // Instantiate and swap
+        const nextView = new ViewClass();
+        // RootView removes old child and adds new one
+        this.viewComponent.setView(nextView);
+        // Register new mediator
+        this.mediatorMap.register(nextView);
+        // Initialize view logic
+        nextView.init();
+    };
 
     protected override get viewComponent(): RootView {
         return this.view;

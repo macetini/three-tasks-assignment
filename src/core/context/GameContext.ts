@@ -1,12 +1,14 @@
 // src/core/context/GameContext.ts
 import { Application } from 'pixi.js';
 import { AssetService } from '../mvcs/service/AssetService';
+import { AceOfShadowsView } from '../mvcs/view/component/AceOfShadowsView';
+import { MainMenuView } from '../mvcs/view/component/MainMenuView';
+import { RootView } from '../mvcs/view/component/RootView';
+import { MainMenuMediator } from '../mvcs/view/mediator/MainMenuMediator';
 import { RootViewMediator } from '../mvcs/view/mediator/RootViewMediator';
 import { MediatorMap } from '../mvcs/view/MediatorMap';
-import { RootView } from '../mvcs/view/component/RootView';
-import { MainMenuView } from '../mvcs/view/component/MainMenuView';
-import { MainMenuMediator } from '../mvcs/view/mediator/MainMenuMediator';
 import { SignalBus } from '../signal/SignalBus';
+import { AceOfShadowsMediator } from '../mvcs/view/mediator/AceOfShadowsMediator';
 
 export class GameContext {
     private readonly app: Application;
@@ -33,6 +35,7 @@ export class GameContext {
         // Mapping        
         this.mediatorMap.map(RootView, RootViewMediator);
         this.mediatorMap.map(MainMenuView, MainMenuMediator);
+        this.mediatorMap.map(AceOfShadowsView, AceOfShadowsMediator);
         //
 
         this.mediatorMap.register(rootView);

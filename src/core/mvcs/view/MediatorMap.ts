@@ -7,6 +7,8 @@ import type { SignalBus } from "../../signal/SignalBus";
 import type { AbstractMediatorType } from "./type/AbstractMediatorType";
 
 export class MediatorMap {
+    // We use AbstractMediator<any> here because the Map doesn't know 
+    // which specific subtype it's holding at any given moment.
     private readonly mappings: Map<string, AbstractMediatorType<any>> = new Map();
     private readonly activeMediators: Map<AbstractView, AbstractMediator<any>> = new Map();
 
@@ -25,28 +27,30 @@ export class MediatorMap {
      * Map a View class to a Mediator class
      */
     public map<V extends AbstractView>(
-        viewClass: new (...args: any[]) => V,
+        viewClass: new () => V,
         mediatorClass: AbstractMediatorType<V>
     ): void {
         const className = viewClass.name;
         if (!className) {
             throw new Error("[MediatorMap] Cannot map a class without a name.");
         }
-
-        this.mappings.set(className, mediatorClass);
+        
+        this.mappings.set(className, mediatorClass as AbstractMediatorType<any>);
     }
 
     /**
      * The register function is called when a view is added to the stage
      */
     public register<T extends AbstractView>(view: T): AbstractMediator<T> {
-        const MediatorClass = this.mappings.get(view.constructor.name);
-        if (!MediatorClass) {
+        const Constructor = this.mappings.get(view.constructor.name);
+
+        if (!Constructor) {
             throw new Error(`[MediatorMap] No Mediator found for ${view.constructor.name}`);
         }
-        const mediator = new MediatorClass(view);
 
-        // Inject dependencies
+        // Cast the generic constructor to the specific view type T
+        const mediator = new Constructor(view) as AbstractMediator<T>;
+
         mediator.setApp(this.app);
         mediator.setAssetService(this.assetService);
         mediator.setSignalBus(this.signalBus);
@@ -69,7 +73,6 @@ export class MediatorMap {
         }
 
         mediator.onRemove();
-        this.activeMediators.delete(view);
-        console.log(`[MediatorMap] Unregistered mediator for: ${view.constructor.name}`);
+        this.activeMediators.delete(view);        
     }
 }

@@ -3,34 +3,21 @@ import { Container } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class RootView extends AbstractView {
-    // We create dedicated layers for depth management
-    private backgroundLayer: Container = new Container();
 
-    private taskLayer: Container = new Container();
-
-    private readonly _uiLayer: Container = new Container();
-    public get uiLayer(): Container {
-        return this._uiLayer;
-    }    
-
-    public override init(): void {
-        this.addChild(this.backgroundLayer);
-        this.addChild(this.taskLayer);
-        this.addChild(this._uiLayer);
+    public get activeView(): AbstractView | undefined {
+        return this.children[0] as AbstractView;
     }
 
-    public get activeTask(): AbstractView | undefined {
-        return this.taskLayer.children[0] as AbstractView;
-    }
-
-    public setTaskView(view: AbstractView): void {
-        if (this.taskLayer.children.length > 0) {
-            const oldView = this.taskLayer.children[0] as AbstractView;
+    /**
+     * Completely replaces the current view with a new one
+     */
+    public setView(view: AbstractView): void {
+        if (this.children.length > 0) {
+            const oldView = this.children[0] as AbstractView;
+            console.log(`[RootView] Replacing ${oldView.constructor.name} with ${view.constructor.name}`);
             if (oldView.dispose) oldView.dispose();
-            this.taskLayer.removeChildren();
+            this.removeChildren();
         }
-
-        this.taskLayer.addChild(view);
-        view.init();
+        this.addChild(view);        
     }
 }

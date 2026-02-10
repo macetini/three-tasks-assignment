@@ -11,17 +11,11 @@ export class AceOfShadowsView extends AbstractView {
     private readonly STACK_Y = 500;
     private readonly Y_OFFSET = 2; // Offset for the stacking effect
 
-    private readonly assetService: AssetService;
+    //private readonly assetService: AssetService;    
 
-    constructor() {
-        super();
-        this.assetService = new AssetService();
-        this.createDeck();
-    }
-
-    // You MUST have these 3 to satisfy the AbstractView contract:
     public init(): void {
-        console.log("AceOfShadows Initialized with assets:", this.assetService);
+        super.init();
+        //console.log("AceOfShadows Initialized with assets:", this.assetService);
     }
 
     public update(delta: number): void {
@@ -32,6 +26,7 @@ export class AceOfShadowsView extends AbstractView {
         // Clean up logic
     }
 
+    /*
     private createDeck(): void {
         for (let i = 0; i < 144; i++) {
             const cardUnit = new Container();
@@ -58,6 +53,7 @@ export class AceOfShadowsView extends AbstractView {
             this.addChild(cardUnit); // Added to container: higher index = visually on top
         }
     }
+        */
 
     /**
      * Generates a unique, high-vibrancy color for each card.

@@ -11,7 +11,9 @@ export abstract class AbstractView extends Container {
      * Called by the Mediator or Parent during the setup phase.
      * Use this to create children, setup layout, etc.
      */
-    public abstract init(): void;
+    public init(): void {
+        console.log(`[${this.constructor.name}] initialized.`);
+    };
 
     public layout(width: number, height: number): void {
         this.x = this.y = 0;
@@ -31,12 +33,12 @@ export abstract class AbstractView extends Container {
     * We destroy children but keep the shared textures in the AssetService pool.
     */
     public dispose(): void {
-        console.log(`[${this.constructor.name}] dispose()`);
-
         // In PixiJS v8, we only need to specify 'texture'
         this.destroy({
             children: true,
             texture: false
         });
+
+        console.log(`[${this.constructor.name}] View disposed.`);
     }
 }

@@ -2,16 +2,10 @@ import { AbstractMediator } from '../AbstractMediator';
 import { AceOfShadowsView } from '../component/AceOfShadowsView';
 
 export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
-    private _intervalId: number | null = null;
+    //private _intervalId: number | null = null;
 
     public override onRegister(): void {
         super.onRegister();
-
-        // 1. Initial positioning
-        this.applyLayout();
-
-        // 2. Listen for window resizing to keep stacks aligned
-        this.app.renderer.on('resize', this.onResize);
 
         // 3. Start the process: 144 cards, move 1 every 1 second
         //this._intervalId = window.setInterval(() => this.dealCard(), 1000);
