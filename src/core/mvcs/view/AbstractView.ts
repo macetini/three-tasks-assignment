@@ -13,7 +13,7 @@ export abstract class AbstractView extends Container {
      */
     public init(): void {
         console.log(`[${this.constructor.name}] View initialized.`);
-    };
+    };    
 
     /**
      * 

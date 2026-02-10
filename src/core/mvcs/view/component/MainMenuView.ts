@@ -12,8 +12,8 @@ export class MainMenuView extends AbstractView {
 
     public init(): void {
         this.createButton("ACE OF SHADOWS", "CARDS");
-        this.createButton("MAGIC FIRE", "FIRE");
-        this.createButton("SCALES", "SLOT");
+        this.createButton("MAGIC WORDS", "WORDS");
+        this.createButton("Phoenix Flame", "FLAME");
     }
 
     private createButton(label: string, taskType: string): void {

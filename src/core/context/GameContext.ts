@@ -9,6 +9,8 @@ import { RootViewMediator } from '../mvcs/view/mediator/RootViewMediator';
 import { MediatorMap } from '../mvcs/view/MediatorMap';
 import { SignalBus } from '../signal/SignalBus';
 import { AceOfShadowsMediator } from '../mvcs/view/mediator/AceOfShadowsMediator';
+import { MagicWordsMediator } from '../mvcs/view/mediator/MagicWordsMediator';
+import { MagicWordsView } from '../mvcs/view/component/MagicWordsView';
 
 export class GameContext {
     private readonly app: Application;
@@ -37,6 +39,7 @@ export class GameContext {
         this.mediatorMap.map(RootView, RootViewMediator);
         this.mediatorMap.map(MainMenuView, MainMenuMediator);
         this.mediatorMap.map(AceOfShadowsView, AceOfShadowsMediator);
+        this.mediatorMap.map(MagicWordsView, MagicWordsMediator);
         //
 
         this.mediatorMap.register(rootView);

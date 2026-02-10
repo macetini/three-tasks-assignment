@@ -2,8 +2,8 @@
 export const TaskType = {
     MAIN: 'MAIN',
     CARDS: 'CARDS',
-    FIRE: 'FIRE',
-    SLOT: 'SLOT'
+    WORDS: 'WORDS',
+    FLAME: 'FLAME',
 } as const;
 
 // This line allows you to use 'TaskType' as a type for your variables
