@@ -1,5 +1,4 @@
 // src/core/mvcs/view/MainView.ts
-import { Container } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class RootView extends AbstractView {

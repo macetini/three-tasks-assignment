@@ -1,5 +1,3 @@
-import { EventEmitter } from 'pixi.js';
-
 /**
  * A central messaging hub allowing mediators to communicate 
  * without being directly coupled to each other.

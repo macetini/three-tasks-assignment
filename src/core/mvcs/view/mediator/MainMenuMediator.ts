@@ -19,8 +19,12 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
     // If height is impossible, skip this update to prevent jumping
     // I had some issues with this in the past
     protected override isValidLayout(width: number, height: number): boolean {
+        if (width < 0 || height < 0) {
+            console.warn('[MainMenuMediator] Suppressing impossible dimensions.');
+            return false;
+        }
         if (height > window.innerHeight * 1.5) {
-            console.warn('[MainMenuMediator] Suppressing impossible height');
+            console.warn('[MainMenuMediator] Suppressing impossible height.');
             return false;
         }
         return true;

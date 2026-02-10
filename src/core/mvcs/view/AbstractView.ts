@@ -23,6 +23,10 @@ export abstract class AbstractView extends Container {
      * @param height Height of the screen
      */
     public layout(width: number, height: number): void {
+        if (width <= 0 || height <= 0) {
+            console.log(`[${this.constructor.name}] Skipping layout update due to collapsed renderer.`);
+            return;
+        }
         console.log(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
     }
 

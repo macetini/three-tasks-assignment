@@ -72,7 +72,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * Override this in specific mediators to add logic like your 1.5x height check.
      */
     protected isValidLayout(width: number, height: number): boolean {
-        return true;
+        return width > 0 && height > 0;
     }
 
     // --- Dependency Injection ---
