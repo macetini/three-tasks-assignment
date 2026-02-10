@@ -1,14 +1,12 @@
 // src/core/mvcs/view/component/MainMenuView.ts
 import { Container, Graphics, Text } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
+import { GameConfig } from '../../../config/GameConfig';
 
 export class MainMenuView extends AbstractView {
     public static readonly MENU_CLICK_EVENT = 'menu_click_event';
 
-    private readonly BUTTON_W: number = 240;
-    private readonly BUTTON_H: number = 50;
-
-    private readonly BUTTON_GAP: number = 15;
+    private readonly cfg = GameConfig.MAIN;
 
     private readonly buttons: Container[] = [];
 
@@ -24,7 +22,7 @@ export class MainMenuView extends AbstractView {
         btn.eventMode = 'static';
 
         const bg = new Graphics()
-            .roundRect(0, 0, this.BUTTON_W, this.BUTTON_H, 8)
+            .roundRect(0, 0, this.cfg.BUTTON_WIDTH, this.cfg.BUTTON_HEIGHT, 8)
             .fill({ color: 0x222222, alpha: 0.8 });
 
         const btnTxt = new Text({
@@ -55,9 +53,9 @@ export class MainMenuView extends AbstractView {
         let totalHeight = 0;
         this.buttons.forEach((button, index) => {
             // Center buttons horizontally relative to this view's (0,0)
-            button.x = -this.BUTTON_W * 0.5;
-            button.y = index * (this.BUTTON_H + this.BUTTON_GAP);
-            totalHeight = button.y + this.BUTTON_H;
+            button.x = -this.cfg.BUTTON_WIDTH * 0.5;
+            button.y = index * (this.cfg.BUTTON_HEIGHT + this.cfg.BUTTON_GAP);
+            totalHeight = button.y + this.cfg.BUTTON_HEIGHT;
         });
 
         // Center whole menu

@@ -1,11 +1,23 @@
 // src/core/config/GameConfig.ts
 export const GameConfig = {
+    MAIN: {
+        BUTTON_WIDTH: 240,
+        BUTTON_HEIGHT: 50,
+        BUTTON_GAP: 15,
+    },
     CARDS: {
-        COUNT: 144,
-        INTERVAL_MS: 1000,
+        TEMPLATES_COUNT: 12,
+        TOTAL_COUNT: 144,
+        WIDTH: 200,
+        HEIGHT: 280,
+        VORONOI_POINT_COUNT: 10,
+        GAP: 500,
+        ROTATION_VARIANCE: 0.5,
+        Y_CONTENT_OFFSET: 100,
+        Y_CARD_OFFSET: 2,
         DURATION_SEC: 2,
-        STACK_OFFSET_Y: -0.5,
-        SCALE: 0.5,
+        DELAY_SEC: 1,
+        CONTENT_SCALER: 1000,
     },
     FIRE: {
         PARTICLE_COUNT: 10,

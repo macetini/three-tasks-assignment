@@ -4,7 +4,6 @@ import { AbstractMediator } from '../AbstractMediator';
 import { MainMenuView } from '../component/MainMenuView';
 
 export class MainMenuMediator extends AbstractMediator<MainMenuView> {
-
     public override onRegister(): void {
         super.onRegister();
         this.viewComponent.on(MainMenuView.MENU_CLICK_EVENT, this.onMenuClick);
@@ -15,14 +14,15 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
         super.onRemove();
     }
 
-    // Sanity check: CSS aspect-ratio ensures width < height for portrait
-    // If height is impossible, skip this update to prevent jumping
-    // I had some issues with this in the past
     protected override isValidLayout(width: number, height: number): boolean {
         if (width < 0 || height < 0) {
             console.warn('[MainMenuMediator] Suppressing impossible dimensions.');
             return false;
         }
+
+        // Sanity check: CSS aspect-ratio ensures width < height for portrait
+        // If height is impossible, skip this update to prevent jumping
+        // I had some issues with this in the past
         if (height > window.innerHeight * 1.5) {
             console.warn('[MainMenuMediator] Suppressing impossible height.');
             return false;

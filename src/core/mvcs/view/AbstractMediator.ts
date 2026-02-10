@@ -76,7 +76,6 @@ export abstract class AbstractMediator<T extends AbstractView> {
     }
 
     // --- Dependency Injection ---
-
     public setApp(app: Application): void {
         this.app = app;
     }

@@ -9,8 +9,8 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
     }
 
     private async buildCardStacks(renderer: Renderer): Promise<void> {
-        const cards = await this.assetService.getCards(renderer);
-        this.view.populateStack(cards);
+        const cardSprites = await this.assetService.getCards(renderer);
+        this.view.populateStack(cardSprites);
         this.view.startStackingSequence();
     }
 

@@ -1,13 +1,9 @@
 // src/core/mvcs/service/AssetService.ts
 import { Assets, Color, Container, Graphics, Sprite, Texture, type Renderer } from 'pixi.js';
+import { GameConfig } from '../../config/GameConfig';
 
 export class AssetService {
-    private readonly CARD_TEMPLATES_COUNT: number = 10;
-    private readonly CARDS_COUNT: number = 144;
-
-    private readonly CARD_WIDTH: number = 200;
-    private readonly CARD_HEIGHT: number = 280;
-    private readonly VORONOI_POINT_COUNT: number = 10;
+    private readonly cfg = GameConfig.CARDS;
 
     /**
      * Bootstraps all assets. In a larger app, this would also 
@@ -24,8 +20,8 @@ export class AssetService {
     private generateOutlineTexture(renderer: Renderer): Texture {
         console.log(`[AssetService] Generating Outline Texture.`);
 
-        const width = this.CARD_WIDTH;
-        const height = this.CARD_HEIGHT;
+        const width = this.cfg.WIDTH;
+        const height = this.cfg.HEIGHT;
 
         const g = new Graphics();
 
@@ -45,9 +41,9 @@ export class AssetService {
      * stack looks organic and "limited edition."
      */
     private generateDeckTextures(renderer: Renderer): Texture[] {
-        console.log(`[AssetService] Generating '${this.CARD_TEMPLATES_COUNT}' card textures.`);
+        console.log(`[AssetService] Generating '${this.cfg.TEMPLATES_COUNT}' card textures.`);
         const cardTextures: Texture[] = [];
-        for (let i = 0; i < this.CARD_TEMPLATES_COUNT; i++) {
+        for (let i = 0; i < this.cfg.TEMPLATES_COUNT; i++) {
             const seed: number = i * Math.random();
             const voronoiTex = this.createVoronoiTexture(renderer, seed);
             cardTextures.push(voronoiTex);
@@ -60,8 +56,8 @@ export class AssetService {
  * Bakes a Voronoi-style pattern into a reusable GPU Texture.
  */
     private createVoronoiTexture(renderer: Renderer, seed: number): Texture {
-        const width = this.CARD_WIDTH;
-        const height = this.CARD_HEIGHT;
+        const width = this.cfg.WIDTH;
+        const height = this.cfg.HEIGHT;
         const g = new Graphics();
 
         const points = this.generatePatternPoints(seed, width, height);
@@ -78,7 +74,7 @@ export class AssetService {
     */
     private generatePatternPoints(seed: number, width: number, height: number) {
         const points = [];
-        const pointCount = this.VORONOI_POINT_COUNT;
+        const pointCount = this.cfg.VORONOI_POINT_COUNT;
 
         for (let i = 0; i < pointCount; i++) {
             points.push({
@@ -95,15 +91,12 @@ export class AssetService {
      * Handles the expensive pixel-looping to draw the cellular pattern.
      */
     private drawVoronoiPattern(g: Graphics, points: any[], width: number, height: number): void {
-        // 1. Solid Background
         g.rect(0, 0, width, height).fill({ color: 0x222222 });
 
         const centerX = width * 0.5;
         const centerY = height * 0.5;
 
         points.forEach((p, i) => {
-            // Draw colorful triangles radiating from the center to the edges
-            // This creates a "Star" or "Prism" effect
             g.moveTo(centerX, centerY)
                 .lineTo(p.x, p.y)
                 .lineTo(points[(i + 1) % points.length].x, points[(i + 1) % points.length].y)
@@ -119,20 +112,21 @@ export class AssetService {
         const pattern = new Sprite({ anchor: 0.5 });
         const outline = new Sprite({ texture: outlineTexture, anchor: 0.5 });
 
-        pattern.position.set(this.CARD_WIDTH * 0.5, this.CARD_HEIGHT * 0.5);
-        outline.position.set(this.CARD_WIDTH * 0.5, this.CARD_HEIGHT * 0.5);
+        const width = this.cfg.WIDTH;
+        const height = this.cfg.HEIGHT;
+
+        pattern.position.set(width * 0.5, height * 0.5);
+        outline.position.set(width * 0.5, height * 0.5);
 
         bakeContainer.addChild(pattern, outline);
 
-        for (let i = 0; i < this.CARDS_COUNT; i++) {
-            // Update temporary baking elements
-            pattern.texture = textures[i % this.CARD_TEMPLATES_COUNT];
+        for (let i = 0; i < this.cfg.TOTAL_COUNT; i++) {
+            pattern.texture = textures[i % this.cfg.TEMPLATES_COUNT];
             pattern.tint = this.getVibrantColor(i);
 
-            // Snap the texture
             const texture = renderer.generateTexture({
                 target: bakeContainer,
-                resolution: 1, // Keep it 1 for performance, or use devicePixelRatio for sharpness
+                resolution: 1,
                 antialias: true
             });
 
@@ -149,7 +143,6 @@ export class AssetService {
         const hue = (index * 137.508) % 360;
         return new Color({ h: hue, s: 80, v: 100 }).toNumber();
     }
-
 
     /**
      * For Task 2: We can use this to load specific fonts
