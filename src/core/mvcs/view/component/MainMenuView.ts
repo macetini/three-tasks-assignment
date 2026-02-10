@@ -51,7 +51,7 @@ export class MainMenuView extends AbstractView {
     * @param width The current width of the Pixi screen
     * @param height The current height of the Pixi screen
     */
-    public layout(width: number, height: number): void {
+    public override layout(width: number, height: number): void {
         let totalHeight = 0;
         this.buttons.forEach((button, index) => {
             // Center buttons horizontally relative to this view's (0,0)
@@ -63,5 +63,7 @@ export class MainMenuView extends AbstractView {
         // Center whole menu
         this.y = height * 0.5 - totalHeight * 0.5;
         this.x = width * 0.5;
+
+        console.log(`[MainMenuView] Using responsive layout. View positioned at (${this.x}, ${this.y})`);
     }
 }

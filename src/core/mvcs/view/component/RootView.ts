@@ -11,7 +11,7 @@ export class RootView extends AbstractView {
     private readonly _uiLayer: Container = new Container();
     public get uiLayer(): Container {
         return this._uiLayer;
-    }
+    }    
 
     public override init(): void {
         this.addChild(this.backgroundLayer);

@@ -14,7 +14,8 @@ export abstract class AbstractView extends Container {
     public abstract init(): void;
 
     public layout(width: number, height: number): void {
-        console.warn(`[${this.constructor.name}] layout() not implemented. View remains at (0,0).`);
+        this.x = this.y = 0;
+        console.log(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
     };
 
     /**
