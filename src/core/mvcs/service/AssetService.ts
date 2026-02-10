@@ -52,7 +52,7 @@ export class AssetService {
             const voronoiTex = this.createVoronoiTexture(renderer, seed);
             this._cardTextures.push(voronoiTex);
         }
-        console.log(`[AssetService] Generated '${this._cardTextures.length}' card textures.`);
+        console.log(`[AssetService] Finished Card Textures Generation: '${this._cardTextures.length}' card textures.`);
     }
 
     /**

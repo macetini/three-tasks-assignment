@@ -1,32 +1,36 @@
 // src/core/context/GameContext.ts
 import { Application } from 'pixi.js';
-import { SceneNavigator } from '../SceneNavigator';
 import { AssetService } from '../mvcs/service/AssetService';
-import { AceOfShadowsView } from '../mvcs/view/component/AceOfShadowsView';
-import { MainView } from '../mvcs/view/component/MainView';
+import { RootViewMediator } from '../mvcs/view/mediator/RootViewMediator';
+import { MediatorMap } from '../mvcs/view/MediatorMap';
+import { RootView } from '../mvcs/view/component/RootView';
+import { MainMenuView } from '../mvcs/view/component/MainMenuView';
+import { MainMenuMediator } from '../mvcs/view/mediator/MainMenuMediator';
 
 export class GameContext {
     private readonly app: Application;
     private readonly assetService: AssetService;
-    private readonly navigator: SceneNavigator;
 
-    //private currentState: GameState = GameState.BOOTSTRAP;
+    private readonly mediatorMap: MediatorMap;
 
     constructor(app: Application) {
         this.app = app;
         this.assetService = new AssetService();
-        this.navigator = new SceneNavigator(app.stage);
+        this.mediatorMap = new MediatorMap(this.assetService);
     }
 
     public async bootstrap() {
         console.log("[GameContext] Bootstrapping services...");
         await this.assetService.init(this.app.renderer);
 
-        // 2. Create the Root View
-        const mainView = new MainView();
-        this.app.stage.addChild(mainView);
+        const rootView = new RootView();
+        rootView.init();
+        this.app.stage.addChild(rootView);
 
-        //const view: AceOfShadowsView = new AceOfShadowsView(this.assetService);
-        //this.app.stage.addChild(view);
+        // Mapping        
+        this.mediatorMap.map(RootView, RootViewMediator);
+        this.mediatorMap.map(MainMenuView, MainMenuMediator);
+
+        this.mediatorMap.register(rootView);
     }
 }
