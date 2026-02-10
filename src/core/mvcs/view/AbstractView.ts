@@ -1,0 +1,37 @@
+// src/core/mvcs/views/AbstractView.ts
+import { Container } from 'pixi.js';
+
+export abstract class AbstractView extends Container {
+
+    constructor() {
+        super();
+    }
+
+    /**
+     * Called by the Mediator or Parent during the setup phase.
+     * Use this to create children, setup layout, etc.
+     */
+    public abstract init(): void;
+
+    /**
+     * Standard update loop hook (useful for Task 2's Magic Fire).
+     * @param delta frame delta time
+     */
+    public update(delta: number): void {
+        // To be overridden by subclasses if needed
+    }
+
+    /**
+ * Cleans up the view. 
+ * We destroy children but keep the shared textures in the AssetService pool.
+ */
+    public dispose(): void {
+        console.log(`[${this.constructor.name}] dispose()`);
+
+        // In PixiJS v8, we only need to specify 'texture'
+        this.destroy({
+            children: true,
+            texture: false
+        });
+    }
+}

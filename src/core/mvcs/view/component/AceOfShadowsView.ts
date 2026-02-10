@@ -1,9 +1,9 @@
-import { Color, Container, Sprite, Texture } from 'pixi.js';
-import type { AssetService } from '../service/AssetService';
+import { Color, Container, Sprite } from 'pixi.js';
+import type { AssetService } from '../../service/AssetService';
 
 export class AceOfShadowsView extends Container {
-    private _stackA: Sprite[] = [];
-    private _stackB: Sprite[] = [];
+    private _stackA: Container[] = [];
+    private _stackB: Container[] = [];
 
     private readonly STACK_A_X = 200;
     private readonly STACK_B_X = 600;
@@ -30,11 +30,7 @@ export class AceOfShadowsView extends Container {
 
             const outline = new Sprite(this.assetService.getOutlineTexture());
             outline.anchor.set(0.5);
-
-            // Positioning for Stack A (Bottom to Top)
-            //pattern.x = outline.x = this.STACK_A_X;
-            //pattern.y = outline.y = this.STACK_Y - (i * this.Y_OFFSET);
-
+            
             // Stack them: Outline on top of Pattern
             cardUnit.addChild(pattern);
             cardUnit.addChild(outline);
@@ -44,7 +40,7 @@ export class AceOfShadowsView extends Container {
             cardUnit.y = this.STACK_Y - (i * this.Y_OFFSET);
             cardUnit.rotation = (Math.random() - 0.5) * 0.5;
 
-            //this._stackA.push(cardUnit);
+            this._stackA.push(cardUnit);
             this.addChild(cardUnit); // Added to container: higher index = visually on top
         }
     }
@@ -61,7 +57,7 @@ export class AceOfShadowsView extends Container {
      * Pops the top card from Stack A. 
      * In PIXI, the 'top' card is the one with the highest index in our array.
      */
-    public getNextCardFromA(): Sprite | undefined {
+    public getNextCardFromA(): Container | undefined {
         return this._stackA.pop();
     }
 

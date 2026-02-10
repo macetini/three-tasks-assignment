@@ -2,7 +2,8 @@
 import { Application } from 'pixi.js';
 import { SceneNavigator } from '../SceneNavigator';
 import { AssetService } from '../mvcs/service/AssetService';
-import { AceOfShadowsView } from '../mvcs/views/AceOfShadowsView';
+import { AceOfShadowsView } from '../mvcs/view/component/AceOfShadowsView';
+import { MainView } from '../mvcs/view/component/MainView';
 
 export class GameContext {
     private readonly app: Application;
@@ -21,7 +22,11 @@ export class GameContext {
         console.log("[GameContext] Bootstrapping services...");
         await this.assetService.init(this.app.renderer);
 
-        const view: AceOfShadowsView = new AceOfShadowsView(this.assetService);
-        this.app.stage.addChild(view);
+        // 2. Create the Root View
+        const mainView = new MainView();
+        this.app.stage.addChild(mainView);
+
+        //const view: AceOfShadowsView = new AceOfShadowsView(this.assetService);
+        //this.app.stage.addChild(view);
     }
 }
