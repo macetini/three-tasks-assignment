@@ -1,11 +1,9 @@
 import { RootView } from '../component/RootView';
-import { MediatorMap } from '../MediatorMap';
-import { AssetService } from '../../service/AssetService';
-
-// Import Views for the switcher
 import { MainMenuView } from '../component/MainMenuView';
 import { AbstractMediator } from '../AbstractMediator';
+import { AceOfShadowsView } from '../component/AceOfShadowsView';
 import type { AbstractView } from '../AbstractView';
+import type { Container } from 'pixi.js';
 
 export class RootViewMediator extends AbstractMediator<RootView> {
     private _activeTaskMediator: AbstractMediator<any> | null = null;
@@ -15,38 +13,43 @@ export class RootViewMediator extends AbstractMediator<RootView> {
     }
 
     public override onRegister(): void {
-        console.log("[RootViewMediator] Initializing Application Layers...");
+        super.onRegister();
+        console.log("[RootViewMediator] Initializing Application Layers.");
 
         // 1. Setup the Permanent UI (Menu)
         this.initMenu();
 
         // 2. Listen for the Global Task Switch event
-        window.addEventListener('SWITCH_TASK', (e: any) => this.onSwitchTask(e.detail));
+        // Use a bound function so we can remove it later
+        window.addEventListener('SWITCH_TASK', this.handleSwitchTask);
 
-        // 3. Load the default Task (Task 1)
+        // 3. Load default
         this.onSwitchTask('CARDS');
     }
 
     private initMenu(): void {
-        const menuView = new MainMenuView();
-
-        // PLACE in the UI Layer (Always on top)
-        this.view.addUI(menuView);
-
-        // REGISTER the mediator
-        const menuMediator = this.mediatorMap.register(menuView);
-        menuMediator.onRegister();
+        this.addAndRegister(new MainMenuView(), this.view.uiLayer);
     }
 
-    private onSwitchTask(taskType: string): void {
-        console.log(`[RootViewMediator] Switching to task: ${taskType}`);
+    private addAndRegister<T extends AbstractView>(view: T, layer: Container): void {
+        layer.addChild(view);
+        this.mediatorMap.register(view);
+        view.init();
+    }
 
-        // Clean up current task before starting new one
+    // Helper to handle the event listener context
+    private readonly handleSwitchTask = (e: any): void => {
+        this.onSwitchTask(e.detail);
+    };
+
+    private onSwitchTask(taskType: string): void {
+        // 1. Teardown existing mediator
         if (this._activeTaskMediator) {
             this._activeTaskMediator.onRemove();
             this._activeTaskMediator = null;
         }
 
+        // 2. Switch Task
         /*
         if (taskType === 'CARDS') {
             this.showTask(AceOfShadowsView);
@@ -55,21 +58,24 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         }*/
     }
 
-    /*private showTask(ViewClass: new (as: AssetService) => AbstractView): void {
-        // 1. Create View Instance
-        const viewInstance = new ViewClass();//this.assetService);
+    private showTask(ViewClass: new (...args: any[]) => AbstractView): void {
+        // Instantiate the View
+        const viewInstance = new ViewClass();
 
-        // 2. PLACE in the Task Layer (RootView handles cleanup of old children)
+        // RootView handles adding to taskLayer and removing old children
         this.view.setTaskView(viewInstance);
 
-        // 3. REGISTER & INIT Mediator
-        this._activeTaskMediator = this._mediatorMap.register(viewInstance);
-        this._activeTaskMediator.initialize();
-    }*/
+        // Register couples them and calls onRegister() automatically
+        this._activeTaskMediator = this.mediatorMap.register(viewInstance);
+    }
 
     public override onRemove(): void {
-        //window.removeEventListener('SWITCH_TASK', this.onSwitchTask);
-        if (this._activeTaskMediator) this._activeTaskMediator.onRemove();
+        window.removeEventListener('SWITCH_TASK', this.handleSwitchTask);
+
+        if (this._activeTaskMediator) {
+            this._activeTaskMediator.onRemove();
+        }
+
         super.onRemove();
     }
 }

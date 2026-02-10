@@ -3,44 +3,65 @@ import { Container, Graphics, Text } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class MainMenuView extends AbstractView {
-    // We'll expose these so the Mediator can listen to them
-    public readonly btnTask1 = new Container();
-    public readonly btnTask2 = new Container();
-    public readonly btnTask3 = new Container();
+    private _buttons: Container[] = [];
+    private readonly BUTTON_GAP = 15;
 
-    public override init(): void {
-        const buttonWidth = 120;
-        const spacing = 20;
+    public init(): void {
+        this.createButton("ACE OF SHADOWS", "CARDS");
+        this.createButton("MAGIC FIRE", "FIRE");
+        this.createButton("SCALES", "SLOT");
 
-        // Create 3 buttons
-        this.createButton(this.btnTask1, "CARDS", 0);
-        this.createButton(this.btnTask2, "FIRE", 1);
-        this.createButton(this.btnTask3, "SLOT", 2);
-
-        // Position the menu at the top center
-        this.x = 400; // Assuming 800 width, or handle in resize
-        this.y = 40;
+       // this.layout(); // Call once at init
     }
 
-    private createButton(container: Container, label: string, index: number): void {
+    private createButton(label: string, taskType: string): void {
+        const btn = new Container();
+        btn.cursor = 'pointer';
+        btn.eventMode = 'static';
+
         const bg = new Graphics()
-            .roundRect(-60, -20, 120, 40, 8)
-            .fill({ color: 0x333333, alpha: 0.8 })
-            .stroke({ width: 2, color: 0xffffff });
+            .roundRect(0, 0, 240, 50, 8)
+            .fill({ color: 0x222222, alpha: 0.8 });
 
         const txt = new Text({
             text: label,
-            style: { fill: 0xffffff, fontSize: 14, fontWeight: 'bold' }
+            style: { fill: 0xffffff, fontSize: 16, fontWeight: 'bold' }
         });
         txt.anchor.set(0.5);
+        txt.position.set(120, 25);
 
-        container.addChild(bg, txt);
-        container.x = (index - 1) * 140; // Spread them out
+        btn.addChild(bg, txt);
 
-        // Make interactive
-        container.interactive = true;
-        container.cursor = 'pointer';
+        btn.on('pointertap', () => {
+            //this.dispatchEvent(new CustomEvent('MENU_CLICK', { detail: taskType }));
+        });
 
-        this.addChild(container);
+        this.addChild(btn);
+        this._buttons.push(btn);
+    }
+
+    /**
+    * Aligns buttons vertically and centers the entire menu within 
+    * the provided dimensions.
+    * 
+    * @param width The current width of the Pixi screen
+    * @param height The current height of the Pixi screen
+    */
+    public layout(width: number, height: number): void {
+        const BTN_W = 240;
+        const BTN_H = 50;
+        let totalHeight = 0;
+
+        this._buttons.forEach((btn, index) => {
+            // Center buttons horizontally relative to this view's (0,0)
+            btn.x = -BTN_W / 2;
+            btn.y = index * (BTN_H + this.BUTTON_GAP);
+            totalHeight = btn.y + BTN_H;
+        });
+
+        // Optional: If you want the menu itself to be centered 
+        // in your fixed virtual space (e.g. 1000px height)
+        this.y = height / 2 - totalHeight* 0.5;
+        this.x = width * 0.5;
     }
 }

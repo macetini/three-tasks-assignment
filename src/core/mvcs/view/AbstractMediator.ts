@@ -1,10 +1,12 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
+import type { Application } from 'pixi.js';
 import type { AssetService } from '../service/AssetService';
 import type { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
 
 export abstract class AbstractMediator<T extends AbstractView> {
     protected view!: T;
+    protected app!: Application;
     protected assetService!: AssetService;
     protected mediatorMap!: MediatorMap;
     //protected signalBus!: SignalBus;
@@ -13,7 +15,8 @@ export abstract class AbstractMediator<T extends AbstractView> {
         this.view = view;
     }
 
-    public setterInject(assetService: AssetService, mediatorMap: MediatorMap): void {
+    public setterInject(app: Application, assetService: AssetService, mediatorMap: MediatorMap): void {
+        this.app = app;
         this.assetService = assetService;
         this.mediatorMap = mediatorMap;
     }
@@ -34,5 +37,5 @@ export abstract class AbstractMediator<T extends AbstractView> {
         // In a real framework, we would auto-remove signal listeners here.
     }
 
-    public viewComponent(): T { return this.view; }
+    protected viewComponent(): T { return this.view; }
 }

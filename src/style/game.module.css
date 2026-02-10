@@ -1,19 +1,28 @@
 .gameCanvas {
   display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* Ensure no touch-action delay on mobile */
+  /* Fixed Aspect Ratio */
+  aspect-ratio: 9 / 16; 
+  
+  /* Scale to fit screen without overflowing */
+  max-width: 100%;
+  max-height: 100vh;
+  
+  /* Center it */
+  margin: auto;
+  
+  /* Touch handling */
   touch-action: none;
+  background-color: #1099bb;
 }
 
 :global(body) {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000; /* Black bars background */
   overflow: hidden;
-  background-color: #1099bb;
 }

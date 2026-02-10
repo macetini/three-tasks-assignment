@@ -4,29 +4,36 @@ import { MainMenuView } from '../component/MainMenuView';
 
 export class MainMenuMediator extends AbstractMediator<MainMenuView> {
 
-    public override onRegister(): void {
-        // RobotLegs style: Map signals/events to local handlers
-        this.view.btnTask1.on('pointerdown', () => this.onTaskRequest('CARDS'));
-        this.view.btnTask2.on('pointerdown', () => this.onTaskRequest('FIRE'));
-        this.view.btnTask3.on('pointerdown', () => this.onTaskRequest('SLOT'));
+    protected override viewComponent(): MainMenuView {
+        return this.view;
     }
 
-    private onTaskRequest(task: string): void {
-        console.log(`[MainMenuMediator] Requesting task: ${task}`);
+    public override onRegister(): void {
+        requestAnimationFrame(() => this.applyLayout());
+        this.app.renderer.on('resize', this.onResize);
+    }
 
-        /**
-         * SENIOR TIP: In a full framework, we'd dispatch a Signal here.
-         * For now, we'll use a custom DOM event or a callback passed 
-         * through the mediatorMap if you want to keep it simple.
-         */
-        const event = new CustomEvent('SWITCH_TASK', { detail: task });
-        window.dispatchEvent(event);
+    private readonly onResize = (): void => {
+        this.applyLayout();
+    };
+
+    private applyLayout(): void {
+        const { width, height } = this.app.screen;
+
+        // Sanity check: CSS aspect-ratio ensures width < height for portrait
+        // If height is impossible, skip this update to prevent jumping
+        // I had some issues with this in the past
+        if (height > window.innerHeight * 1.5) {
+            console.error('[MainMenuMediator] Skipping layout update due to impossible height');
+            return;
+        }
+
+        console.log('[MainMenuMediator] Layout update', width, height);
+        this.view.layout(width, height);
     }
 
     public override onRemove(): void {
-        this.view.btnTask1.removeAllListeners();
-        this.view.btnTask2.removeAllListeners();
-        this.view.btnTask3.removeAllListeners();
+        this.app.renderer.off('resize', this.onResize);
         super.onRemove();
     }
 }

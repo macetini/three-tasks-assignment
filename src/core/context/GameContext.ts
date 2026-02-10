@@ -16,7 +16,7 @@ export class GameContext {
     constructor(app: Application) {
         this.app = app;
         this.assetService = new AssetService();
-        this.mediatorMap = new MediatorMap(this.assetService);
+        this.mediatorMap = new MediatorMap(this.app, this.assetService);
     }
 
     public async bootstrap() {

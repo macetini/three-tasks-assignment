@@ -13,10 +13,9 @@ export class Game {
         // Initialize with responsive settings
         await this.app.init({
             resizeTo: globalThis.window,
-            width: window.innerWidth,
-            height: window.innerHeight,
             autoDensity: true,
             antialias: true,
+            resolution: window.devicePixelRatio || 1,
             backgroundColor: 0x1099bb
 
         });
@@ -27,6 +26,9 @@ export class Game {
         gameContext.bootstrap();
 
         this.addDebugInfo();
+
+        const container = document.getElementById('game-container') || document.body;
+        container.appendChild(this.app.canvas);
     }
 
     private addDebugInfo(): void {
