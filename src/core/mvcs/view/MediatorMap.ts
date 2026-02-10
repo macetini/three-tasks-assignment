@@ -4,16 +4,15 @@ import type { AssetService } from "../service/AssetService";
 import type { AbstractMediator } from "./AbstractMediator";
 import type { AbstractView } from "./AbstractView";
 import type { SignalBus } from "../../signal/SignalBus";
-
-type MediatorClass<T extends AbstractView> = new (view: T) => AbstractMediator<T>;
+import type { AbstractMediatorType } from "./type/AbstractMediatorType";
 
 export class MediatorMap {
-    private readonly mappings: Map<string, MediatorClass<any>> = new Map();
+    private readonly mappings: Map<string, AbstractMediatorType<any>> = new Map();
+    private readonly activeMediators: Map<AbstractView, AbstractMediator<any>> = new Map();
 
     private readonly app: Application;
     private readonly assetService: AssetService;
     private readonly signalBus: SignalBus;
-
 
     // TODO. Too many arguments, refactor.
     constructor(app: Application, assetService: AssetService, signalBus: SignalBus) {
@@ -27,7 +26,7 @@ export class MediatorMap {
      */
     public map<V extends AbstractView>(
         viewClass: new (...args: any[]) => V,
-        mediatorClass: MediatorClass<V>
+        mediatorClass: AbstractMediatorType<V>
     ): void {
         const className = viewClass.name;
         if (!className) {
@@ -47,15 +46,30 @@ export class MediatorMap {
         }
         const mediator = new MediatorClass(view);
 
-        // Inject dependencies one by one
+        // Inject dependencies
         mediator.setApp(this.app);
         mediator.setAssetService(this.assetService);
         mediator.setSignalBus(this.signalBus);
         mediator.setMediatorMap(this);
-        //
 
-        // Call the onRegister() method
         mediator.onRegister();
+
+        this.activeMediators.set(view, mediator);
         return mediator;
+    }
+
+    /**
+     * Finds the mediator associated with this view, calls onRemove, and cleans up.
+     */
+    public unregister(view: AbstractView): void {
+        const mediator = this.activeMediators.get(view);
+        if (!mediator) {
+            console.warn(`[MediatorMap] No active mediator found for: ${view.constructor.name}`);
+            return;
+        }
+
+        mediator.onRemove();
+        this.activeMediators.delete(view);
+        console.log(`[MediatorMap] Unregistered mediator for: ${view.constructor.name}`);
     }
 }

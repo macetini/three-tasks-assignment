@@ -4,9 +4,16 @@ import { AbstractMediator } from '../AbstractMediator';
 import { AceOfShadowsView } from '../component/AceOfShadowsView';
 import type { AbstractView } from '../AbstractView';
 import type { Container } from 'pixi.js';
+import { SignalType } from '../../../signal/type/SignalType';
+import type { AssetService } from '../../service/AssetService';
+import { TaskType } from '../../../signal/type/TaskType';
 
 export class RootViewMediator extends AbstractMediator<RootView> {
-    private _activeTaskMediator: AbstractMediator<any> | null = null;
+
+    private static readonly TASK_MAP: Record<string, new () => AbstractView> = {
+        [TaskType.CARDS]: AceOfShadowsView,
+        // [TaskType.FIRE]: MagicFireView,
+    };
 
     constructor(view: RootView) {
         super(view);
@@ -14,17 +21,18 @@ export class RootViewMediator extends AbstractMediator<RootView> {
 
     public override onRegister(): void {
         super.onRegister();
-        console.log("[RootViewMediator] Initializing Application Layers.");
 
+        console.log("[RootViewMediator] Initializing Application Layers.");
         // 1. Setup the Permanent UI (Menu)
         this.initMenu();
+        this.signalBus.on(SignalType.SWITCH_TASK, this.onSwitchTask);
+    }
 
-        // 2. Listen for the Global Task Switch event
-        // Use a bound function so we can remove it later
-        window.addEventListener('SWITCH_TASK', this.handleSwitchTask);
-
-        // 3. Load default
-        this.onSwitchTask('CARDS');
+    public override onRemove(): void {
+        // INFO: Unnecessary but nice to follow convention,
+        // the root is never removed, the application exits.
+        this.signalBus.off(SignalType.SWITCH_TASK, this.onSwitchTask);
+        super.onRemove();
     }
 
     private initMenu(): void {
@@ -32,50 +40,40 @@ export class RootViewMediator extends AbstractMediator<RootView> {
     }
 
     private addAndRegister<T extends AbstractView>(view: T, layer: Container): void {
+        console.log(`[RootViewMediator] Registering: ${view.constructor.name}`);
         layer.addChild(view);
         this.mediatorMap.register(view);
         view.init();
     }
 
-    // Helper to handle the event listener context
-    private readonly handleSwitchTask = (e: any): void => {
-        this.onSwitchTask(e.detail);
-    };
+    private readonly onSwitchTask = (taskType: string): void => {
+        console.log(`[RootViewMediator] Executing switch to: ${taskType}`);
 
-    private onSwitchTask(taskType: string): void {
-        // 1. Teardown existing mediator
-        if (this._activeTaskMediator) {
-            this._activeTaskMediator.onRemove();
-            this._activeTaskMediator = null;
+        const ViewClass = RootViewMediator.TASK_MAP[taskType];
+
+        const currentTaskView = this.viewComponent.activeTask;
+        if (currentTaskView) {
+            this.mediatorMap.unregister(currentTaskView);
         }
 
-        // 2. Switch Task
-        /*
-        if (taskType === 'CARDS') {
-            this.showTask(AceOfShadowsView);
-        } else if (taskType === 'FIRE') {
-            // this.showTask(MagicFireView);
-        }*/
+        this.showTask(ViewClass);
     }
 
     private showTask(ViewClass: new (...args: any[]) => AbstractView): void {
-        // Instantiate the View
-        const viewInstance = new ViewClass();
+        // Instantiate with the service required by the View
+        const viewInstance = new ViewClass(this.assetService);
 
-        // RootView handles adding to taskLayer and removing old children
-        this.view.setTaskView(viewInstance);
+        // RootView handles taskLayer cleanup and adding the new view
+        this.viewComponent.setTaskView(viewInstance);
 
-        // Register couples them and calls onRegister() automatically
-        this._activeTaskMediator = this.mediatorMap.register(viewInstance);
+        // MediatorMap registers and calls onRegister()
+        this.mediatorMap.register(viewInstance);
+
+        // Manual init for internal view setup
+        viewInstance.init();
     }
 
-    public override onRemove(): void {
-        window.removeEventListener('SWITCH_TASK', this.handleSwitchTask);
-
-        if (this._activeTaskMediator) {
-            this._activeTaskMediator.onRemove();
-        }
-
-        super.onRemove();
+    protected override get viewComponent(): RootView {
+        return this.view;
     }
 }

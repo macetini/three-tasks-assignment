@@ -1,4 +1,5 @@
 // src/core/mvcs/view/mediator/MainMenuMediator.ts
+import { SignalType } from '../../../signal/type/SignalType';
 import { AbstractMediator } from '../AbstractMediator';
 import { MainMenuView } from '../component/MainMenuView';
 
@@ -25,8 +26,8 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
     }
 
     private readonly onMenuClick = (taskType: string): void => {
-        console.log('[MainMenuMediator] Switching task to: ', taskType);
-        //window.dispatchEvent(new CustomEvent('SWITCH_TASK', { detail: taskType }));
+        console.log('[MainMenuMediator] Click on the Menu Button Type: ', taskType);
+        this.signalBus.emit(SignalType.SWITCH_TASK, taskType);
     }
 
     private applyLayout(): void {

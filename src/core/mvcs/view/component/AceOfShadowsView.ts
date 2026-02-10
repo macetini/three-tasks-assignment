@@ -1,7 +1,8 @@
 import { Color, Container, Sprite } from 'pixi.js';
-import type { AssetService } from '../../service/AssetService';
+import { AssetService } from '../../service/AssetService';
+import { AbstractView } from '../AbstractView';
 
-export class AceOfShadowsView extends Container {
+export class AceOfShadowsView extends AbstractView {
     private _stackA: Container[] = [];
     private _stackB: Container[] = [];
 
@@ -12,10 +13,23 @@ export class AceOfShadowsView extends Container {
 
     private readonly assetService: AssetService;
 
-    constructor(assetService: AssetService) {
+    constructor() {
         super();
-        this.assetService = assetService;
+        this.assetService = new AssetService();
         this.createDeck();
+    }
+
+    // You MUST have these 3 to satisfy the AbstractView contract:
+    public init(): void {
+        console.log("AceOfShadows Initialized with assets:", this.assetService);
+    }
+
+    public update(delta: number): void {
+        // Pixi ticker calls this
+    }
+
+    public dispose(): void {
+        // Clean up logic
     }
 
     private createDeck(): void {
@@ -30,7 +44,7 @@ export class AceOfShadowsView extends Container {
 
             const outline = new Sprite(this.assetService.getOutlineTexture());
             outline.anchor.set(0.5);
-            
+
             // Stack them: Outline on top of Pattern
             cardUnit.addChild(pattern);
             cardUnit.addChild(outline);
