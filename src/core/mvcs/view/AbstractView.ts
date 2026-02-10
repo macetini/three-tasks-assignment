@@ -19,10 +19,10 @@ export abstract class AbstractView extends Container {
      * 
      * Called by the Mediator or Parent during the render phase.
      * 
-     * @param w Width of the screen
-     * @param h Height of the screen
+     * @param width Width of the screen
+     * @param height Height of the screen
      */
-    public layout(w: number, h: number): void {
+    public layout(width: number, height: number): void {
         console.log(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
     }
 

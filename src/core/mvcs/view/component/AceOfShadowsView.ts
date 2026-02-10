@@ -1,56 +1,84 @@
-import { Color, Container, Point, RenderGroup, Sprite, Texture } from 'pixi.js';
 import { gsap } from 'gsap';
+import { Container, Point, Sprite } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class AceOfShadowsView extends AbstractView {
-    private readonly Y_OFFSET = 2; // Offset for the stacking effect
+    private readonly CONTENT_SCALER = 1000;
+
+    private readonly CARD_GAP = 500;
+    private readonly CARD_ROTATION = 0.5;
+
+    private readonly Y_CONTENT_OFFSET = 100;
+    private readonly Y_CARD_OFFSET = 2; // Offset for the stacking effect
+
+    private readonly ANIMATION_DURATION: number = 2; // 2 seconds
+    private readonly ANIMATION_DELAY: number = 1; //1 second
 
     private readonly stackA = new Container();
     private readonly stackB = new Container();
 
+    protected readonly scalableContent = new Container();
     private readonly cards: Sprite[] = [];
-    protected readonly content = new Container();
+
+    private sequence: gsap.core.Timeline | null = null;
     private readonly tempPoint = new Point();
 
     public override init(): void {
         super.init();
-        this.addChild(this.content);
 
-        this.stackA.position.set(-275, 100);
-        this.stackB.position.set(275, 100);
-        this.content.addChild(this.stackA, this.stackB);
+        this.addChild(this.scalableContent);
+
+        this.stackA.position.set(this.CARD_GAP * -0.5, this.Y_CONTENT_OFFSET);
+        this.stackB.position.set(this.CARD_GAP * 0.5, this.Y_CONTENT_OFFSET);
+
+        this.scalableContent.addChild(this.stackA, this.stackB);
     }
 
-    public override layout(w: number, h: number): void {
-        // 1. Center the design box
-        this.content.position.set(w * 0.5, h * 0.5);
+    public override layout(width: number, height: number): void {
+        this.scalableContent.position.set(width * 0.5, height * 0.5);
 
-        // 2. The "Safe Zone" Math (Design for 1000x1000)
-        // This ensures the content is ALWAYS visible and NEVER overflows
-        const scale = Math.min(w / 1000, h / 1000);
-        this.content.scale.set(scale);
+        const scale = Math.min(width / this.CONTENT_SCALER, height / this.CONTENT_SCALER);
+        this.scalableContent.scale.set(scale);
 
-        //console.log(`[${this.constructor.name}] Scaling content to: ${scale}`);
+        console.log(`[AceOfShadowsView] Using custom layout. Layout scaled to ${scale}.`);
     }
 
-    public populateDeck(cards: Sprite[]): void {
+    public populateStack(cards: Sprite[]): void {
         cards.forEach((card, index) => {
-            this.cards.push(card);
-
             card.anchor.set(0.5);
+            card.y = -(index * this.Y_CARD_OFFSET);
+            card.rotation = (Math.random() - 0.5) * this.CARD_ROTATION;
 
-            card.y = -(index * this.Y_OFFSET);
-            card.rotation = (Math.random() - 0.5) * 0.5;
-
+            this.cards.push(card);
             this.stackA.addChild(card);
         })
     }
 
+    public startStackingSequence(): void {
+        this.sequence?.kill();
+
+        this.sequence = gsap.timeline({ repeat: -1 });
+        this.sequence.call(() => {
+            if (this.stackA.children.length > 0) {
+                this.moveTopCardToStackB();
+            } else {
+                this.sequence?.kill();
+            }
+        }, [], this.ANIMATION_DELAY);
+    }
+
+    public stopSequence(): void {
+        this.sequence?.kill();
+    }
+
     public moveTopCardToStackB(): void {
         const { stackA, stackB } = this;
-        if (stackA.children.length === 0) return;
+        if (stackA.children.length === 0) {
+            console.log(`[AceOfShadowsView] Stack A is empty.`);
+            return;
+        }
 
-        const card = stackA.children[stackA.children.length - 1] as Container;
+        const card = stackA.children.at(-1) as Container;
 
         // OPTIMIZATION: Using the 'out' parameter in getGlobalPosition and toLocal 
         // reuses the memory of _tempPoint instead of creating 2 new Point objects per second.
@@ -60,18 +88,15 @@ export class AceOfShadowsView extends AbstractView {
 
         card.position.set(this.tempPoint.x, this.tempPoint.y);
 
-        const targetY = -(stackB.children.length - 1) * this.Y_OFFSET;
+        const targetY = -(stackB.children.length - 1) * this.Y_CARD_OFFSET;
 
         gsap.to(card, {
             x: 0,
             y: targetY,
-            duration: 2,
+            duration: this.ANIMATION_DURATION,
             ease: "sine.inOut",
             overwrite: "auto",
         });
     }
 
-    public getStackACount(): number {
-        return this.stackA.children.length;
-    }
 }

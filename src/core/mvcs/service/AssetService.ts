@@ -9,9 +9,6 @@ export class AssetService {
     private readonly CARD_HEIGHT: number = 280;
     private readonly VORONOI_POINT_COUNT: number = 10;
 
-    //private readonly cardTextures: Texture[] = [];
-    //private outlineTexture: Texture | null = null;    
-
     /**
      * Bootstraps all assets. In a larger app, this would also 
      * handle Assets.load() for external manifests.
@@ -113,9 +110,6 @@ export class AssetService {
                 .closePath()
                 .fill({ color: p.color, alpha: 0.8 });
         });
-
-        // 2. Add a high-contrast border to make the card "pop"
-        //g.roundRect(0, 0, width, height, 10).stroke({ width: 3, color: 0xffffff, alignment: 0 });
     }
 
     public bakeCardTextures(renderer: Renderer, outlineTexture: Texture, textures: Texture[]): Sprite[] {
