@@ -7,7 +7,7 @@ import { MainMenuView } from '../component/MainMenuView';
 import { RootView } from '../component/RootView';
 
 export class RootViewMediator extends AbstractMediator<RootView> {
-    
+
     private static readonly TASK_MAP: Record<string, new () => AbstractView> = {
         [TaskType.MAIN]: MainMenuView,
         [TaskType.CARDS]: AceOfShadowsView,
@@ -29,7 +29,7 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         super.onRemove();
     }
 
-    private initMainMenu(): void {        
+    private initMainMenu(): void {
         this.onSwitchTask(TaskType.MAIN);
     }
 
@@ -39,17 +39,16 @@ export class RootViewMediator extends AbstractMediator<RootView> {
             console.warn(`[RootViewMediator] Unknown Task Type: ${taskType}`);
             return;
         }
-
-        const currentView = this.viewComponent.activeView;
-        if (currentView) { // TODO: Maybe remove?
-            this.mediatorMap.unregister(currentView);
-        }
         const nextView = new ViewClass();
         this.addAndRegister(nextView);
     }
 
     private addAndRegister<T extends AbstractView>(view: T): void {
         console.log(`[RootViewMediator] Registering: ${view.constructor.name}`);
+        const currentView = this.viewComponent.activeView;
+        if (currentView) {
+            this.mediatorMap.unregister(currentView);
+        }
         this.viewComponent.setView(view);
         this.mediatorMap.register(view);
         view.init();
