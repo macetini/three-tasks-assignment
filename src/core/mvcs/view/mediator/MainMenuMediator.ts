@@ -4,18 +4,27 @@ import { MainMenuView } from '../component/MainMenuView';
 
 export class MainMenuMediator extends AbstractMediator<MainMenuView> {
 
-    protected override viewComponent(): MainMenuView {
-        return this.view;
-    }
-
     public override onRegister(): void {
         requestAnimationFrame(() => this.applyLayout());
         this.app.renderer.on('resize', this.onResize);
+
+        this.viewComponent.on(MainMenuView.MENU_CLICK_EVENT, this.onMenuClick);
+    }
+
+    public override onRemove(): void {
+        this.app.renderer.off('resize', this.onResize);
+        super.onRemove();
     }
 
     private readonly onResize = (): void => {
         this.applyLayout();
-    };
+    }
+
+    private readonly onMenuClick = (taskType: string): void => {
+        //window.dispatchEvent(new CustomEvent('SWITCH_TASK', { detail: taskType }));
+    }
+
+
 
     private applyLayout(): void {
         const { width, height } = this.app.screen;
@@ -28,12 +37,11 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
             return;
         }
 
-        console
+        console.log('[MainMenuMediator] Layout update: ', width, height);
         this.view.layout(width, height);
     }
 
-    public override onRemove(): void {
-        this.app.renderer.off('resize', this.onResize);
-        super.onRemove();
+    protected override get viewComponent(): MainMenuView {
+        return this.view;
     }
 }

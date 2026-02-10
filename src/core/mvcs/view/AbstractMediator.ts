@@ -37,5 +37,5 @@ export abstract class AbstractMediator<T extends AbstractView> {
         // In a real framework, we would auto-remove signal listeners here.
     }
 
-    protected viewComponent(): T { return this.view; }
+    protected get viewComponent(): T { return this.view; }
 }

@@ -11,7 +11,7 @@ export abstract class AbstractView extends Container {
      * Called by the Mediator or Parent during the setup phase.
      * Use this to create children, setup layout, etc.
      */
-    public abstract init(): void;
+    public abstract init(): void;    
 
     /**
      * Standard update loop hook (useful for Task 2's Magic Fire).
@@ -22,9 +22,9 @@ export abstract class AbstractView extends Container {
     }
 
     /**
- * Cleans up the view. 
- * We destroy children but keep the shared textures in the AssetService pool.
- */
+    * Cleans up the view. 
+    * We destroy children but keep the shared textures in the AssetService pool.
+    */
     public dispose(): void {
         console.log(`[${this.constructor.name}] dispose()`);
 
