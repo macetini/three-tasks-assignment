@@ -10,10 +10,12 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
 
     private async initCardTemplates(renderer: Renderer): Promise<void> {
         await this.assetService.initCardTemplates(renderer);
-        
+
         const textures = this.assetService.cardTextures;
         const outline = this.assetService.getOutlineTexture();
         this.view.populateDeck(textures, outline);
+
+        this.view.layout(renderer.screen.width, renderer.screen.height);
     }
 
     public override onRemove(): void {

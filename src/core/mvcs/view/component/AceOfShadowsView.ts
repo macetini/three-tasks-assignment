@@ -2,26 +2,35 @@ import { Color, Container, Sprite, Texture } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class AceOfShadowsView extends AbstractView {
-    public stackA = new Container();
-    public stackB = new Container();
-
-    private cards: Sprite[] = [];
-
-    private readonly STACK_A_X = 200;
-    private readonly STACK_B_X = 600;
-    private readonly STACK_Y = 500;
     private readonly Y_OFFSET = 2; // Offset for the stacking effect
+
+    private readonly stackA = new Container();
+    private readonly stackB = new Container();
+
+    private readonly cards: Container[] = [];
+
+    protected readonly content = new Container();
 
     public override init(): void {
         super.init();
-        this.addChild(this.stackA, this.stackB);
+        this.addChild(this.content);
+        this.content.addChild(this.stackA, this.stackB);
     }
 
+    public override layout(w: number, h: number): void {
+        // 1. Center the design box
+        this.content.position.set(w * 0.5, h * 0.5);
+
+        // 2. The "Safe Zone" Math (Design for 1000x1000)
+        // This ensures the content is ALWAYS visible and NEVER overflows
+        const scale = Math.min(w / 1000, h / 1000);
+        this.content.scale.set(scale);        
+    }
 
     public populateDeck(textures: Texture[], outlineTexture: Texture): void {
         for (let i = 0; i < 144; i++) {
             const cardUnit = new Container();
-            
+
             const patternTexture = textures[i % 10];
             const pattern = new Sprite(patternTexture);
             pattern.anchor.set(0.5);
@@ -35,12 +44,13 @@ export class AceOfShadowsView extends AbstractView {
             cardUnit.addChild(outline);
 
             // Playfulness: Add a tiny random rotation to each card
-            cardUnit.x = this.STACK_A_X;
-            cardUnit.y = this.STACK_Y - (i * this.Y_OFFSET);
+            cardUnit.x = 0;
+            cardUnit.y = -(i * this.Y_OFFSET);
             cardUnit.rotation = (Math.random() - 0.5) * 0.5;
 
+            this.cards.push(cardUnit);
+
             this.stackA.addChild(cardUnit);
-            this.addChild(cardUnit); // Added to container: higher index = visually on top
         }
     }
 
