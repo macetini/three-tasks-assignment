@@ -15,7 +15,13 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
         const outline = this.assetService.getOutlineTexture();
         this.view.populateDeck(textures, outline);
 
-        this.view.layout(renderer.screen.width, renderer.screen.height);
+        const interval = setInterval(() => {
+            if (this.view.getStackACount() > 0) {
+                this.view.moveTopCardToStackB();
+            } else {
+                clearInterval(interval);
+            }
+        }, 1000); // One card every second
     }
 
     public override onRemove(): void {

@@ -1,4 +1,5 @@
 import { Color, Container, Sprite, Texture } from 'pixi.js';
+import { gsap } from 'gsap';
 import { AbstractView } from '../AbstractView';
 
 export class AceOfShadowsView extends AbstractView {
@@ -26,7 +27,9 @@ export class AceOfShadowsView extends AbstractView {
         // 2. The "Safe Zone" Math (Design for 1000x1000)
         // This ensures the content is ALWAYS visible and NEVER overflows
         const scale = Math.min(w / 1000, h / 1000);
-        this.content.scale.set(scale);        
+        this.content.scale.set(scale);
+
+        console.log(`[${this.constructor.name}] Scaling content to: ${scale}`);
     }
 
     public populateDeck(textures: Texture[], outlineTexture: Texture): void {
@@ -64,34 +67,41 @@ export class AceOfShadowsView extends AbstractView {
         return new Color({ h: hue, s: 80, v: 100 }).toNumber();
     }
 
-    /**
-     * Pops the top card from Stack A. 
-     * In PIXI, the 'top' card is the one with the highest index in our array.
-     */
-    /*
-    public getNextCardFromA(): Container | undefined {
-        return this.stackA.pop();
-    }*/
+    public moveTopCardToStackB(): void {
+        if (this.stackA.children.length === 0) return;
 
-    /**
-     * Logic for landing a card in Stack B
-     */
-    /*
-    public landCardInB(card: Sprite): void {
-        const indexInB = this._stackB.length;
+        // 2. Pick the top card (last child in PIXI)
+        const card = this.stackA.children[this.stackA.children.length - 1] as Container;
 
-        // Re-calculate Y for Stack B so it builds up
-        card.x = this.STACK_B_X;
-        card.y = this.STACK_Y - (indexInB * this.Y_OFFSET);
+        // 3. The "Teleport" Trick:
+        // Before we change the parent, get where the card is on the ACTUAL screen.
+        const globalPos = card.getGlobalPosition();
 
-        this._stackB.push(card);
+        // 4. Change Parent
+        this.stackB.addChild(card);
 
-        // Move to top of the display list to ensure it sits on top of Stack B
-        this.addChild(card);
+        // 5. Calculate where that screen position is INSIDE stackB's local world
+        const localPos = this.stackB.toLocal(globalPos);
+
+        // 6. Set the card to that local position so it hasn't visually moved yet
+        card.position.set(localPos.x, localPos.y);
+
+        // 7. GSAP Animation
+        // Now we animate it from its current "weird" local position back to (0, targetY)
+        const isPortrait = this.stackB.x < 300;
+        const offset = isPortrait ? 2 : 1.2;
+        const targetY = -(this.stackB.children.length - 1) * offset;
+
+        gsap.to(card, {
+            x: 0,
+            y: targetY,
+            duration: 2, // 2-second flight as per common task requirements
+            ease: "sine.inOut",
+            overwrite: "auto", // Prevents animation conflicts if user goes crazy
+        });
     }
 
-    public get stackBX(): number { return this.STACK_B_X; }
-    public getStackBY(index: number): number { return this.STACK_Y - (index * this.Y_OFFSET); }
-    public get stackBLength(): number { return this.stackB.length; }
-    */
+    public getStackACount(): number {
+        return this.stackA.children.length;
+    }
 }

@@ -15,16 +15,15 @@ export abstract class AbstractView extends Container {
         console.log(`[${this.constructor.name}] View initialized.`);
     };
 
+    /**
+     * 
+     * Called by the Mediator or Parent during the render phase.
+     * 
+     * @param w Width of the screen
+     * @param h Height of the screen
+     */
     public layout(w: number, h: number): void {
         console.log(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
-    }
-
-    /**
-     * Standard update loop hook (useful for Task 2's Magic Fire).
-     * @param delta frame delta time
-     */
-    public update(delta: number): void {
-        // To be overridden by subclasses if needed
     }
 
     /**
