@@ -20,15 +20,13 @@ export class Game {
 
         });
         this.app.canvas.className = styles.gameCanvas;
-        document.body.appendChild(this.app.canvas);
+        const gameContainer = document.getElementById('game-container') || document.body;
+        gameContainer.appendChild(this.app.canvas);
 
         const gameContext = new GameContext(this.app);
         gameContext.bootstrap();
 
         this.addDebugInfo();
-
-        const container = document.getElementById('game-container') || document.body;
-        container.appendChild(this.app.canvas);
     }
 
     private addDebugInfo(): void {

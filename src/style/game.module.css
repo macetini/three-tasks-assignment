@@ -2,14 +2,11 @@
   display: block;
   /* Fixed Aspect Ratio */
   aspect-ratio: 9 / 16; 
-  
   /* Scale to fit screen without overflowing */
   max-width: 100%;
   max-height: 100vh;
-  
   /* Center it */
   margin: auto;
-  
   /* Touch handling */
   touch-action: none;
   background-color: #1099bb;

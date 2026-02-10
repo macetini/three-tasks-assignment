@@ -1,6 +1,6 @@
 import { Game } from './core/Game';
 
-const app = new Game();
-await app.init();
+const game = new Game();
+await game.init();
 
 console.log("[Main] Game Initialized");
