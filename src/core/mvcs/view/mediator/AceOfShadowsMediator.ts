@@ -9,11 +9,8 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
     }
 
     private async initCardTemplates(renderer: Renderer): Promise<void> {
-        await this.assetService.initCardTemplates(renderer);
-
-        const textures = this.assetService.cardTextures;
-        const outline = this.assetService.getOutlineTexture();
-        this.view.populateDeck(textures, outline);
+        const cards = await this.assetService.getCards(renderer);
+        this.view.populateDeck(cards);
 
         const interval = setInterval(() => {
             if (this.view.getStackACount() > 0) {

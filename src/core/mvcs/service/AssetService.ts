@@ -1,34 +1,35 @@
 // src/core/mvcs/service/AssetService.ts
-import { Assets, Graphics, Texture, type Renderer } from 'pixi.js';
+import { Assets, Color, Container, Graphics, Sprite, Texture, type Renderer } from 'pixi.js';
 
 export class AssetService {
-    private readonly CARDS_POOL_SIZE = 10; // Generate 10 variations to keep memory low but variety high
+    private readonly CARD_TEMPLATES_COUNT: number = 10;
+    private readonly CARDS_COUNT: number = 144;
 
-    private readonly _cardTextures: Texture[] = [];
-    public get cardTextures(): Texture[] {
-        return this._cardTextures;
-    }
+    private readonly CARD_WIDTH: number = 200;
+    private readonly CARD_HEIGHT: number = 280;
+    private readonly VORONOI_POINT_COUNT: number = 10;
 
-    private _outlineTexture: Texture | null = null;
-    public getOutlineTexture(): Texture {
-        return this._outlineTexture!;
-    }
+    //private readonly cardTextures: Texture[] = [];
+    //private outlineTexture: Texture | null = null;    
 
     /**
      * Bootstraps all assets. In a larger app, this would also 
      * handle Assets.load() for external manifests.
      */
-    public async initCardTemplates(renderer: Renderer): Promise<void> {
+    public async getCards(renderer: Renderer): Promise<Sprite[]> {
         await Assets.init();
 
-        this.generateOutlineTexture(renderer);
-        this.generateDeckTextures(renderer);
+        const outlineTexture: Texture = this.generateOutlineTexture(renderer);
+        const cardTextures: Texture[] = this.generateDeckTextures(renderer);
+        return this.bakeCardTextures(renderer, outlineTexture, cardTextures);
     }
 
-    private generateOutlineTexture(renderer: Renderer): void {
+    private generateOutlineTexture(renderer: Renderer): Texture {
         console.log(`[AssetService] Generating Outline Texture.`);
-        const width = 200;
-        const height = 280;
+
+        const width = this.CARD_WIDTH;
+        const height = this.CARD_HEIGHT;
+
         const g = new Graphics();
 
         g.roundRect(0, 0, width, height, 10)
@@ -39,29 +40,31 @@ export class AssetService {
         const texture = renderer.generateTexture(g);
         g.destroy();
 
-        this._outlineTexture = texture;
+        return texture;
     }
 
     /**
      * Creates a pool of different card textures to ensure the 144-card 
      * stack looks organic and "limited edition."
      */
-    private generateDeckTextures(renderer: Renderer): void {
-        console.log(`[AssetService] Generating '${this.CARDS_POOL_SIZE}' card textures.`);
-        for (let i = 0; i < this.CARDS_POOL_SIZE; i++) {
+    private generateDeckTextures(renderer: Renderer): Texture[] {
+        console.log(`[AssetService] Generating '${this.CARD_TEMPLATES_COUNT}' card textures.`);
+        const cardTextures: Texture[] = [];
+        for (let i = 0; i < this.CARD_TEMPLATES_COUNT; i++) {
             const seed: number = i * Math.random();
             const voronoiTex = this.createVoronoiTexture(renderer, seed);
-            this._cardTextures.push(voronoiTex);
+            cardTextures.push(voronoiTex);
         }
-        console.log(`[AssetService] Finished Card Textures Generation: '${this._cardTextures.length}' cards generated.`);
+        console.log(`[AssetService] Finished Card Textures Generation: '${cardTextures.length}' cards generated.`);
+        return cardTextures;
     }
 
     /**
  * Bakes a Voronoi-style pattern into a reusable GPU Texture.
  */
     private createVoronoiTexture(renderer: Renderer, seed: number): Texture {
-        const width = 200;
-        const height = 280;
+        const width = this.CARD_WIDTH;
+        const height = this.CARD_HEIGHT;
         const g = new Graphics();
 
         const points = this.generatePatternPoints(seed, width, height);
@@ -78,7 +81,7 @@ export class AssetService {
     */
     private generatePatternPoints(seed: number, width: number, height: number) {
         const points = [];
-        const pointCount = 10;
+        const pointCount = this.VORONOI_POINT_COUNT;
 
         for (let i = 0; i < pointCount; i++) {
             points.push({
@@ -114,6 +117,45 @@ export class AssetService {
         // 2. Add a high-contrast border to make the card "pop"
         //g.roundRect(0, 0, width, height, 10).stroke({ width: 3, color: 0xffffff, alignment: 0 });
     }
+
+    public bakeCardTextures(renderer: Renderer, outlineTexture: Texture, textures: Texture[]): Sprite[] {
+        const bakedSprites: Sprite[] = [];
+        const bakeContainer = new Container();
+
+        const pattern = new Sprite({ anchor: 0.5 });
+        const outline = new Sprite({ texture: outlineTexture, anchor: 0.5 });
+
+        pattern.position.set(this.CARD_WIDTH * 0.5, this.CARD_HEIGHT * 0.5);
+        outline.position.set(this.CARD_WIDTH * 0.5, this.CARD_HEIGHT * 0.5);
+
+        bakeContainer.addChild(pattern, outline);
+
+        for (let i = 0; i < this.CARDS_COUNT; i++) {
+            // Update temporary baking elements
+            pattern.texture = textures[i % this.CARD_TEMPLATES_COUNT];
+            pattern.tint = this.getVibrantColor(i);
+
+            // Snap the texture
+            const texture = renderer.generateTexture({
+                target: bakeContainer,
+                resolution: 1, // Keep it 1 for performance, or use devicePixelRatio for sharpness
+                antialias: true
+            });
+
+            const card = new Sprite(texture);
+            card.anchor.set(0.5);
+            bakedSprites.push(card);
+        }
+
+        bakeContainer.destroy({ children: true });
+        return bakedSprites;
+    }
+
+    private getVibrantColor(index: number): number {
+        const hue = (index * 137.508) % 360;
+        return new Color({ h: hue, s: 80, v: 100 }).toNumber();
+    }
+
 
     /**
      * For Task 2: We can use this to load specific fonts
