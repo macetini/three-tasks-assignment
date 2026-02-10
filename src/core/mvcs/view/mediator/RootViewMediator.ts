@@ -59,9 +59,9 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         this.showTask(ViewClass);
     }
 
-    private showTask(ViewClass: new (...args: any[]) => AbstractView): void {
+    private showTask(ViewClass: new () => AbstractView): void {
         // Instantiate with the service required by the View
-        const viewInstance = new ViewClass(this.assetService);
+        const viewInstance = new ViewClass();
 
         // RootView handles taskLayer cleanup and adding the new view
         this.viewComponent.setTaskView(viewInstance);

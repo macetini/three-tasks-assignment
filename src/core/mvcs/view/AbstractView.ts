@@ -11,7 +11,11 @@ export abstract class AbstractView extends Container {
      * Called by the Mediator or Parent during the setup phase.
      * Use this to create children, setup layout, etc.
      */
-    public abstract init(): void;    
+    public abstract init(): void;
+
+    public layout(width: number, height: number): void {
+        console.warn(`[${this.constructor.name}] layout() not implemented. View remains at (0,0).`);
+    };
 
     /**
      * Standard update loop hook (useful for Task 2's Magic Fire).
