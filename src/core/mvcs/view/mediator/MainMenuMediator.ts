@@ -28,7 +28,7 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
             return;
         }
 
-        console.log('[MainMenuMediator] Layout update', width, height);
+        console
         this.view.layout(width, height);
     }
 

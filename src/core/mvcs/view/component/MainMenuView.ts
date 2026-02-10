@@ -3,15 +3,16 @@ import { Container, Graphics, Text } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class MainMenuView extends AbstractView {
-    private _buttons: Container[] = [];
     private readonly BUTTON_GAP = 15;
+    private readonly BUTTON_W: number = 240;
+    private readonly BUTTON_H: number = 50;
+
+    private readonly _buttons: Container[] = [];
 
     public init(): void {
         this.createButton("ACE OF SHADOWS", "CARDS");
         this.createButton("MAGIC FIRE", "FIRE");
         this.createButton("SCALES", "SLOT");
-
-       // this.layout(); // Call once at init
     }
 
     private createButton(label: string, taskType: string): void {
@@ -48,20 +49,17 @@ export class MainMenuView extends AbstractView {
     * @param height The current height of the Pixi screen
     */
     public layout(width: number, height: number): void {
-        const BTN_W = 240;
-        const BTN_H = 50;
         let totalHeight = 0;
-
         this._buttons.forEach((btn, index) => {
             // Center buttons horizontally relative to this view's (0,0)
-            btn.x = -BTN_W / 2;
-            btn.y = index * (BTN_H + this.BUTTON_GAP);
-            totalHeight = btn.y + BTN_H;
+            btn.x = -this.BUTTON_W * 0.5;
+            btn.y = index * (this.BUTTON_H + this.BUTTON_GAP);
+            totalHeight = btn.y + this.BUTTON_H;
         });
 
         // Optional: If you want the menu itself to be centered 
         // in your fixed virtual space (e.g. 1000px height)
-        this.y = height / 2 - totalHeight* 0.5;
+        this.y = height * 0.5 - totalHeight * 0.5;
         this.x = width * 0.5;
     }
 }
