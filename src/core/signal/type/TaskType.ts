@@ -1,5 +1,6 @@
 // src/core/mvcs/signal/type/TaskType.ts
 export const TaskType = {
+    MAIN: 'MAIN',
     CARDS: 'CARDS',
     FIRE: 'FIRE',
     SLOT: 'SLOT'

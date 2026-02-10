@@ -12,7 +12,7 @@ export abstract class AbstractView extends Container {
      * Use this to create children, setup layout, etc.
      */
     public init(): void {
-        console.log(`[${this.constructor.name}] initialized.`);
+        console.log(`[${this.constructor.name}] View initialized.`);
     };
 
     public layout(width: number, height: number): void {

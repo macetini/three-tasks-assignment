@@ -5,8 +5,8 @@ export class AssetService {
     private readonly CARDS_POOL_SIZE = 10; // Generate 10 variations to keep memory low but variety high
 
     private readonly _cardTextures: Texture[] = [];
-    public getRandomCardTexture(index: number): Texture {
-        return this._cardTextures[index % this.CARDS_POOL_SIZE];
+    public get cardTextures(): Texture[] {
+        return this._cardTextures;
     }
 
     private _outlineTexture: Texture | null = null;
@@ -18,7 +18,7 @@ export class AssetService {
      * Bootstraps all assets. In a larger app, this would also 
      * handle Assets.load() for external manifests.
      */
-    public async init(renderer: Renderer): Promise<void> {
+    public async initCardTemplates(renderer: Renderer): Promise<void> {
         await Assets.init();
 
         this.generateOutlineTexture(renderer);
@@ -26,6 +26,7 @@ export class AssetService {
     }
 
     private generateOutlineTexture(renderer: Renderer): void {
+        console.log(`[AssetService] Generating Outline Texture.`);
         const width = 200;
         const height = 280;
         const g = new Graphics();
@@ -52,7 +53,7 @@ export class AssetService {
             const voronoiTex = this.createVoronoiTexture(renderer, seed);
             this._cardTextures.push(voronoiTex);
         }
-        console.log(`[AssetService] Finished Card Textures Generation: '${this._cardTextures.length}' card textures.`);
+        console.log(`[AssetService] Finished Card Textures Generation: '${this._cardTextures.length}' cards generated.`);
     }
 
     /**

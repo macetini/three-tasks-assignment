@@ -26,8 +26,7 @@ export class GameContext {
 
     public async bootstrap() {
         console.log("[GameContext] Bootstrapping services...");
-        await this.assetService.init(this.app.renderer);
-
+    
         const rootView = new RootView();
         rootView.init();
         this.app.stage.addChild(rootView);

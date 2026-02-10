@@ -1,16 +1,15 @@
-import { RootView } from '../component/RootView';
-import { MainMenuView } from '../component/MainMenuView';
-import { AbstractMediator } from '../AbstractMediator';
-import { AceOfShadowsView } from '../component/AceOfShadowsView';
-import type { AbstractView } from '../AbstractView';
-import type { Container } from 'pixi.js';
 import { SignalType } from '../../../signal/type/SignalType';
-import type { AssetService } from '../../service/AssetService';
 import { TaskType } from '../../../signal/type/TaskType';
+import { AbstractMediator } from '../AbstractMediator';
+import type { AbstractView } from '../AbstractView';
+import { AceOfShadowsView } from '../component/AceOfShadowsView';
+import { MainMenuView } from '../component/MainMenuView';
+import { RootView } from '../component/RootView';
 
 export class RootViewMediator extends AbstractMediator<RootView> {
-
+    
     private static readonly TASK_MAP: Record<string, new () => AbstractView> = {
+        [TaskType.MAIN]: MainMenuView,
         [TaskType.CARDS]: AceOfShadowsView,
         // [TaskType.FIRE]: MagicFireView,
     };
@@ -19,8 +18,7 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         super.onRegister();
 
         console.log("[RootViewMediator] Initializing Application Layers.");
-        // 1. Setup the Permanent UI (Menu)
-        this.initMenu();
+        this.initMainMenu();
         this.signalBus.on(SignalType.SWITCH_TASK, this.onSwitchTask);
     }
 
@@ -31,8 +29,23 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         super.onRemove();
     }
 
-    private initMenu(): void {
-        this.addAndRegister(new MainMenuView());
+    private initMainMenu(): void {        
+        this.onSwitchTask(TaskType.MAIN);
+    }
+
+    private readonly onSwitchTask = (taskType: string): void => {
+        const ViewClass = RootViewMediator.TASK_MAP[taskType];
+        if (!ViewClass) {
+            console.warn(`[RootViewMediator] Unknown Task Type: ${taskType}`);
+            return;
+        }
+
+        const currentView = this.viewComponent.activeView;
+        if (currentView) { // TODO: Maybe remove?
+            this.mediatorMap.unregister(currentView);
+        }
+        const nextView = new ViewClass();
+        this.addAndRegister(nextView);
     }
 
     private addAndRegister<T extends AbstractView>(view: T): void {
@@ -41,28 +54,6 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         this.mediatorMap.register(view);
         view.init();
     }
-
-    private readonly onSwitchTask = (taskType: string): void => {
-        // Find the new class from our map
-        const ViewClass = RootViewMediator.TASK_MAP[taskType];
-        if (!ViewClass) {
-            return;
-        }
-
-        // Unregister the mediator of the view currently on screen
-        const currentView = this.viewComponent.activeView;
-        if (currentView) {
-            this.mediatorMap.unregister(currentView);
-        }
-        // Instantiate and swap
-        const nextView = new ViewClass();
-        // RootView removes old child and adds new one
-        this.viewComponent.setView(nextView);
-        // Register new mediator
-        this.mediatorMap.register(nextView);
-        // Initialize view logic
-        nextView.init();
-    };
 
     protected override get viewComponent(): RootView {
         return this.view;

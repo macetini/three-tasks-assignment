@@ -1,43 +1,33 @@
-import { Color, Container, Sprite } from 'pixi.js';
-import { AssetService } from '../../service/AssetService';
+import { Color, Container, Sprite, Texture } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class AceOfShadowsView extends AbstractView {
-    private _stackA: Container[] = [];
-    private _stackB: Container[] = [];
+    public stackA = new Container();
+    public stackB = new Container();
+
+    private cards: Sprite[] = [];
 
     private readonly STACK_A_X = 200;
     private readonly STACK_B_X = 600;
     private readonly STACK_Y = 500;
     private readonly Y_OFFSET = 2; // Offset for the stacking effect
 
-    //private readonly assetService: AssetService;    
-
-    public init(): void {
+    public override init(): void {
         super.init();
-        //console.log("AceOfShadows Initialized with assets:", this.assetService);
+        this.addChild(this.stackA, this.stackB);
     }
 
-    public update(delta: number): void {
-        // Pixi ticker calls this
-    }
 
-    public dispose(): void {
-        // Clean up logic
-    }
-
-    /*
-    private createDeck(): void {
+    public populateDeck(textures: Texture[], outlineTexture: Texture): void {
         for (let i = 0; i < 144; i++) {
             const cardUnit = new Container();
-
-            // Get one of our baked Voronoi textures
-            const patternTexture = this.assetService.getRandomCardTexture(i);
+            
+            const patternTexture = textures[i % 10];
             const pattern = new Sprite(patternTexture);
             pattern.anchor.set(0.5);
             pattern.tint = this.getRandomVibrantColor(i);
 
-            const outline = new Sprite(this.assetService.getOutlineTexture());
+            const outline = new Sprite(outlineTexture);
             outline.anchor.set(0.5);
 
             // Stack them: Outline on top of Pattern
@@ -49,11 +39,10 @@ export class AceOfShadowsView extends AbstractView {
             cardUnit.y = this.STACK_Y - (i * this.Y_OFFSET);
             cardUnit.rotation = (Math.random() - 0.5) * 0.5;
 
-            this._stackA.push(cardUnit);
+            this.stackA.addChild(cardUnit);
             this.addChild(cardUnit); // Added to container: higher index = visually on top
         }
     }
-        */
 
     /**
      * Generates a unique, high-vibrancy color for each card.
@@ -67,13 +56,15 @@ export class AceOfShadowsView extends AbstractView {
      * Pops the top card from Stack A. 
      * In PIXI, the 'top' card is the one with the highest index in our array.
      */
+    /*
     public getNextCardFromA(): Container | undefined {
-        return this._stackA.pop();
-    }
+        return this.stackA.pop();
+    }*/
 
     /**
      * Logic for landing a card in Stack B
      */
+    /*
     public landCardInB(card: Sprite): void {
         const indexInB = this._stackB.length;
 
@@ -89,5 +80,6 @@ export class AceOfShadowsView extends AbstractView {
 
     public get stackBX(): number { return this.STACK_B_X; }
     public getStackBY(index: number): number { return this.STACK_Y - (index * this.Y_OFFSET); }
-    public get stackBLength(): number { return this._stackB.length; }
+    public get stackBLength(): number { return this.stackB.length; }
+    */
 }
