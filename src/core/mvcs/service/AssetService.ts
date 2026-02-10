@@ -5,13 +5,16 @@ import { GameConfig } from '../../config/GameConfig';
 export class AssetService {
     private readonly cfg = GameConfig.CARDS;
 
+    public async init(): Promise<void> {
+        await Assets.init({});        
+        console.log("[AssetService] Assets Service Initialized.");
+    }
+
     /**
      * Bootstraps all assets. In a larger app, this would also 
      * handle Assets.load() for external manifests.
      */
     public async getCards(renderer: Renderer): Promise<Sprite[]> {
-        await Assets.init();
-
         const outlineTexture: Texture = this.generateOutlineTexture(renderer);
         const cardTextures: Texture[] = this.generateMainTextures(renderer);
         return this.bakeCardTextures(renderer, outlineTexture, cardTextures);

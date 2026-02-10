@@ -25,8 +25,10 @@ export class GameContext {
     }
 
     public async bootstrap() {
-        console.log("[GameContext] Bootstrapping services...");
-    
+        console.log("[GameContext] Bootstrap Started.");
+
+        await this.assetService.init();
+
         const rootView = new RootView();
         rootView.init();
         this.app.stage.addChild(rootView);
@@ -38,5 +40,7 @@ export class GameContext {
         //
 
         this.mediatorMap.register(rootView);
+
+        console.log("[GameContext] Bootstrap Finished.");
     }
 }
