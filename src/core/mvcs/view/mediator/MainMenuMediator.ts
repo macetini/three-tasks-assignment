@@ -5,14 +5,18 @@ import { MainMenuView } from '../component/MainMenuView';
 export class MainMenuMediator extends AbstractMediator<MainMenuView> {
 
     public override onRegister(): void {
-        requestAnimationFrame(() => this.applyLayout());
-        this.app.renderer.on('resize', this.onResize);
+        super.onRegister();
 
+        requestAnimationFrame(() => this.applyLayout());
+
+        this.app.renderer.on('resize', this.onResize);
         this.viewComponent.on(MainMenuView.MENU_CLICK_EVENT, this.onMenuClick);
     }
 
     public override onRemove(): void {
+        this.viewComponent.off(MainMenuView.MENU_CLICK_EVENT, this.onMenuClick);
         this.app.renderer.off('resize', this.onResize);
+
         super.onRemove();
     }
 
@@ -21,10 +25,9 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
     }
 
     private readonly onMenuClick = (taskType: string): void => {
+        console.log('[MainMenuMediator] Switching task to: ', taskType);
         //window.dispatchEvent(new CustomEvent('SWITCH_TASK', { detail: taskType }));
     }
-
-
 
     private applyLayout(): void {
         const { width, height } = this.app.screen;

@@ -3,26 +3,40 @@ import type { Application } from 'pixi.js';
 import type { AssetService } from '../service/AssetService';
 import type { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
+import type { SignalBus } from '../../signal/SignalBus';
 
 export abstract class AbstractMediator<T extends AbstractView> {
     protected view!: T;
     protected app!: Application;
     protected assetService!: AssetService;
+    protected signalBus!: SignalBus;
     protected mediatorMap!: MediatorMap;
-    //protected signalBus!: SignalBus;
 
     constructor(view: T) {
         this.view = view;
     }
 
-    public setterInject(app: Application, assetService: AssetService, mediatorMap: MediatorMap): void {
+    // --- Dependency Injection ---
+
+    public setApp(app: Application): void {
         this.app = app;
-        this.assetService = assetService;
-        this.mediatorMap = mediatorMap;
     }
 
+    public setAssetService(service: AssetService): void {
+        this.assetService = service;
+    }
+
+    public setSignalBus(bus: SignalBus): void {
+        this.signalBus = bus;
+    }
+
+    public setMediatorMap(map: MediatorMap): void {
+        this.mediatorMap = map;
+    }
+    // --- End of Dependency Injection ---
+
     /**
-     * Equivalent to initialize() in RobotLegs.
+     *          
      * Call this after the view is added to the stage.
      */
     public onRegister(): void {
@@ -30,7 +44,8 @@ export abstract class AbstractMediator<T extends AbstractView> {
     }
 
     /**
-     * Destructor to clean up listeners, intervals, and GSAP tweens.
+     * 
+     * Destructor to clean up listeners, intervals, tweens etc..
      */
     public onRemove(): void {
         console.log(`[${this.constructor.name}] onRemove()`);

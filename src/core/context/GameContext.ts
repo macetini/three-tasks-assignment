@@ -6,17 +6,20 @@ import { MediatorMap } from '../mvcs/view/MediatorMap';
 import { RootView } from '../mvcs/view/component/RootView';
 import { MainMenuView } from '../mvcs/view/component/MainMenuView';
 import { MainMenuMediator } from '../mvcs/view/mediator/MainMenuMediator';
+import { SignalBus } from '../signal/SignalBus';
 
 export class GameContext {
     private readonly app: Application;
     private readonly assetService: AssetService;
+    private readonly signalBus: SignalBus;
 
     private readonly mediatorMap: MediatorMap;
 
     constructor(app: Application) {
         this.app = app;
         this.assetService = new AssetService();
-        this.mediatorMap = new MediatorMap(this.app, this.assetService);
+        this.signalBus = new SignalBus();
+        this.mediatorMap = new MediatorMap(this.app, this.assetService, this.signalBus);
     }
 
     public async bootstrap() {
@@ -30,6 +33,7 @@ export class GameContext {
         // Mapping        
         this.mediatorMap.map(RootView, RootViewMediator);
         this.mediatorMap.map(MainMenuView, MainMenuMediator);
+        //
 
         this.mediatorMap.register(rootView);
     }

@@ -3,6 +3,7 @@ import type { Application } from "pixi.js";
 import type { AssetService } from "../service/AssetService";
 import type { AbstractMediator } from "./AbstractMediator";
 import type { AbstractView } from "./AbstractView";
+import type { SignalBus } from "../../signal/SignalBus";
 
 type MediatorClass<T extends AbstractView> = new (view: T) => AbstractMediator<T>;
 
@@ -11,10 +12,14 @@ export class MediatorMap {
 
     private readonly app: Application;
     private readonly assetService: AssetService;
+    private readonly signalBus: SignalBus;
 
-    constructor(app: Application, assetService: AssetService) {
+
+    // TODO. Too many arguments, refactor.
+    constructor(app: Application, assetService: AssetService, signalBus: SignalBus) {
         this.app = app;
         this.assetService = assetService;
+        this.signalBus = signalBus;
     }
 
     /**
@@ -37,15 +42,20 @@ export class MediatorMap {
      */
     public register<T extends AbstractView>(view: T): AbstractMediator<T> {
         const MediatorClass = this.mappings.get(view.constructor.name);
-
         if (!MediatorClass) {
             throw new Error(`[MediatorMap] No Mediator found for ${view.constructor.name}`);
-        }        
-
+        }
         const mediator = new MediatorClass(view);
-        mediator.setterInject(this.app, this.assetService, this);
-        mediator.onRegister();
 
+        // Inject dependencies one by one
+        mediator.setApp(this.app);
+        mediator.setAssetService(this.assetService);
+        mediator.setSignalBus(this.signalBus);
+        mediator.setMediatorMap(this);
+        //
+
+        // Call the onRegister() method
+        mediator.onRegister();
         return mediator;
     }
 }

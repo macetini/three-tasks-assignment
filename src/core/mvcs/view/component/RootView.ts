@@ -23,9 +23,6 @@ export class RootView extends AbstractView {
         view.init();
     }
 
-    /**
-     * The MainMediator calls this to swap Task 1, 2, or 3.
-     */
     public setTaskView(view: AbstractView): void {
         if (this._taskLayer.children.length > 0) {
             const oldView = this._taskLayer.children[0] as AbstractView;
