@@ -66,13 +66,15 @@ export abstract class AbstractMediator<T extends AbstractView> {
 
         // A generic sanity check: don't layout if the renderer is collapsed
         if (width <= 0 || height <= 0) {
-            console.error('[AbstractMediator] Skipping layout update due to collapsed renderer');
+            console.warn('[AbstractMediator] Skipping layout update due to collapsed renderer');
             return;
         }
 
         // Run the guard check. If it passes, execute the layout.
         if (this.isValidLayout(width, height)) {
             this.view.layout(width, height);
+        } else {
+            console.warn('[AbstractMediator] Layout validation failed.');
         }
     }
 
@@ -97,5 +99,8 @@ export abstract class AbstractMediator<T extends AbstractView> {
     }
     // --- End of Dependency Injection ---
 
+    /**
+     * Returns the view component. Can be cast to the specific view type.
+     */
     protected get viewComponent(): T { return this.view; }
 }

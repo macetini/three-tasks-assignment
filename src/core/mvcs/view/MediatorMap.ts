@@ -17,7 +17,6 @@ export class MediatorMap {
         this.signalBus = signalBus;
     }
 
-
     /**
      * Map a View class to a Mediator class
      */
