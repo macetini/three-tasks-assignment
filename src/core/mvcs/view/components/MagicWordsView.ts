@@ -1,8 +1,13 @@
-import { Container } from 'pixi.js';
+import { Container, Texture } from 'pixi.js';
+import type { AvatarPosition } from '../../model/states/MagicWordsModel';
+import type { MagicWordVO } from '../../model/states/vo/MagicWordVO';
 import { AbstractView } from '../AbstractView';
+import { RichTextRow } from './ui/RichTextRow';
 
 export class MagicWordsView extends AbstractView {
     private readonly chatContainer = new Container();
+
+    private currentY: number = 0;
 
     public override init(): void {
         super.init();
@@ -14,7 +19,26 @@ export class MagicWordsView extends AbstractView {
         this.chatContainer.position.set(50, 50);
     }
 
-    public addRow(row: Container): void {
-        this.chatContainer.addChild(row);
+    public buildRows(
+        words: MagicWordVO[],
+        options: {
+            textureProvider: (id: string) => Texture,
+            positionProvider: (name: string) => AvatarPosition
+        }
+    ): void {
+        this.chatContainer.removeChildren();
+
+        words.forEach((wordsRow) => {
+            const position = options.positionProvider(wordsRow.characterName);
+            const textRow = new RichTextRow(wordsRow, position, options.textureProvider);
+            this.addRow(textRow);
+        });
+    }
+
+    public addRow(wordsRow: RichTextRow): void {
+        wordsRow.y = this.currentY;
+        this.chatContainer.addChild(wordsRow);
+        this.currentY += wordsRow.height + 20;
+
     }
 }
