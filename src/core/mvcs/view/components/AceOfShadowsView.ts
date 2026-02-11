@@ -19,30 +19,12 @@ export class AceOfShadowsView extends AbstractView {
 
     public override init(): void {
         super.init();
-
-        this.createBackButton();
-
         this.addChild(this.scalableContent);
 
         this.stackA.position.set(this.cfg.GAP * -0.5, this.cfg.Y_CONTENT_OFFSET);
         this.stackB.position.set(this.cfg.GAP * 0.5, this.cfg.Y_CONTENT_OFFSET);
 
         this.scalableContent.addChild(this.stackA, this.stackB);
-    }
-
-    private createBackButton(): void {
-        const backBtn = new Text({
-            text: '◀ BACK',
-            style: { fill: 0xffffff, fontSize: 24 }
-        });
-
-        backBtn.interactive = true;
-        backBtn.cursor = 'pointer';
-        backBtn.position.set(GameConfig.GLOBAL.BACK_BUTTON_X, GameConfig.GLOBAL.BACK_BUTTON_Y);
-
-        backBtn.on('pointertap', () => this.emit(AceOfShadowsView.CARD_BACK_CLICK_EVENT));
-
-        this.addChild(backBtn);
     }
 
     public override layout(width: number, height: number): void {
@@ -108,7 +90,7 @@ export class AceOfShadowsView extends AbstractView {
         card.position.set(this.tempPoint.x, this.tempPoint.y);
 
         const targetY = -(stackB.children.length - 1) * this.cfg.Y_CARD_OFFSET;
-        
+
         gsap.killTweensOf(card);
         gsap.to(card, {
             x: 0,

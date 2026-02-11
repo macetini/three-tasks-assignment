@@ -3,8 +3,12 @@ import type { Application } from 'pixi.js';
 import type { SignalBus } from '../../signal/SignalBus';
 import type { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
+import { SignalType } from '../../signal/type/SignalType';
+import { TaskType } from '../../signal/type/TaskType';
 
 export abstract class AbstractMediator<T extends AbstractView> {
+    public static readonly CARD_BACK_CLICK_EVENT = 'cardBackClick';
+
     protected view!: T;
     protected app!: Application;
     protected signalBus!: SignalBus;
@@ -21,6 +25,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
     public onRegister(): void {
         console.log(`[${this.constructor.name}] Mediator registered.`);
         this.setupResponsiveLayout();
+        this.view.on(AbstractMediator.CARD_BACK_CLICK_EVENT, this.onCardBackClickEvent);
     }
 
     /**
@@ -29,8 +34,15 @@ export abstract class AbstractMediator<T extends AbstractView> {
      */
     public onRemove(): void {
         console.log(`[${this.constructor.name}] Mediator removed.`);
-        this.app.renderer.off('resize', this.onResize)
+        this.app.renderer.off('resize', this.onResize);
+        this.viewComponent.off(AbstractMediator.CARD_BACK_CLICK_EVENT, this.onCardBackClickEvent);
     }
+
+    private readonly onCardBackClickEvent = (): void => {
+        console.log('[AceOfShadowsMediator] Handling: ', AbstractMediator.CARD_BACK_CLICK_EVENT);
+        this.signalBus.emit(SignalType.SWITCH_TASK, TaskType.MAIN);
+    }
+
 
     /**
      * Call this in onRegister() if your mediator needs to handle resizing.

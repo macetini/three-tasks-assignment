@@ -1,5 +1,7 @@
 // src/core/mvcs/views/AbstractView.ts
-import { Container } from 'pixi.js';
+import { Container, Text } from 'pixi.js';
+import { GameConfig } from '../../config/GameConfig';
+import { AbstractMediator } from './AbstractMediator';
 
 export abstract class AbstractView extends Container {
 
@@ -13,7 +15,30 @@ export abstract class AbstractView extends Container {
      */
     public init(): void {
         console.log(`[${this.constructor.name}] View initialized.`);
-    };    
+        this.createBackButton();
+    };
+
+    /**
+     * Creates the default back button that every view except the root one will have.
+     * 
+     * NOTE: This is not the best way to do it, but for a prototype it will do the job.
+     * 
+     */
+    protected createBackButton(): void {
+        console.log(`[${this.constructor.name}] Adding default back button.`);
+        const backBtn = new Text({
+            text: '◀ BACK',
+            style: { fill: 0xffffff, fontSize: 24 }
+        });
+
+        backBtn.interactive = true;
+        backBtn.cursor = 'pointer';
+        backBtn.position.set(GameConfig.GLOBAL.BACK_BUTTON_X, GameConfig.GLOBAL.BACK_BUTTON_Y);
+
+        backBtn.on('pointertap', () => this.emit(AbstractMediator.CARD_BACK_CLICK_EVENT));
+
+        this.addChild(backBtn);
+    }
 
     /**
      * 

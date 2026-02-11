@@ -9,21 +9,20 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
     public override onRegister(): void {
         super.onRegister();
 
+        // 1. Listen for the "Back" button
         this.view.on(MagicWordsView.BACK_CLICK_EVENT, this.onBackRequested, this);
 
-        this.fetchDialogueData();
+        // 2. Listen for when the Command finishes updating the Model
+        this.signalBus.on(SignalType.WORDS_LOADED, this.onWordsLoaded, this);
+
+        // 3. Trigger the Command to fetch the data
+        this.signalBus.emit(SignalType.FETCH_MAGIC_WORDS);
     }
 
-    private async fetchDialogueData(): Promise<void> {
-        try {
-            // We will move the actual fetch logic to AssetService shortly 
-            const response = await fetch('https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords');
-            const data = await response.json();
-
-            this.view.displayDialogue(data.data);
-        } catch (error) {
-            console.error("[MagicWordsMediator] Failed to fetch dialogue:", error);
-        }
+    private onWordsLoaded(): void {
+        // 4. Get data from Model and give to View
+        //const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
+        //this.view.displayDialogue(model.words);
     }
 
     private onBackRequested(): void {
@@ -31,6 +30,7 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
     }
 
     public override onRemove(): void {
+        this.signalBus.off(SignalType.WORDS_LOADED, this.onWordsLoaded);
         this.view.off(MagicWordsView.BACK_CLICK_EVENT, this.onBackRequested, this);
         super.onRemove();
     }

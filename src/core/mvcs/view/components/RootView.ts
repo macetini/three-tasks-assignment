@@ -7,6 +7,10 @@ export class RootView extends AbstractView {
         return this.children[0] as AbstractView;
     }
 
+    // Do not create a default back button
+    protected override createBackButton(): void {
+    }
+
     /**
      * Completely replaces the current view with a new one
      */
