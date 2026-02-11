@@ -33,7 +33,7 @@ export class AceOfShadowsView extends AbstractView {
         const scale = Math.min(width / this.cfg.CONTENT_SCALER, height / this.cfg.CONTENT_SCALER);
         this.scalableContent.scale.set(scale);
 
-        console.log(`[AceOfShadowsView] Using custom layout. Layout scaled to ${scale}.`);
+        console.debug(`[AceOfShadowsView] Using custom layout. Layout scaled to ${scale}.`);
     }
 
     public populateStack(cards: Sprite[]): void {
@@ -77,7 +77,7 @@ export class AceOfShadowsView extends AbstractView {
     public moveTopCardToStackB(): void {
         const { stackA, stackB } = this;
         if (stackA.children.length === 0) {
-            console.log(`[AceOfShadowsView] Stack A is empty.`);
+            console.debug(`[AceOfShadowsView] Stack A is empty.`);
             return;
         }
 

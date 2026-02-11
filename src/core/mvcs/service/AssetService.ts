@@ -7,7 +7,7 @@ export class AssetService {
 
     public async init(): Promise<void> {
         await Assets.init({});        
-        console.log("[AssetService] Assets Service Initialized.");
+        console.debug("[AssetService] Assets Service Initialized.");
     }
 
     /**
@@ -21,7 +21,7 @@ export class AssetService {
     }
 
     private generateOutlineTexture(renderer: Renderer): Texture {
-        console.log(`[AssetService] Generating Outline Texture.`);
+        console.debug(`[AssetService] Generating Outline Texture.`);
 
         const width = this.cfg.WIDTH;
         const height = this.cfg.HEIGHT;
@@ -44,14 +44,14 @@ export class AssetService {
      * stack looks organic and "limited edition."
      */
     private generateMainTextures(renderer: Renderer): Texture[] {
-        console.log(`[AssetService] Generating '${this.cfg.TEMPLATES_COUNT}' card textures.`);
+        console.debug(`[AssetService] Generating '${this.cfg.TEMPLATES_COUNT}' card textures.`);
         const cardTextures: Texture[] = [];
         for (let i = 0; i < this.cfg.TEMPLATES_COUNT; i++) {
             const seed: number = i * Math.random();
             const voronoiTex = this.createVoronoiTexture(renderer, seed);
             cardTextures.push(voronoiTex);
         }
-        console.log(`[AssetService] Finished Card Textures Generation: '${cardTextures.length}' cards generated.`);
+        console.debug(`[AssetService] Finished Card Textures Generation: '${cardTextures.length}' cards generated.`);
         return cardTextures;
     }
 

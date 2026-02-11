@@ -31,7 +31,7 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
     }
 
     private readonly onMenuClick = (taskType: string): void => {
-        console.log('[MainMenuMediator] Click on the Menu Button Type: ', taskType);
+        console.debug('[MainMenuMediator] Click on the Menu Button Type: ', taskType);
         this.signalBus.emit(SignalType.SWITCH_TASK, taskType);
     }
 }

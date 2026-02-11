@@ -8,7 +8,7 @@ export class PrepareCardsCommand extends AbstractCommand {
      * @override
      */
     public async execute(): Promise<void> {
-        console.log("[PrepareCardsCommand] Executing.");
+        console.debug("[PrepareCardsCommand] Executing.");
         try {
             const renderer = this.payload as Renderer;
 
@@ -18,7 +18,7 @@ export class PrepareCardsCommand extends AbstractCommand {
             cardModel.setCards(cardSprites);
 
             this.signalBus.emit<Sprite[]>(SignalType.CARDS_PREPARED, cardSprites);
-            console.log("[PrepareCardsCommand] Cards prepared and Model updated.");
+            console.debug("[PrepareCardsCommand] Cards prepared and Model updated.");
         } catch (error) {
             console.error("[PrepareCardsCommand] Failed to prepare cards:", error);
         }

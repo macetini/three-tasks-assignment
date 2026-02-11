@@ -18,7 +18,7 @@ export class RootViewMediator extends AbstractMediator<RootView> {
     public override onRegister(): void {
         super.onRegister();
 
-        console.log("[RootViewMediator] Initializing Application Layers.");
+        console.debug("[RootViewMediator] Initializing Application Layers.");
         this.initMainMenu();
         this.signalBus.on(SignalType.SWITCH_TASK, this.onSwitchTask);
     }
@@ -45,7 +45,7 @@ export class RootViewMediator extends AbstractMediator<RootView> {
     }
 
     private addAndRegister<T extends AbstractView>(view: T): void {
-        console.log(`[RootViewMediator] Registering: ${view.constructor.name}`);
+        console.debug(`[RootViewMediator] Registering: ${view.constructor.name}`);
         const currentView = this.viewComponent.activeView;
         if (currentView) {
             this.mediatorMap.unregister(currentView);

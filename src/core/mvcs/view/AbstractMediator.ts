@@ -23,7 +23,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * Call this after the view is added to the stage.
      */
     public onRegister(): void {
-        console.log(`[${this.constructor.name}] Mediator registered.`);
+        console.debug(`[${this.constructor.name}] Mediator registered.`);
         this.setupResponsiveLayout();
         this.view.on(AbstractMediator.CARD_BACK_CLICK_EVENT, this.onCardBackClickEvent);
     }
@@ -33,13 +33,13 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * Destructor to clean up listeners, intervals, tweens etc..
      */
     public onRemove(): void {
-        console.log(`[${this.constructor.name}] Mediator removed.`);
+        console.debug(`[${this.constructor.name}] Mediator removed.`);
         this.app.renderer.off('resize', this.onResize);
         this.viewComponent.off(AbstractMediator.CARD_BACK_CLICK_EVENT, this.onCardBackClickEvent);
     }
 
     private readonly onCardBackClickEvent = (): void => {
-        console.log('[AceOfShadowsMediator] Handling: ', AbstractMediator.CARD_BACK_CLICK_EVENT);
+        console.debug('[AceOfShadowsMediator] Handling: ', AbstractMediator.CARD_BACK_CLICK_EVENT);
         this.signalBus.emit(SignalType.SWITCH_TASK, TaskType.MAIN);
     }
 

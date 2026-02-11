@@ -10,6 +10,7 @@ export class Game {
     }
 
     async init(): Promise<void> {
+        console.log("[Game] Init Started.");
         // Initialize with responsive settings
         await this.app.init({
             resizeTo: globalThis.window,

@@ -17,7 +17,7 @@ export class RootView extends AbstractView {
     public setView(view: AbstractView): void {
         if (this.children.length > 0) {
             const oldView = this.children[0] as AbstractView;
-            console.log(`[RootView] Replacing ${oldView.constructor.name} with ${view.constructor.name}`);
+            console.debug(`[RootView] Replacing ${oldView.constructor.name} with ${view.constructor.name}`);
             if (oldView.dispose) {
                 oldView.dispose();
             }

@@ -21,6 +21,6 @@ export class MagicWordsView extends AbstractView {
      */
     public displayDialogue(content: any[]): void {
         // We will implement the Rich Text rendering logic here next
-        console.log("[MagicWordsView] Displaying dialogue data", content);
+        console.debug("[MagicWordsView] Displaying dialogue data", content);
     }
 }

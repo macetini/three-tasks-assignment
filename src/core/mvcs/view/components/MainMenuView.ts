@@ -64,6 +64,6 @@ export class MainMenuView extends AbstractView {
         this.y = height * 0.5 - totalHeight * 0.5;
         this.x = width * 0.5;
 
-        console.log(`[MainMenuView] Using responsive layout. View positioned at (${this.x}, ${this.y})`);
+        console.debug(`[MainMenuView] Using responsive layout. View positioned at (${this.x}, ${this.y})`);
     }
 }

@@ -14,7 +14,7 @@ export abstract class AbstractView extends Container {
      * Use this to create children, setup layout, etc.
      */
     public init(): void {
-        console.log(`[${this.constructor.name}] View initialized.`);
+        console.debug(`[${this.constructor.name}] View initialized.`);
         this.createBackButton();
     };
 
@@ -25,7 +25,7 @@ export abstract class AbstractView extends Container {
      * 
      */
     protected createBackButton(): void {
-        console.log(`[${this.constructor.name}] Adding default back button.`);
+        console.debug(`[${this.constructor.name}] Adding default back button.`);
         const backBtn = new Text({
             text: '◀ BACK',
             style: { fill: 0xffffff, fontSize: 24 }
@@ -49,10 +49,10 @@ export abstract class AbstractView extends Container {
      */
     public layout(width: number, height: number): void {
         if (width <= 0 || height <= 0) {
-            console.log(`[${this.constructor.name}] Skipping layout update due to collapsed renderer.`);
+            console.debug(`[${this.constructor.name}] Skipping layout update due to collapsed renderer.`);
             return;
         }
-        console.log(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
+        console.debug(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
     }
 
     /**
@@ -66,6 +66,6 @@ export abstract class AbstractView extends Container {
             texture: false
         });
 
-        console.log(`[${this.constructor.name}] View disposed.`);
+        console.debug(`[${this.constructor.name}] View disposed.`);
     }
 }

@@ -10,7 +10,7 @@ export class FetchMagicWordsCommand extends AbstractCommand {
     private readonly cfg = GameConfig.WORDS;
 
     public async execute(): Promise<void> {
-        console.log("[FetchMagicWordsCommand] Executing.");
+        console.debug("[FetchMagicWordsCommand] Executing.");
         try {
             const response = await fetch(this.cfg.API_URL);
             if (!response.ok) {
@@ -23,7 +23,7 @@ export class FetchMagicWordsCommand extends AbstractCommand {
 
             this.signalBus.emit(SignalType.WORDS_LOADED);
 
-            console.log("[FetchMagicWordsCommand] Words loaded successfully.");
+            console.debug("[FetchMagicWordsCommand] Words loaded successfully.");
         } catch (error) {
             console.error("[FetchMagicWordsCommand] Failed to fetch words:", error);
         }
