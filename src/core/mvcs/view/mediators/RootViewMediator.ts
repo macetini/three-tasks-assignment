@@ -2,17 +2,17 @@ import { SignalType } from '../../../signal/type/SignalType';
 import { TaskType } from '../../../signal/type/TaskType';
 import { AbstractMediator } from '../AbstractMediator';
 import type { AbstractView } from '../AbstractView';
-import { AceOfShadowsView } from '../component/AceOfShadowsView';
-import { MagicWordsView } from '../component/MagicWordsView';
-import { MainMenuView } from '../component/MainMenuView';
-import { RootView } from '../component/RootView';
+import { AceOfShadowsView } from '../components/AceOfShadowsView';
+import { MagicWordsView } from '../components/MagicWordsView';
+import { MainMenuView } from '../components/MainMenuView';
+import { RootView } from '../components/RootView';
 
 export class RootViewMediator extends AbstractMediator<RootView> {
 
     private static readonly TASK_MAP: Record<string, new () => AbstractView> = {
         [TaskType.MAIN]: MainMenuView,
         [TaskType.CARDS]: AceOfShadowsView,
-        [TaskType.WORDS]: MagicWordsView        
+        [TaskType.WORDS]: MagicWordsView
     };
 
     public override onRegister(): void {

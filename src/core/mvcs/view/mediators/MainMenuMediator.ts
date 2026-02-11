@@ -1,7 +1,7 @@
 // src/core/mvcs/view/mediator/MainMenuMediator.ts
 import { SignalType } from '../../../signal/type/SignalType';
 import { AbstractMediator } from '../AbstractMediator';
-import { MainMenuView } from '../component/MainMenuView';
+import { MainMenuView } from '../components/MainMenuView';
 
 export class MainMenuMediator extends AbstractMediator<MainMenuView> {
     public override onRegister(): void {

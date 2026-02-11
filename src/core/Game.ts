@@ -22,7 +22,6 @@ export class Game {
         this.app.canvas.className = styles.gameCanvas;
         const gameContainer = document.getElementById('game-container') || document.body;
         gameContainer.appendChild(this.app.canvas);
-        //document.body.appendChild(this.app.canvas);
 
         const gameContext = new GameContext(this.app);
         gameContext.bootstrap();

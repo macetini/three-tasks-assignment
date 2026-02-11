@@ -2,7 +2,7 @@
 import { SignalType } from '../../../signal/type/SignalType';
 import { TaskType } from '../../../signal/type/TaskType';
 import { AbstractMediator } from '../AbstractMediator';
-import { MagicWordsView } from '../component/MagicWordsView';
+import { MagicWordsView } from '../components/MagicWordsView';
 
 export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
 

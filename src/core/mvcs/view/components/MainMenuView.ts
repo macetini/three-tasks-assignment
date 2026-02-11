@@ -11,15 +11,16 @@ export class MainMenuView extends AbstractView {
     private readonly buttons: Container[] = [];
 
     public init(): void {
-        this.createButton("ACE OF SHADOWS", "CARDS");
-        this.createButton("MAGIC WORDS", "WORDS");
-        this.createButton("Phoenix Flame", "FLAME");
+        this.addButton("ACE OF SHADOWS", "CARDS");
+        this.addButton("MAGIC WORDS", "WORDS");
+        this.addButton("Phoenix Flame", "FLAME");
     }
 
-    private createButton(label: string, taskType: string): void {
-        const btn = new Container();
-        btn.cursor = 'pointer';
-        btn.eventMode = 'static';
+    private addButton(label: string, taskType: string): void {
+        const button = new Container();
+        button.cursor = 'pointer';
+        button.eventMode = 'static';
+        button.visible = button.interactive = false;
 
         const bg = new Graphics()
             .roundRect(0, 0, this.cfg.BUTTON_WIDTH, this.cfg.BUTTON_HEIGHT, 8)
@@ -32,14 +33,14 @@ export class MainMenuView extends AbstractView {
         btnTxt.anchor.set(0.5);
         btnTxt.position.set(120, 25);
 
-        btn.addChild(bg, btnTxt);
+        button.addChild(bg, btnTxt);
 
-        btn.on('pointertap', () => {
+        button.on('pointertap', () => {
             this.emit(MainMenuView.MENU_CLICK_EVENT, taskType);
         });
 
-        this.addChild(btn);
-        this.buttons.push(btn);
+        this.addChild(button);
+        this.buttons.push(button);
     }
 
     /**
@@ -56,6 +57,7 @@ export class MainMenuView extends AbstractView {
             button.x = -this.cfg.BUTTON_WIDTH * 0.5;
             button.y = index * (this.cfg.BUTTON_HEIGHT + this.cfg.BUTTON_GAP);
             totalHeight = button.y + this.cfg.BUTTON_HEIGHT;
+            button.visible = button.interactive = true;
         });
 
         // Center whole menu

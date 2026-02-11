@@ -1,14 +1,12 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
 import type { Application } from 'pixi.js';
-import type { AssetService } from '../service/AssetService';
+import type { SignalBus } from '../../signal/SignalBus';
 import type { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
-import type { SignalBus } from '../../signal/SignalBus';
 
 export abstract class AbstractMediator<T extends AbstractView> {
     protected view!: T;
     protected app!: Application;
-    protected assetService!: AssetService;
     protected signalBus!: SignalBus;
     protected mediatorMap!: MediatorMap;
 
@@ -38,9 +36,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * Call this in onRegister() if your mediator needs to handle resizing.
      */
     protected setupResponsiveLayout(): void {
-        // Initial snap
         requestAnimationFrame(() => this.triggerLayout());
-        // Listener
         this.app.renderer.on('resize', this.onResize);
     }
 
@@ -78,10 +74,6 @@ export abstract class AbstractMediator<T extends AbstractView> {
     // --- Dependency Injection ---
     public setApp(app: Application): void {
         this.app = app;
-    }
-
-    public setAssetService(service: AssetService): void {
-        this.assetService = service;
     }
 
     public setSignalBus(bus: SignalBus): void {
