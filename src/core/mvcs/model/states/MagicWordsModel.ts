@@ -1,4 +1,6 @@
 // src/core/mvcs/model/states/MagicWordsModel.ts
+import type { Texture } from "pixi.js";
+import { GameConfig } from "../../../config/GameConfig";
 import type { MagicWordVO } from "./vo/MagicWordVO";
 
 export type AvatarPosition = "left" | "right";
@@ -6,10 +8,10 @@ export type AvatarPosition = "left" | "right";
 export class MagicWordsModel {
     public static readonly NAME = "magicWordsModel";
 
-    private readonly DEFAULT_AVATAR_POSITION: AvatarPosition = "left";
-
     private _words: MagicWordVO[] = [];
     private readonly _positions: Map<string, AvatarPosition> = new Map();
+
+    private _textureMap: Map<string, Texture> = new Map();
 
     /**
      * Called by FetchMagicWordsCommand to store the metadata from JSON
@@ -21,7 +23,7 @@ export class MagicWordsModel {
     }
 
     public getPosition(characterName: string): AvatarPosition {
-        return this._positions.get(characterName) || this.DEFAULT_AVATAR_POSITION;
+        return this._positions.get(characterName) || GameConfig.WORDS.DEFAULT_AVATAR_POSITION;
     }
 
     public setData(data: MagicWordVO[]): void {
@@ -30,5 +32,13 @@ export class MagicWordsModel {
 
     public get words(): MagicWordVO[] {
         return this._words;
+    }
+
+    public setTextures(map: Map<string, Texture>): void {
+        this._textureMap = map;
+    }
+
+    public getTexture(id: string): Texture {
+        return this._textureMap.get(id) || this._textureMap.get("default")!;
     }
 }

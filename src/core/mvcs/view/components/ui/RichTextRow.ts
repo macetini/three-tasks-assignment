@@ -1,5 +1,5 @@
 // src/core/mvcs/view/components/ui/RichTextRow.ts
-import { Cache, Container, Sprite, Text } from "pixi.js";
+import { Container, Sprite, Text, Texture } from "pixi.js";
 import { GameConfig } from "../../../../config/GameConfig";
 import type { AvatarPosition } from "../../../model/states/MagicWordsModel";
 import type { MagicWordVO } from "../../../model/states/vo/MagicWordVO";
@@ -9,14 +9,16 @@ export class RichTextRow extends Container {
 
     private readonly AVATAR_SIZE = 64;
     private readonly PADDING = 12;
-    private readonly MAX_WIDTH = 400; // Limits how wide the text can go
+    private readonly MAX_WIDTH = 400;
 
-    constructor(vo: MagicWordVO, position: AvatarPosition) {
+    private readonly textureProvider: (id: string) => Texture;
+
+    constructor(vo: MagicWordVO, position: AvatarPosition, textureProvider: (id: string) => Texture) {
         super();
 
-        const avatarAlias = Cache.has(vo.characterName) ? vo.characterName : "default";
-        const avatar = Sprite.from(avatarAlias);
+        this.textureProvider = textureProvider;
 
+        const avatar = new Sprite(this.textureProvider(vo.characterName));
         avatar.width = avatar.height = this.AVATAR_SIZE;
 
         const message = this.createMessageContent(vo);
@@ -68,7 +70,7 @@ export class RichTextRow extends Container {
                 currentX += txt.width + 4;
             } else {
                 // It's an emoji!
-                const emoji = Sprite.from(token.value);
+                const emoji = new Sprite(this.textureProvider(token.value));
                 emoji.width = emoji.height = 24; // Match text height
                 emoji.x = currentX;
                 emoji.y = currentY - 2; // Slight adjustment for baseline

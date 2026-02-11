@@ -18,21 +18,16 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
         const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
         const words = model.words;
 
+        const textureProvider = (id: string) => model.getTexture(id);
+
         let currentY = 0;
         const spacing = 20;
 
         words.forEach((vo) => {
-            // 1. Get the layout strategy for this character
             const position = model.getPosition(vo.characterName);
-
-            // 2. Create the row (We'll build this class next)
-            const row = new RichTextRow(vo, position);
-
-            // 3. Stack vertically
+            const row = new RichTextRow(vo, position, textureProvider);
             row.y = currentY;
             this.view.addRow(row);
-
-            // 4. Increment Y based on the dynamic height of the text
             currentY += row.height + spacing;
         });
 

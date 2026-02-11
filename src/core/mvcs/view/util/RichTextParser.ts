@@ -1,3 +1,4 @@
+// src/core/mvcs/view/util/RichTextParser.ts
 import { GameConfig } from "../../../config/GameConfig";
 import type { IRichTextToken } from "./meta/IRichTextToken";
 

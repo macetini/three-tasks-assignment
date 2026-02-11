@@ -67,4 +67,16 @@ export class AssetService {
             return null;
         }
     }
+
+    /**
+ * Returns a texture from the cache or a default one if it doesn't exist.
+ */
+    public getTexture(alias: string): Texture {
+        if (Cache.has(alias)) {
+            return Texture.from(alias);
+        }
+
+        console.warn(`[AssetService] Asset ${alias} not found. Falling back to default.`);
+        return Texture.from("default");
+    }
 }
