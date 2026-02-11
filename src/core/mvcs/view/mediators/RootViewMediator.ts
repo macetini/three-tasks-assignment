@@ -1,4 +1,4 @@
-import { SignalType } from '../../../signal/type/SignalType';
+import { ModelType } from '../../../signal/type/ModelType';
 import { TaskType } from '../../../signal/type/TaskType';
 import { AbstractMediator } from '../AbstractMediator';
 import type { AbstractView } from '../AbstractView';
@@ -20,13 +20,13 @@ export class RootViewMediator extends AbstractMediator<RootView> {
 
         console.debug("[RootViewMediator] Initializing Application Layers.");
         this.initMainMenu();
-        this.signalBus.on(SignalType.SWITCH_TASK, this.onSwitchTask);
+        this.signalBus.on(ModelType.SWITCH_TASK, this.onSwitchTask);
     }
 
     public override onRemove(): void {
         // INFO: Unnecessary but nice to follow convention,
         // the root is never removed, the application exits.
-        this.signalBus.off(SignalType.SWITCH_TASK, this.onSwitchTask);
+        this.signalBus.off(ModelType.SWITCH_TASK, this.onSwitchTask);
         super.onRemove();
     }
 

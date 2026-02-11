@@ -17,7 +17,7 @@ import { MagicWordsMediator } from '../mvcs/view/mediators/MagicWordsMediator';
 import { MainMenuMediator } from '../mvcs/view/mediators/MainMenuMediator';
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
 import { SignalBus } from '../signal/SignalBus';
-import { SignalType } from '../signal/type/SignalType';
+import { ModelType } from '../signal/type/ModelType';
 
 export class GameContext {
     private readonly app: Application;
@@ -52,8 +52,8 @@ export class GameContext {
 
         // --- Command Mapping --- 
         console.log("[GameContext] Command Mapping.");
-        this.commandMap.map(SignalType.PREPARE_CARDS, PrepareCardsCommand);
-        this.commandMap.map(SignalType.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
+        this.commandMap.map(ModelType.PREPARE_CARDS, PrepareCardsCommand);
+        this.commandMap.map(ModelType.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
 
         // --- View & Mediator Mapping ---  
         console.log("[GameContext] View & Mediator Mapping.");

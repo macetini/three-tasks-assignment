@@ -1,5 +1,5 @@
-// src/core/signal/type/SignalType.ts
-export const SignalType = {
+// src/core/signal/type/ModelType.ts
+export const ModelType = {
     SWITCH_TASK: 'switch_task',
     PREPARE_CARDS: 'prepare_cards',
     CARDS_PREPARED: 'cards_prepared',
@@ -7,5 +7,4 @@ export const SignalType = {
     MAGIC_WORDS_LOADED: 'magic_words_loaded',
 } as const;
 
-// Optional: Extract the type for use in function signatures
-export type SignalType = typeof SignalType[keyof typeof SignalType];
+export type ModelType = typeof ModelType[keyof typeof ModelType];

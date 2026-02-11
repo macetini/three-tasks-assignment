@@ -1,7 +1,7 @@
 // src/core/mvcs/command/FetchMagicWordsCommand.ts
 
 import { GameConfig } from "../../../config/GameConfig";
-import { SignalType } from "../../../signal/type/SignalType";
+import { ModelType } from "../../../signal/type/ModelType";
 import type { MagicWordsResponse } from "../../model/states/dto/MagicWordsResponse";
 import { MagicWordsModel } from "../../model/states/MagicWordsModel";
 import { MagicWordVO } from "../../model/states/vo/MagicWordVO";
@@ -28,6 +28,6 @@ export class FetchMagicWordsCommand extends AbstractCommand {
         const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
         model.setData(voArray);
 
-        this.signalBus.emit(SignalType.MAGIC_WORDS_LOADED);
+        this.signalBus.emit(ModelType.MAGIC_WORDS_LOADED);
     }
 }

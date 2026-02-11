@@ -1,3 +1,4 @@
+// src/core/mvcs/view/util/CardsGenerator.ts
 import { Color, Container, Graphics, Sprite, Texture, type Renderer } from "pixi.js";
 import { GameConfig } from "../../../config/GameConfig";
 

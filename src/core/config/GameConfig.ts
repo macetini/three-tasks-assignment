@@ -26,6 +26,7 @@ export const GameConfig = {
     },
     WORDS: {
         API_URL: 'https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords',
+        DICEBEAR_URL: 'dicebear.com',
         // We'll add more here tomorrow!
     },
     FLAME: {

@@ -1,7 +1,7 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
 import type { Application } from 'pixi.js';
 import type { SignalBus } from '../../signal/SignalBus';
-import { SignalType } from '../../signal/type/SignalType';
+import { ModelType } from '../../signal/type/ModelType';
 import { TaskType } from '../../signal/type/TaskType';
 import type { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
@@ -40,7 +40,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
 
     private readonly onCardBackClickEvent = (): void => {
         console.debug('[AceOfShadowsMediator] Handling: ', AbstractMediator.CARD_BACK_CLICK_EVENT);
-        this.signalBus.emit(SignalType.SWITCH_TASK, TaskType.MAIN);
+        this.signalBus.emit(ModelType.SWITCH_TASK, TaskType.MAIN);
     }
 
 
