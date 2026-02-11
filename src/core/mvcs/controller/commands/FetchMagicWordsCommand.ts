@@ -2,30 +2,32 @@
 
 import { GameConfig } from "../../../config/GameConfig";
 import { SignalType } from "../../../signal/type/SignalType";
+import type { MagicWordsResponse } from "../../model/states/dto/MagicWordsResponse";
 import { MagicWordsModel } from "../../model/states/MagicWordsModel";
-import type { MagicWordsResponse } from "../../model/vo/MagicWordVO";
+import { MagicWordVO } from "../../model/states/vo/MagicWordVO";
 import { AbstractCommand } from "../AbstractCommand";
 
 export class FetchMagicWordsCommand extends AbstractCommand {
     private readonly cfg = GameConfig.WORDS;
 
     public async execute(): Promise<void> {
-        console.debug("[FetchMagicWordsCommand] Executing.");
-        try {
-            const response = await fetch(this.cfg.API_URL);
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
+        const response = await fetch(this.cfg.API_URL);
+        const json = (await response.json()) as MagicWordsResponse;
 
-            const json: MagicWordsResponse = await response.json();
-            const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
-            model.setData(json.data);
+        // 1. First, tell AssetService to load the new emoji textures
+        // We want to wait for this so the View doesn't try to show empty sprites
+        const assetPromises = json.emojies.map(emoji =>
+            this.assetService.loadRemoteTexture(emoji.name, emoji.url)
+        );
+        await Promise.all(assetPromises);
 
-            this.signalBus.emit(SignalType.WORDS_LOADED);
+        // 2. Hydrate the VO array
+        const voArray = json.dialogue.map(item => new MagicWordVO(item.name, item.text));
 
-            console.debug("[FetchMagicWordsCommand] Words loaded successfully.");
-        } catch (error) {
-            console.error("[FetchMagicWordsCommand] Failed to fetch words:", error);
-        }
+        // 3. Update Model
+        const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
+        model.setData(voArray);
+
+        this.signalBus.emit(SignalType.MAGIC_WORDS_LOADED);
     }
 }

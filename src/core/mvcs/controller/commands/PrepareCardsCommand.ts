@@ -21,6 +21,7 @@ export class PrepareCardsCommand extends AbstractCommand {
             console.debug("[PrepareCardsCommand] Cards prepared and Model updated.");
         } catch (error) {
             console.error("[PrepareCardsCommand] Failed to prepare cards:", error);
+            throw error;
         }
     }
 }

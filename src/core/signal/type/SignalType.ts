@@ -4,7 +4,7 @@ export const SignalType = {
     PREPARE_CARDS: 'prepare_cards',
     CARDS_PREPARED: 'cards_prepared',
     FETCH_MAGIC_WORDS: 'fetch_magic_words',
-    WORDS_LOADED: 'words_loaded',
+    MAGIC_WORDS_LOADED: 'magic_words_loaded',
 } as const;
 
 // Optional: Extract the type for use in function signatures

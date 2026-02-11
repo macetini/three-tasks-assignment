@@ -1,4 +1,4 @@
-import type { MagicWordVO } from "../vo/MagicWordVO";
+import type { MagicWordVO } from "./vo/MagicWordVO";
 
 // src/core/mvcs/model/states/MagicWordsModel.ts
 export class MagicWordsModel {
