@@ -1,9 +1,11 @@
 // src/core/context/GameContext.ts
 import { Application } from 'pixi.js';
 import { CommandMap } from '../mvcs/controller/CommandMap';
+import { FetchMagicWordsCommand } from '../mvcs/controller/commands/FetchMagicWordsCommand';
 import { PrepareCardsCommand } from '../mvcs/controller/commands/PrepareCardsCommand';
 import { ModelMap } from '../mvcs/model/ModelMap';
 import { CardModel } from '../mvcs/model/states/CardModel';
+import { MagicWordsModel } from '../mvcs/model/states/MagicWordsModel';
 import { AssetService } from '../mvcs/service/AssetService';
 import { AceOfShadowsView } from '../mvcs/view/components/AceOfShadowsView';
 import { MagicWordsView } from '../mvcs/view/components/MagicWordsView';
@@ -42,10 +44,11 @@ export class GameContext {
 
         // --- Model Mapping ---        
         this.modelMap.map(CardModel.NAME, new CardModel());
+        this.modelMap.map(MagicWordsModel.NAME, new MagicWordsModel());
 
         // --- Command Mapping ---    
         this.commandMap.map(SignalType.PREPARE_CARDS, PrepareCardsCommand);
-        //this.commandMap.map(SignalType.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
+        this.commandMap.map(SignalType.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
 
         // --- View & Mediator Mapping ---        
         this.mediatorMap.map(RootView, RootViewMediator);

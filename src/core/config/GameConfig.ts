@@ -23,11 +23,11 @@ export const GameConfig = {
         DELAY_SEC: 1,
         CONTENT_SCALER: 1000,
     },
-    FIRE: {
-        PARTICLE_COUNT: 10,
+    WORDS: {
+        API_URL: 'https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords',
         // We'll add more here tomorrow!
     },
-    SLOT: {
+    FLAME: {
         // For Task 3
     }
 } as const;

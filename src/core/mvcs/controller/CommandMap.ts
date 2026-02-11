@@ -18,7 +18,6 @@ export class CommandMap {
         this.signalBus = signalBus;
         this.assetService = assetService;
         this.modelMap = modelMap;
-
     }
 
     public map(signalType: string, commandClass: CommandConstructor): void {
@@ -31,7 +30,6 @@ export class CommandMap {
 
         if (CommandClass) {
             const command = new CommandClass(payload);
-            // 4. Use a Type Guard to safely check for AbstractCommand
             if (command instanceof AbstractCommand) {
                 command.setDependencies({
                     signalBus: this.signalBus,

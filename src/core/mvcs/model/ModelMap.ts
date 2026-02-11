@@ -16,6 +16,9 @@ export class ModelMap {
         return Object.fromEntries(this._models);
     }
 
+    /**
+     * Retrieves a specific model instance by key.
+     */
     public get<T>(key: string): T {
         return this._models.get(key) as T;
     }
