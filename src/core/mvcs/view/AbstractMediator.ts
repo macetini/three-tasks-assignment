@@ -3,12 +3,12 @@ import type { Application } from 'pixi.js';
 import type { SignalBus } from '../../signal/SignalBus';
 import { ModelType } from '../../signal/type/ModelType';
 import { TaskType } from '../../signal/type/TaskType';
+import type { ModelMap } from '../model/ModelMap';
 import type { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
-import type { ModelMap } from '../model/ModelMap';
 
 export abstract class AbstractMediator<T extends AbstractView> {
-    public static readonly CARD_BACK_CLICK_EVENT = 'cardBackClick';
+    public static readonly BACK_CLICK_EVENT = 'backClickEvent';
 
     protected view!: T;
     protected app!: Application;
@@ -27,7 +27,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
     public onRegister(): void {
         console.debug(`[${this.constructor.name}] Mediator registered.`);
         this.setupResponsiveLayout();
-        this.view.on(AbstractMediator.CARD_BACK_CLICK_EVENT, this.onCardBackClickEvent);
+        this.view.on(AbstractMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
     }
 
     /**
@@ -37,14 +37,13 @@ export abstract class AbstractMediator<T extends AbstractView> {
     public onRemove(): void {
         console.debug(`[${this.constructor.name}] Mediator removed.`);
         this.app.renderer.off('resize', this.onResize);
-        this.viewComponent.off(AbstractMediator.CARD_BACK_CLICK_EVENT, this.onCardBackClickEvent);
+        this.viewComponent.off(AbstractMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
     }
 
-    private readonly onCardBackClickEvent = (): void => {
-        console.debug('[AceOfShadowsMediator] Handling: ', AbstractMediator.CARD_BACK_CLICK_EVENT);
+    private readonly onBackClickEvent = (): void => {
+        console.debug('[AceOfShadowsMediator] Handling: ', AbstractMediator.BACK_CLICK_EVENT);
         this.signalBus.emit(ModelType.SWITCH_TASK, TaskType.MAIN);
     }
-
 
     /**
      * Call this in onRegister() if your mediator needs to handle resizing.

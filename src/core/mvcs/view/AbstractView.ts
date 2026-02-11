@@ -29,7 +29,7 @@ export abstract class AbstractView extends Container {
         backBtn.cursor = 'pointer';
         backBtn.position.set(GameConfig.GLOBAL.BACK_BUTTON_X, GameConfig.GLOBAL.BACK_BUTTON_Y);
 
-        backBtn.on('pointertap', () => this.emit(AbstractMediator.CARD_BACK_CLICK_EVENT));
+        backBtn.on('pointertap', () => this.emit(AbstractMediator.BACK_CLICK_EVENT));
 
         this.addChild(backBtn);
     }

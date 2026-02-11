@@ -45,25 +45,21 @@ export class Game {
 
         this.app.ticker.add(() => {
             const currentFPS = this.app.ticker.FPS;
-
-            // 1. Update rolling buffer
+            
             samples.push(currentFPS);
             if (samples.length > maxSamples) {
                 samples.shift(); // Remove oldest
             }
-
-            // 2. Calculate average
+            
             const sum = samples.reduce((a, b) => a + b, 0);
             const avgFPS = Math.round(sum / samples.length);
-
-            // 3. Update text (using single replace chain for speed)
+            
             fpsText.text = textTemplate
                 .replace("%1", Math.round(currentFPS).toString())
                 .replace("%2", avgFPS.toString());
-
-            // OPTIMIZATION: Color code the FPS for quick visual debugging
-            if (currentFPS < 30) fpsText.style.fill = 0xff4444; // Red
-            else if (currentFPS < 55) fpsText.style.fill = 0xffaa00; // Orange
+            
+            if (currentFPS < 20) fpsText.style.fill = 0xff4444; // Red
+            else if (currentFPS < 40) fpsText.style.fill = 0xffaa00; // Orange
             else fpsText.style.fill = 0x00ff00; // Green
         });
     }

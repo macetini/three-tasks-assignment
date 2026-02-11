@@ -43,7 +43,6 @@ export class FetchMagicWordsCommand extends AbstractCommand {
         json.emojies.forEach(emoji => {
             assetPromises.push(this.assetService.loadRemoteTexture(emoji.name, emoji.url));
         });
-
         json.avatars.forEach(avatar => {
             assetPromises.push(this.assetService.loadRemoteTexture(avatar.name, avatar.url));
         });

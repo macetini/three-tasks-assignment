@@ -5,6 +5,7 @@ import type { AbstractView } from '../AbstractView';
 import { AceOfShadowsView } from '../components/AceOfShadowsView';
 import { MagicWordsView } from '../components/MagicWordsView';
 import { MainMenuView } from '../components/MainMenuView';
+import { PhoenixFlameView } from '../components/PhoenixFlameView';
 import { RootView } from '../components/RootView';
 
 export class RootViewMediator extends AbstractMediator<RootView> {
@@ -12,7 +13,8 @@ export class RootViewMediator extends AbstractMediator<RootView> {
     private static readonly TASK_MAP: Record<string, new () => AbstractView> = {
         [TaskType.MAIN]: MainMenuView,
         [TaskType.CARDS]: AceOfShadowsView,
-        [TaskType.WORDS]: MagicWordsView
+        [TaskType.WORDS]: MagicWordsView,
+        [TaskType.FLAME]: PhoenixFlameView
     };
 
     public override onRegister(): void {

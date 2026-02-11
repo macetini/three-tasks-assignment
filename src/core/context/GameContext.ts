@@ -10,11 +10,13 @@ import { AssetService } from '../mvcs/service/AssetService';
 import { AceOfShadowsView } from '../mvcs/view/components/AceOfShadowsView';
 import { MagicWordsView } from '../mvcs/view/components/MagicWordsView';
 import { MainMenuView } from '../mvcs/view/components/MainMenuView';
+import { PhoenixFlameView } from '../mvcs/view/components/PhoenixFlameView';
 import { RootView } from '../mvcs/view/components/RootView';
 import { MediatorMap } from '../mvcs/view/MediatorMap';
 import { AceOfShadowsMediator } from '../mvcs/view/mediators/AceOfShadowsMediator';
 import { MagicWordsMediator } from '../mvcs/view/mediators/MagicWordsMediator';
 import { MainMenuMediator } from '../mvcs/view/mediators/MainMenuMediator';
+import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediator';
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
 import { SignalBus } from '../signal/SignalBus';
 import { ModelType } from '../signal/type/ModelType';
@@ -70,6 +72,7 @@ export class GameContext {
         this.mediatorMap.map(MainMenuView, MainMenuMediator);
         this.mediatorMap.map(AceOfShadowsView, AceOfShadowsMediator);
         this.mediatorMap.map(MagicWordsView, MagicWordsMediator);
+        this.mediatorMap.map(PhoenixFlameView, PhoenixFlameMediator);
         //        
 
         // --- Initialization ---
