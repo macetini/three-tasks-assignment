@@ -9,6 +9,8 @@ export class RootView extends AbstractView {
 
     // Do not create a default back button
     protected override createBackButton(): void {
+        // Override as no back button on the root.
+        // Not the best way to do it, but for a prototype it will do the job.
     }
 
     /**

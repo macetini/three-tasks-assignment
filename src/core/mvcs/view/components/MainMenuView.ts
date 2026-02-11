@@ -7,13 +7,12 @@ export class MainMenuView extends AbstractView {
     public static readonly MENU_CLICK_EVENT = 'menu_click_event';
 
     private readonly cfg = GameConfig.MAIN;
-
     private readonly buttons: Container[] = [];
 
     public init(): void {
         this.addButton("ACE OF SHADOWS", "CARDS");
         this.addButton("MAGIC WORDS", "WORDS");
-        this.addButton("Phoenix Flame", "FLAME");
+        this.addButton("PHOENIX FLAME", "FLAME");
     }
 
     private addButton(label: string, taskType: string): void {

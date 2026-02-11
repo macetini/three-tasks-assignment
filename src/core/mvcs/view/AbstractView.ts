@@ -5,10 +5,6 @@ import { AbstractMediator } from './AbstractMediator';
 
 export abstract class AbstractView extends Container {
 
-    constructor() {
-        super();
-    }
-
     /**
      * Called by the Mediator or Parent during the setup phase.
      * Use this to create children, setup layout, etc.
