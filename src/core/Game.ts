@@ -1,5 +1,5 @@
 import { Application, Text } from 'pixi.js';
-import styles from '../style/game.module.css';
+//import styles from '../style/game.module.css';
 import { GameContext } from './context/GameContext';
 
 export class Game {
@@ -20,9 +20,11 @@ export class Game {
             backgroundColor: 0x1099bb
 
         });
-        this.app.canvas.className = styles.gameCanvas;
-        const gameContainer = document.getElementById('game-container') || document.body;
-        gameContainer.appendChild(this.app.canvas);
+        //this.app.canvas.className = styles.gameCanvas;
+        //const gameContainer = document.getElementById('game-container') || document.body;
+        //gameContainer.appendChild(this.app.canvas);
+
+        document.body.appendChild(this.app.canvas);
 
         const gameContext = new GameContext(this.app);
         gameContext.bootstrap();
