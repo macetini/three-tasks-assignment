@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    base: './', 
+    base: '/three-tasks-assignment', 
     build: {
-        outDir: 'docs',
+        outDir: 'dist',
     }
 });
