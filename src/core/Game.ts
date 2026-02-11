@@ -1,4 +1,4 @@
-import { Application, Text } from 'pixi.js';
+import { Application } from 'pixi.js';
 import styles from '../style/game.module.css';
 import { GameContext } from './context/GameContext';
 
@@ -29,46 +29,11 @@ export class Game {
             backgroundColor: 0x1099bb
 
         });
-        //this.app.canvas.className = styles.gameCanvas;
+        this.app.canvas.className = styles.gameCanvas;
         const gameContainer = document.getElementById('game-container') || document.body;
-        gameContainer.appendChild(this.app.canvas);        
+        gameContainer.appendChild(this.app.canvas);
 
         this.gameContext.bootstrap();
-        this.addDebugInfo();
         console.log("[Game] Init Finished.");
-    }
-
-    private addDebugInfo(): void {
-        const textTemplate = "FPS: %1 Avg: %2";
-        const fpsText: Text = new Text({
-            text: textTemplate.replace("%1", "0").replace("%2", "0"),
-            style: { fill: 0xffffff, fontSize: 16, fontWeight: 'bold' }
-        });
-
-        fpsText.x = fpsText.y = 10;
-        this.app.stage.addChild(fpsText);
-
-        const samples: number[] = [];
-        const maxSamples = 60;
-
-        this.app.ticker.add(() => {
-            const currentFPS = this.app.ticker.FPS;
-
-            samples.push(currentFPS);
-            if (samples.length > maxSamples) {
-                samples.shift(); // Remove oldest
-            }
-
-            const sum = samples.reduce((a, b) => a + b, 0);
-            const avgFPS = Math.round(sum / samples.length);
-
-            fpsText.text = textTemplate
-                .replace("%1", Math.round(currentFPS).toString())
-                .replace("%2", avgFPS.toString());
-
-            if (currentFPS < 20) fpsText.style.fill = 0xff4444; // Red
-            else if (currentFPS < 40) fpsText.style.fill = 0xffaa00; // Orange
-            else fpsText.style.fill = 0x00ff00; // Green
-        });
     }
 }
