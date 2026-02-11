@@ -12,7 +12,7 @@ export class Game {
     }
 
     public async init(): Promise<void> {
-        console.log("[Game] Init Started.");
+        console.log("[Game] Init Started NEW.");
 
         try {
             await this.app.init({
