@@ -29,11 +29,9 @@ export class Game {
             backgroundColor: 0x1099bb
 
         });
-        this.app.canvas.className = styles.gameCanvas;
+        //this.app.canvas.className = styles.gameCanvas;
         const gameContainer = document.getElementById('game-container') || document.body;
-        gameContainer.appendChild(this.app.canvas);
-
-        document.body.appendChild(this.app.canvas);
+        gameContainer.appendChild(this.app.canvas);        
 
         this.gameContext.bootstrap();
         this.addDebugInfo();
