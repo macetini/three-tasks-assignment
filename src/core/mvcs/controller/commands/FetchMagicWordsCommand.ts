@@ -57,23 +57,24 @@ export class FetchMagicWordsCommand extends AbstractCommand {
         model.setData(voArray);
         model.setAvatarData(json.avatars);
 
-        // 4. Map textures from Cache into a Map for the Model
-        // This decouples the View/Mediator from the Pixi Cache and AssetService
+        const textureMap = this.getTextureMap(json);
+        model.setTextures(textureMap);
+    }
+
+    private getTextureMap(json: MagicWordsResponse): Map<string, Texture> {
         const textureMap = new Map<string, Texture>();
 
-        // Helper to grab everything we just tried to load + the default fallback
         const allAssetKeys = [
             "default",
             ...json.emojies.map(e => e.name),
             ...json.avatars.map(a => a.name)
         ];
-
         allAssetKeys.forEach(key => {
             if (Cache.has(key)) {
                 textureMap.set(key, Cache.get(key));
             }
         });
 
-        model.setTextures(textureMap);
+        return textureMap;
     }
 }
