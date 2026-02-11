@@ -74,7 +74,7 @@ export class MagicWordsView extends AbstractView {
         if (width <= 375 || height <= 375) return;
 
         let scale = Math.min(width / 375, height / 375);
-        if (scale > 1) scale = 1;
+        scale = Math.max(0, Math.min(scale, 1)); // No Clamp in Pixi :(
         this.chatContainer.scale.set(scale);
     }
 

@@ -3,6 +3,7 @@ import { Container, Graphics, Sprite, Text, Texture } from "pixi.js";
 import { GameConfig } from "../../../../config/GameConfig";
 import type { AvatarPosition } from "../../../model/states/MagicWordsModel";
 import type { MagicWordVO } from "../../../model/states/vo/MagicWordVO";
+import { RichTextParser } from "../../util/RichTextParser";
 
 export class RichTextRow extends Container {
     private readonly cfg = GameConfig.WORDS;
@@ -40,7 +41,7 @@ export class RichTextRow extends Container {
     private drawBubble(): void {
         const padding = 15;
         const cornerRadius = 15;
-        
+
         const bubbleColor = this.avatarPosition == this.cfg.DEFAULT_AVATAR_POSITION ? 0x2196F3 : 0x424242;
 
         this.background.clear();
@@ -72,45 +73,67 @@ export class RichTextRow extends Container {
 
     private createMessageContent(vo: MagicWordVO): Container {
         const container = new Container();
-        const { MAX_WIDTH } = this;
-        const LINE_HEIGHT = 32;
+        
+        let currentPos = { x: 0, y: this.addCharacterName(container, vo.characterName) };
+        
+        vo.tokens.forEach(token => {
+            if (token.type === RichTextParser.TEXT_TOKEN_TYPE) {
+                currentPos = this.addTextToken(container, token.value, currentPos);
+            } else {
+                currentPos = this.addEmojiToken(container, token.value, currentPos);
+            }
+        });
 
+        return container;
+    }
+
+    private addCharacterName(container: Container, name: string): number {
         const nameText = new Text({
-            text: vo.characterName,
+            text: name,
             style: { fontSize: 14, fontWeight: 'bold', fill: 0xffffff }
         });
         container.addChild(nameText);
+        return nameText.height + 5;
+    }
 
-        let curX = 0;
-        let curY = nameText.height + 5;
+    private addTextToken(container: Container, value: string, pos: { x: number, y: number }) {
+        const words = value.split(' ');
 
-        vo.tokens.forEach(token => {
-            if (token.type === 'text') {
-                const words = token.value.split(' ');
-                words.forEach(word => {
-                    const txt = new Text({ text: word + " ", style: { fontSize: 18, fill: 0xeeeeee } });
+        words.forEach(word => {
+            const txt = new Text({
+                text: word + " ",
+                style: { fontSize: 18, fill: 0xeeeeee }
+            });
 
-                    if (curX + txt.width > MAX_WIDTH && curX > 0) {
-                        curX = 0;
-                        curY += LINE_HEIGHT;
-                    }
-                    txt.position.set(curX, curY);
-                    container.addChild(txt);
-                    curX += txt.width;
-                });
-            } else {
-                const emoji = new Sprite(this.textureProvider(token.value));
-                emoji.width = emoji.height = 24;
+            pos = this.handleLineWrap(txt.width, pos);
 
-                if (curX + emoji.width > MAX_WIDTH && curX > 0) {
-                    curX = 0;
-                    curY += LINE_HEIGHT;
-                }
-                emoji.position.set(curX, curY);
-                container.addChild(emoji);
-                curX += emoji.width + 4;
-            }
+            txt.position.set(pos.x, pos.y);
+            container.addChild(txt);
+            pos.x += txt.width;
         });
-        return container;
+
+        return pos;
+    }
+
+    private addEmojiToken(container: Container, emojiId: string, pos: { x: number, y: number }) {
+        const emoji = new Sprite(this.textureProvider(emojiId));
+        emoji.width = emoji.height = 24;
+
+        pos = this.handleLineWrap(emoji.width, pos);
+
+        emoji.position.set(pos.x, pos.y);
+        container.addChild(emoji);
+        pos.x += emoji.width + 4;
+
+        return pos;
+    }
+
+    private handleLineWrap(elementWidth: number, pos: { x: number, y: number }) {
+        const LINE_HEIGHT = 32;
+
+        if (pos.x + elementWidth > this.MAX_WIDTH && pos.x > 0) {
+            return { x: 0, y: pos.y + LINE_HEIGHT };
+        }
+        return pos;
     }
 }

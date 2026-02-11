@@ -5,8 +5,8 @@ import type { IRichTextToken } from "./meta/IRichTextToken";
 export type RichTokenType = "text" | "emoji";
 
 export class RichTextParser {
-    private static readonly TEXT_TOKEN_TYPE: RichTokenType = "text";
-    private static readonly EMOJI_TOKEN_TYPE: RichTokenType = "emoji";
+    public static readonly TEXT_TOKEN_TYPE: RichTokenType = "text";
+    public static readonly EMOJI_TOKEN_TYPE: RichTokenType = "emoji";
 
     public static parse(rawString: string): IRichTextToken[] {
         const tokens: IRichTextToken[] = [];
