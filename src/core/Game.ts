@@ -13,6 +13,35 @@ export class Game {
 
     public async init(): Promise<void> {
         console.log("[Game] Init Started.");
+
+        try {
+            await this.app.init({
+                // Explicitly use a color number, not a string, for background
+                background: 0xF00015,
+                width: 800,
+                height: 600,
+                antialias: true,
+                // Force a specific preference if WebGPU is acting up on GitHub's environment
+                preference: 'webgl'
+            });
+
+            console.log("[Game] Pixi App Initialized."); // NEW LOG
+
+            document.body.appendChild(this.app.canvas);
+            console.log("[Game] Canvas Appended."); // NEW LOG
+
+            this.gameContext.bootstrap();
+            console.log("[Game] Bootstrap Called."); // NEW LOG
+
+        } catch (e) {
+            console.error("[Game] Init/Bootstrap Critical Error:", e);
+        }
+
+        console.log("[Game] Init Finished.");
+    }
+
+    public async init_old(): Promise<void> {
+        console.log("[Game] Init Started.");
         // Initialize with responsive settings
         await this.app.init({
             background: '#F00015',
