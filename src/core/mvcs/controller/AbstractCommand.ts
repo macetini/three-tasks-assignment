@@ -4,17 +4,14 @@ import type { ModelMap } from "../model/ModelMap";
 import type { AssetService } from "../service/AssetService";
 import type { ICommand } from "./meta/ICommand";
 
-export abstract class AbstractCommand implements ICommand {
+export abstract class AbstractCommand<T = unknown> implements ICommand {
     protected signalBus!: SignalBus;
     protected assetService!: AssetService;
     protected modelMap!: ModelMap;
 
-    // The "Bag" of all models and services
-    protected deps!: Record<string, any>;
+    protected readonly payload: T;
 
-    protected readonly payload: any;
-
-    constructor(payload?: any) {
+    constructor(payload: T) {
         this.payload = payload;
     }
 

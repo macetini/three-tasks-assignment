@@ -34,6 +34,9 @@ export class GameContext {
         this.signalBus = new SignalBus();
         this.mediatorMap = new MediatorMap(this.app, this.signalBus);
         this.modelMap = new ModelMap();
+        
+        // NOTE: Three constructor arguments is a bit too much. 
+        // Less would be better, but I believe this is a bit more readable.
         this.commandMap = new CommandMap(this.signalBus, this.assetService, this.modelMap);
     }
 
@@ -43,17 +46,17 @@ export class GameContext {
         await this.assetService.init();
 
         // --- Model Mapping ---
-        console.log("[GameContext] Model Mapping.");        
+        console.log("[GameContext] Model Mapping.");
         this.modelMap.map(CardModel.NAME, new CardModel());
         this.modelMap.map(MagicWordsModel.NAME, new MagicWordsModel());
 
         // --- Command Mapping --- 
-        console.log("[GameContext] Command Mapping.");   
+        console.log("[GameContext] Command Mapping.");
         this.commandMap.map(SignalType.PREPARE_CARDS, PrepareCardsCommand);
         this.commandMap.map(SignalType.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
 
         // --- View & Mediator Mapping ---  
-        console.log("[GameContext] View & Mediator Mapping.");      
+        console.log("[GameContext] View & Mediator Mapping.");
         this.mediatorMap.map(RootView, RootViewMediator);
         this.mediatorMap.map(MainMenuView, MainMenuMediator);
         this.mediatorMap.map(AceOfShadowsView, AceOfShadowsMediator);

@@ -3,12 +3,11 @@ import type { SignalBus } from "../../signal/SignalBus";
 import type { ModelMap } from "../model/ModelMap";
 import type { AssetService } from "../service/AssetService";
 import { AbstractCommand } from "./AbstractCommand";
-import type { ICommand } from "./meta/ICommand";
 
-type CommandConstructor = new (payload?: any) => ICommand;
+type CommandConstructor<T> = new (payload: T) => AbstractCommand<T>;
 
 export class CommandMap {
-    private readonly commands = new Map<string, CommandConstructor>();
+    private readonly commands = new Map<string, CommandConstructor<unknown>>();
 
     private readonly signalBus: SignalBus;
     private readonly assetService: AssetService;
@@ -20,11 +19,10 @@ export class CommandMap {
         this.modelMap = modelMap;
     }
 
-    public map(signalType: string, commandClass: CommandConstructor): void {
-        this.commands.set(signalType, commandClass);
-        this.signalBus.on(signalType, (payload?: any) => this.execute(signalType, payload));
+    public map<T>(signalType: string, commandClass: CommandConstructor<T>): void {
+        this.commands.set(signalType, commandClass as CommandConstructor<unknown>);
+        this.signalBus.on<T>(signalType, (payload) => this.execute(signalType, payload));
     }
-
     private execute(signalType: string, payload?: unknown): void {
         const CommandClass = this.commands.get(signalType);
 

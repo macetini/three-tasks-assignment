@@ -6,18 +6,17 @@ import type { AbstractView } from "./AbstractView";
 import type { AbstractMediatorType } from "./type/AbstractMediatorType";
 
 export class MediatorMap {
-    // We use AbstractMediator<any> here because the Map doesn't know 
-    // which specific subtype it's holding at any given moment.
-    private readonly mappings: Map<string, AbstractMediatorType<any>> = new Map();
-    private readonly activeMediators: Map<AbstractView, AbstractMediator<any>> = new Map();
+    private readonly mappings: Map<string, AbstractMediatorType<AbstractView>> = new Map();
+    private readonly activeMediators: Map<AbstractView, AbstractMediator<AbstractView>> = new Map();
 
-    private readonly app: Application;    
+    private readonly app: Application;
     private readonly signalBus: SignalBus;
-    
+
     constructor(app: Application, signalBus: SignalBus) {
-        this.app = app;        
+        this.app = app;
         this.signalBus = signalBus;
     }
+
 
     /**
      * Map a View class to a Mediator class
@@ -30,8 +29,12 @@ export class MediatorMap {
         if (!className) {
             throw new Error("[MediatorMap] Cannot map a class without a name.");
         }
-
-        this.mappings.set(className, mediatorClass as AbstractMediatorType<any>);
+        // We cast to 'unknown' for internal storage. 
+        // Safe because the public 'map' signature enforced the V -> M relationship.
+        this.mappings.set(
+            className,
+            mediatorClass as unknown as AbstractMediatorType<AbstractView>
+        );
     }
 
     /**
@@ -53,7 +56,10 @@ export class MediatorMap {
 
         mediator.onRegister();
 
-        this.activeMediators.set(view, mediator);
+        this.activeMediators.set(
+            view,
+            mediator as unknown as AbstractMediator<AbstractView>
+        );
         return mediator;
     }
 
