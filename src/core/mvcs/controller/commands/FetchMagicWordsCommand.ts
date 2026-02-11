@@ -7,6 +7,8 @@ import { MagicWordsModel } from "../../model/states/MagicWordsModel";
 import { MagicWordVO } from "../../model/states/vo/MagicWordVO";
 import { AbstractCommand } from "../AbstractCommand";
 
+// src/core/mvcs/command/FetchMagicWordsCommand.ts
+
 export class FetchMagicWordsCommand extends AbstractCommand {
     private readonly cfg = GameConfig.WORDS;
 
@@ -14,20 +16,26 @@ export class FetchMagicWordsCommand extends AbstractCommand {
         const response = await fetch(this.cfg.API_URL);
         const json = (await response.json()) as MagicWordsResponse;
 
-        // 1. First, tell AssetService to load the new emoji textures
-        // We want to wait for this so the View doesn't try to show empty sprites
-        const assetPromises = json.emojies.map(emoji =>
-            this.assetService.loadRemoteTexture(emoji.name, emoji.url)
-        );
+        //Prepare ALL remote assets (Emojis + Avatars)
+        const assetPromises: Promise<any>[] = [];
+        // Load Emojis
+        json.emojies.forEach(emoji => {
+            assetPromises.push(this.assetService.loadRemoteTexture(emoji.name, emoji.url));
+        });
+        // Load Avatars
+        json.avatars.forEach(avatar => {
+            assetPromises.push(this.assetService.loadRemoteTexture(avatar.name, avatar.url));
+        });
+
         await Promise.all(assetPromises);
-
-        // 2. Hydrate the VO array
-        const voArray = json.dialogue.map(item => new MagicWordVO(item.name, item.text));
-
-        // 3. Update Model
+        
         const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
+        
+        const voArray = json.dialogue.map(item => new MagicWordVO(item.name, item.text));
         model.setData(voArray);
-
+        
+        model.setAvatarData(json.avatars);        
+        
         this.signalBus.emit(ModelType.MAGIC_WORDS_LOADED);
     }
 }

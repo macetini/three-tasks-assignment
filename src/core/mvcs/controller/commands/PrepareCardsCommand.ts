@@ -17,7 +17,7 @@ export class PrepareCardsCommand extends AbstractCommand {
             const cardModel = this.modelMap.get<CardModel>(CardModel.NAME);
             cardModel.setCards(cardSprites);
 
-            this.signalBus.emit<Sprite[]>(ModelType.CARDS_PREPARED, cardSprites);
+            this.signalBus.emit<Sprite[]>(ModelType.CARDS_PREPARED);
             console.debug("[PrepareCardsCommand] Cards prepared and Model updated.");
         } catch (error) {
             console.error("[PrepareCardsCommand] Failed to prepare cards:", error);

@@ -3,6 +3,7 @@ import type { Application } from "pixi.js";
 import type { SignalBus } from "../../signal/SignalBus";
 import type { AbstractMediator } from "./AbstractMediator";
 import type { AbstractView } from "./AbstractView";
+import type { ModelMap } from "../model/ModelMap";
 
 export type AbstractMediatorType<T extends AbstractView> = new (view: T) => AbstractMediator<T>;
 
@@ -12,10 +13,12 @@ export class MediatorMap {
 
     private readonly app: Application;
     private readonly signalBus: SignalBus;
+    private readonly modelMap: ModelMap;
 
-    constructor(app: Application, signalBus: SignalBus) {
+    constructor(app: Application, signalBus: SignalBus, modelMap: ModelMap) {
         this.app = app;
         this.signalBus = signalBus;
+        this.modelMap = modelMap;
     }
 
     /**
@@ -52,6 +55,7 @@ export class MediatorMap {
 
         mediator.setApp(this.app);
         mediator.setSignalBus(this.signalBus);
+        mediator.setModelMap(this.modelMap);
         mediator.setMediatorMap(this);
 
         mediator.onRegister();

@@ -22,4 +22,5 @@ export class ModelMap {
     public get<T>(key: string): T {
         return this.models.get(key) as T;
     }
+    
 }

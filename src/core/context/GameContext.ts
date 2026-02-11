@@ -30,14 +30,20 @@ export class GameContext {
 
     constructor(app: Application) {
         this.app = app;
+
         this.assetService = new AssetService();
         this.signalBus = new SignalBus();
-        this.mediatorMap = new MediatorMap(this.app, this.signalBus);
         this.modelMap = new ModelMap();
-        
+
         // NOTE: Three constructor arguments is a bit too much. 
-        // Less would be better, but I believe this is a bit more readable.
+        // Less would be better, but I believe this is a bit more readable.                
         this.commandMap = new CommandMap(this.signalBus, this.assetService, this.modelMap);
+
+        // NOTE: I have decided to pass the model to the mediators.
+        // While this is against the principles of MVCS (it couples Model with the View),
+        // in my opinion it is worth the benefit as it allows for a more efficient memory usage.
+        // No need to transfer the data through the bus.
+        this.mediatorMap = new MediatorMap(this.app, this.signalBus, this.modelMap);
     }
 
     public async bootstrap() {

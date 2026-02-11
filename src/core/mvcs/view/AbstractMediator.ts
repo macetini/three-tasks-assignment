@@ -5,6 +5,7 @@ import { ModelType } from '../../signal/type/ModelType';
 import { TaskType } from '../../signal/type/TaskType';
 import type { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
+import type { ModelMap } from '../model/ModelMap';
 
 export abstract class AbstractMediator<T extends AbstractView> {
     public static readonly CARD_BACK_CLICK_EVENT = 'cardBackClick';
@@ -12,6 +13,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
     protected view!: T;
     protected app!: Application;
     protected signalBus!: SignalBus;
+    protected modelMap!: ModelMap;
     protected mediatorMap!: MediatorMap;
 
     constructor(view: T) {
@@ -92,6 +94,10 @@ export abstract class AbstractMediator<T extends AbstractView> {
 
     public setSignalBus(bus: SignalBus): void {
         this.signalBus = bus;
+    }
+
+    public setModelMap(map: ModelMap): void {
+        this.modelMap = map;
     }
 
     public setMediatorMap(map: MediatorMap): void {

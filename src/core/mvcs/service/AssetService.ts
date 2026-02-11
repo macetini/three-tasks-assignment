@@ -2,7 +2,7 @@
 import { extensions, Assets, ExtensionType, Sprite, Texture, type Renderer } from 'pixi.js';
 import { CardsGenerator } from '../view/util/CardsGenerator';
 
-// Plugin for dicebear
+// Plugin for Dicebear
 const diceBearPlugin = {
     extension: {
         type: ExtensionType.LoadParser,
@@ -53,9 +53,6 @@ export class AssetService {
     /**
      * Loads a texture from a URL and aliases it so it can be 
      * retrieved via Sprite.from(alias)
-     */
-    /**
-     * Correct modern PIXI way to register a remote URL with an alias.
      */
     public async loadRemoteTexture(alias: string, url: string): Promise<Texture | null> {
         try {
