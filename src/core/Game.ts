@@ -20,7 +20,6 @@ export class Game {
         globalThis.window.onunhandledrejection = (e) =>
             console.error("[Unhandled Promise Rejection]", e.reason);
 
-
         await this.app.init({
             resizeTo: globalThis.window,
             autoDensity: true,
