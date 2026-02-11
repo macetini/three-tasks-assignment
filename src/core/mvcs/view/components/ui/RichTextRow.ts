@@ -7,9 +7,10 @@ import type { MagicWordVO } from "../../../model/states/vo/MagicWordVO";
 export class RichTextRow extends Container {
     private readonly cfg = GameConfig.WORDS;
 
-    private readonly AVATAR_SIZE = 64;
-    private readonly PADDING = 12;
+    private readonly AVATAR_SIZE = 58;
+    private readonly PADDING = 24;
     private readonly MAX_WIDTH = 250;
+    private readonly MIN_WIDTH = 375;
 
     private readonly background: Graphics;
     private readonly avatar: Sprite;
@@ -33,14 +34,13 @@ export class RichTextRow extends Container {
 
         this.drawBubble();
 
-        this.updateLayout(400);
+        this.updateLayout(this.MIN_WIDTH);
     }
 
     private drawBubble(): void {
         const padding = 15;
         const cornerRadius = 15;
-
-        // Determine color based on position (e.g., Blue for left, Grey for right)
+        
         const bubbleColor = this.avatarPosition == this.cfg.DEFAULT_AVATAR_POSITION ? 0x2196F3 : 0x424242;
 
         this.background.clear();
