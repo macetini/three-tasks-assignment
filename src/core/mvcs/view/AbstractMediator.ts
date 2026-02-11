@@ -1,10 +1,10 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
 import type { Application } from 'pixi.js';
 import type { SignalBus } from '../../signal/SignalBus';
-import type { AbstractView } from './AbstractView';
-import type { MediatorMap } from './MediatorMap';
 import { SignalType } from '../../signal/type/SignalType';
 import { TaskType } from '../../signal/type/TaskType';
+import type { AbstractView } from './AbstractView';
+import type { MediatorMap } from './MediatorMap';
 
 export abstract class AbstractMediator<T extends AbstractView> {
     public static readonly CARD_BACK_CLICK_EVENT = 'cardBackClick';

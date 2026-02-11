@@ -3,7 +3,8 @@ import type { Application } from "pixi.js";
 import type { SignalBus } from "../../signal/SignalBus";
 import type { AbstractMediator } from "./AbstractMediator";
 import type { AbstractView } from "./AbstractView";
-import type { AbstractMediatorType } from "./type/AbstractMediatorType";
+
+export type AbstractMediatorType<T extends AbstractView> = new (view: T) => AbstractMediator<T>;
 
 export class MediatorMap {
     private readonly mappings: Map<string, AbstractMediatorType<AbstractView>> = new Map();
