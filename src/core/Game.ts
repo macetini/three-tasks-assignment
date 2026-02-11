@@ -8,7 +8,7 @@ export class Game {
 
     constructor() {
         this.app = new PIXI.Application();
-        this.gameContext = new GameContext(this.app);        
+        this.gameContext = new GameContext(this.app);
     }
 
     public async init(): Promise<void> {
@@ -33,9 +33,14 @@ export class Game {
         //const gameContainer = document.getElementById('game-container') || document.body;
         //gameContainer.appendChild(this.app.canvas);
 
-        document.body.appendChild(this.app.canvas);  
-        this.gameContext.bootstrap();      
+        document.body.appendChild(this.app.canvas);
+        try {
+            this.gameContext.bootstrap();
+        } catch (e) {
+            console.error("[Game] Bootstrap Failed:", e);
+        }
         //this.addDebugInfo();
+        console.log("[Game] Init Finished.");
     }
 
     /*
