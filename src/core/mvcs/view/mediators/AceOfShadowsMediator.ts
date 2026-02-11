@@ -13,14 +13,14 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
     }
 
     public override onRemove(): void {
-        this.view.stopSequence();
+        this.view.stopStackingSequence();
         this.signalBus.off(ModelType.CARDS_PREPARED, this.onCardsPrepared);
 
         super.onRemove();
     }
 
     private onCardsPrepared(): void {
-        const cards: Sprite[] = this.modelMap.get<CardModel>(CardModel.NAME).cards;
+        const cards = this.modelMap.get<CardModel>(CardModel.NAME).cards;
         this.view.populateStack(cards);
         this.view.startStackingSequence();
     }

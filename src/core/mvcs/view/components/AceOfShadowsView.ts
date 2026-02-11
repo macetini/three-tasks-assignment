@@ -1,7 +1,7 @@
 import { gsap } from 'gsap';
-import { Container, Point, Sprite, Text } from 'pixi.js';
-import { AbstractView } from '../AbstractView';
+import { Container, Point, Sprite } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
+import { AbstractView } from '../AbstractView';
 
 export class AceOfShadowsView extends AbstractView {
     public static readonly CARD_BACK_CLICK_EVENT = 'card_back_click_event';
@@ -60,22 +60,19 @@ export class AceOfShadowsView extends AbstractView {
         }, [], this.cfg.DELAY_SEC);
     }
 
-    public stopSequence(): void {
-        // 1. Kill the main timeline
+    public stopStackingSequence(): void {
         this.sequence?.kill();
         this.sequence = null;
 
-        // 2. Kill all active tweens on the cards themselves
         this.cards.forEach(card => {
             gsap.killTweensOf(card);
         });
-
-        // 3. Clear the array
         this.cards.length = 0;
     }
 
     public moveTopCardToStackB(): void {
         const { stackA, stackB } = this;
+
         if (stackA.children.length === 0) {
             console.debug(`[AceOfShadowsView] Stack A is empty.`);
             return;
@@ -91,7 +88,7 @@ export class AceOfShadowsView extends AbstractView {
 
         const targetY = -(stackB.children.length - 1) * this.cfg.Y_CARD_OFFSET;
 
-        gsap.killTweensOf(card);
+        gsap.killTweensOf(card); // Clean up previous tween
         gsap.to(card, {
             x: 0,
             y: targetY,

@@ -39,10 +39,12 @@ export class GameContext {
         // Less would be better, but I believe this is a bit more readable.                
         this.commandMap = new CommandMap(this.signalBus, this.assetService, this.modelMap);
 
-        // NOTE: I have decided to pass the model to the mediators.
-        // While this is against the principles of MVCS (it couples Model with the View),
-        // in my opinion it is worth the benefit as it allows for a more efficient memory usage.
-        // No need to transfer the data through the bus.
+        // NOTE: I have decided to pass the model map to the mediator map.
+        // Each mediator will have a reference to the model map.
+        // While this is against the principles of MVCS (it couples Model with the View too tightly),
+        // in my opinion the benefits outweigh the drawbacks. It allows for a more efficient memory usage,
+        // as the data doesn't have to be transferred through the signal bus.
+        // The View will access it directly on Model update.
         this.mediatorMap = new MediatorMap(this.app, this.signalBus, this.modelMap);
     }
 
