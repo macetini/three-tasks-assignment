@@ -117,11 +117,11 @@ export class RichTextRow extends Container {
 
     private addEmojiToken(container: Container, emojiId: string, pos: { x: number, y: number }) {
         const emoji = new Sprite(this.textureProvider(emojiId));
-        emoji.width = emoji.height = 24;
+        emoji.width = emoji.height = 22;
 
         pos = this.handleLineWrap(emoji.width, pos);
 
-        emoji.position.set(pos.x, pos.y);
+        emoji.position.set(pos.x, pos.y - 1);
         container.addChild(emoji);
         pos.x += emoji.width + 4;
 
@@ -129,7 +129,7 @@ export class RichTextRow extends Container {
     }
 
     private handleLineWrap(elementWidth: number, pos: { x: number, y: number }) {
-        const LINE_HEIGHT = 32;
+        const LINE_HEIGHT = 28;
 
         if (pos.x + elementWidth > this.MAX_WIDTH && pos.x > 0) {
             return { x: 0, y: pos.y + LINE_HEIGHT };
