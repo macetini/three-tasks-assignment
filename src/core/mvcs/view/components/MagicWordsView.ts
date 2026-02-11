@@ -5,6 +5,8 @@ import { AbstractView } from '../AbstractView';
 import { RichTextRow } from './ui/RichTextRow';
 
 export class MagicWordsView extends AbstractView {
+    private readonly SCROLL_STEP = 40; // Pixels per key press
+
     private readonly chatContainer = new Container();
 
     private currentY: number = 0;
@@ -19,23 +21,28 @@ export class MagicWordsView extends AbstractView {
         this.addLoadingText();
 
         this.eventMode = 'static';
+
+        globalThis.addEventListener('keydown', this.onKeyDown);
+
+        this.on('wheel', this.onMouseWheel, this);
+
         this.on('pointerdown', this.onDragStart, this);
         this.on('pointermove', this.onDragMove, this);
         this.on('pointerup', this.onDragEnd, this);
         this.on('pointerupoutside', this.onDragEnd, this);
-
-        this.on('wheel', this.onMouseWheel, this);
     }
 
     public override dispose(): void {
         super.dispose();
 
+        globalThis.removeEventListener('keydown', this.onKeyDown);
+
+        this.off('wheel', this.onMouseWheel, this);
+
         this.off('pointerdown', this.onDragStart, this);
         this.off('pointermove', this.onDragMove, this);
         this.off('pointerup', this.onDragEnd, this);
         this.off('pointerupoutside', this.onDragEnd, this);
-
-        this.off('wheel', this.onMouseWheel, this);
     }
 
     private addLoadingText(): void {
@@ -53,6 +60,14 @@ export class MagicWordsView extends AbstractView {
             this.height * 0.5);
         this.chatContainer.addChild(loadingText);
     }
+
+    private readonly onKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === 'ArrowUp') {
+            this.applyScroll(-this.SCROLL_STEP);
+        } else if (event.key === 'ArrowDown') {
+            this.applyScroll(this.SCROLL_STEP);
+        }
+    };
 
     private onMouseWheel(event: WheelEvent): void {
         // scrollDeltaY usually comes in as 100 or -100 per click
