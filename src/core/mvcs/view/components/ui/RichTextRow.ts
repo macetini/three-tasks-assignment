@@ -1,5 +1,5 @@
 // src/core/mvcs/view/components/ui/RichTextRow.ts
-import { Container, Sprite, Text, Texture } from "pixi.js";
+import { Container, Graphics, Sprite, Text, Texture } from "pixi.js";
 import { GameConfig } from "../../../../config/GameConfig";
 import type { AvatarPosition } from "../../../model/states/MagicWordsModel";
 import type { MagicWordVO } from "../../../model/states/vo/MagicWordVO";
@@ -11,6 +11,7 @@ export class RichTextRow extends Container {
     private readonly PADDING = 12;
     private readonly MAX_WIDTH = 250;
 
+    private readonly background: Graphics;
     private readonly avatar: Sprite;
     private readonly message: Container;
     private readonly avatarPosition: AvatarPosition;
@@ -22,13 +23,37 @@ export class RichTextRow extends Container {
         this.textureProvider = textureProvider;
         this.avatarPosition = position;
 
+        this.background = new Graphics();
+
         this.avatar = new Sprite(this.textureProvider(vo.characterName));
         this.avatar.width = this.avatar.height = this.AVATAR_SIZE;
 
         this.message = this.createMessageContent(vo);
-        this.addChild(this.avatar, this.message);
+        this.addChild(this.background, this.avatar, this.message);
 
-        this.updateLayout(375);
+        this.drawBubble();
+
+        this.updateLayout(400);
+    }
+
+    private drawBubble(): void {
+        const padding = 15;
+        const cornerRadius = 15;
+
+        // Determine color based on position (e.g., Blue for left, Grey for right)
+        const bubbleColor = this.avatarPosition == this.cfg.DEFAULT_AVATAR_POSITION ? 0x2196F3 : 0x424242;
+
+        this.background.clear();
+        this.background
+            .roundRect(
+                -padding,
+                -padding * 0.5,
+                this.message.width + (padding * 2),
+                this.message.height + padding,
+                cornerRadius
+            )
+            .fill({ color: bubbleColor, alpha: 1 })
+            .stroke({ color: 0x222222, width: 2 });
     }
 
     /**
@@ -38,10 +63,10 @@ export class RichTextRow extends Container {
     public updateLayout(containerWidth: number): void {
         if (this.avatarPosition === this.cfg.DEFAULT_AVATAR_POSITION) {
             this.avatar.x = 0;
-            this.message.x = this.AVATAR_SIZE + this.PADDING;
+            this.background.x = this.message.x = this.AVATAR_SIZE + this.PADDING;
         } else {
             this.avatar.x = containerWidth - this.AVATAR_SIZE;
-            this.message.x = this.avatar.x - this.message.width - this.PADDING;
+            this.background.x = this.message.x = this.avatar.x - this.message.width - this.PADDING;
         }
     }
 
