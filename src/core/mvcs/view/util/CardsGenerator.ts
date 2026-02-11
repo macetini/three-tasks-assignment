@@ -13,10 +13,10 @@ export class CardsGenerator {
 
         const g = new Graphics();
 
-        g.roundRect(0, 0, width, height, 10)
-            .stroke({ width: 4, color: 0x000000, alignment: 0 });
-        g.roundRect(0, 0, width, height, 10)
-            .stroke({ width: 3, color: 0xffffff, alignment: 0 });
+        g.roundRect(0, 0, width, height, this.cfg.RECT_RADIUS)
+            .stroke({ width: this.cfg.OUTLINE_THICKNESS, color: 0x000000, alignment: 0 });
+        g.roundRect(0, 0, width, height, this.cfg.RECT_RADIUS)
+            .stroke({ width: this.cfg.OUTLINE_THICKNESS - 1, color: 0xffffff, alignment: 0 });
 
         const texture = renderer.generateTexture(g);
         g.destroy();
@@ -77,7 +77,7 @@ export class CardsGenerator {
      * Handles the expensive pixel-looping to draw the cellular pattern.
      */
     private drawVoronoiPattern(g: Graphics, points: any[], width: number, height: number): void {
-        g.rect(0, 0, width, height).fill({ color: 0x222222 });
+        g.rect(0, 0, width, height).fill({ color: 0x222222 }); // deep charcoal, good for tinting
 
         const centerX = width * 0.5;
         const centerY = height * 0.5;
@@ -107,7 +107,7 @@ export class CardsGenerator {
         for (let i = 0; i < this.cfg.TOTAL_COUNT; i++) {
             patternLayer.texture = templateTextures[i % this.cfg.TEMPLATES_COUNT];
             const randomSeed = Math.floor(Math.random() * 1000000);
-            patternLayer.tint = this.getTint(randomSeed); // Tinting the pattern ONLY
+            patternLayer.tint = this.getTint(randomSeed); // Tinting the pattern
 
             const finalTexture = renderer.generateTexture({
                 target: bakeContainer,

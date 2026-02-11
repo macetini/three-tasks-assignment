@@ -15,6 +15,8 @@ export const GameConfig = {
         TOTAL_COUNT: 144,
         WIDTH: 200,
         HEIGHT: 280,
+        RECT_RADIUS: 10,
+        OUTLINE_THICKNESS: 4,
         VORONOI_POINT_COUNT: 10,
         GAP: 500,
         ROTATION_VARIANCE: 0.5,
