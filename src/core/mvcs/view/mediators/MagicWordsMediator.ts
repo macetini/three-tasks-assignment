@@ -22,6 +22,8 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
 
         this.viewComponent.buildRows(words, { textureProvider, positionProvider });
 
+        this.triggerLayout();
+
         console.debug(`[MagicWordsMediator] Rendered ${words.length} chat rows.`);
     }
 

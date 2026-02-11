@@ -15,8 +15,11 @@ export class MagicWordsView extends AbstractView {
     }
 
     public override layout(width: number, height: number): void {
-        this.chatContainer.position.set(width * 0.5, height * 0.5);
-        this.chatContainer.position.set(50, 50);
+        this.chatContainer.position.set(width * 0.5 - this.chatContainer.width * 0.5, 75);
+
+        let scale = Math.min(width / 400, height / 400);
+        if (scale > 1) scale = 1;
+        this.chatContainer.scale.set(scale);
     }
 
     public buildRows(
@@ -26,13 +29,18 @@ export class MagicWordsView extends AbstractView {
             positionProvider: (name: string) => AvatarPosition
         }
     ): void {
+        if (words.length === 0) {
+            console.warn("[MagicWordsView] New chat Words count is 0. Skipping.");
+            return
+        }
+
         this.chatContainer.removeChildren();
 
         words.forEach((wordsRow) => {
             const position = options.positionProvider(wordsRow.characterName);
             const textRow = new RichTextRow(wordsRow, position, options.textureProvider);
             this.addRow(textRow);
-        });
+        });        
     }
 
     public addRow(wordsRow: RichTextRow): void {
