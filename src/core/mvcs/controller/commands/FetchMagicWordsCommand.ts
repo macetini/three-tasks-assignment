@@ -19,7 +19,6 @@ export class FetchMagicWordsCommand extends AbstractCommand {
 
             //Prepare ALL remote assets (Emojis + Avatars)
             const assetPromises: Promise<Texture | null>[] = [];
-
             assetPromises.push(this.assetService.loadRemoteTexture("default", this.cfg.DICEBEAR_URL));
 
             // Load Emojis

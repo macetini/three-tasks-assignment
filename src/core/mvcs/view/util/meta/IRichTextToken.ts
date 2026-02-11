@@ -1,4 +1,4 @@
-import type { RichTokenType } from "../type/RichTokenType";
+import type { RichTokenType } from "../RichTextParser";
 
 export interface IRichTextToken {
     type: RichTokenType;

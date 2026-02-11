@@ -1,9 +1,12 @@
 // src/core/mvcs/view/components/ui/RichTextRow.ts
 import { Cache, Container, Sprite, Text } from "pixi.js";
+import { GameConfig } from "../../../../config/GameConfig";
 import type { AvatarPosition } from "../../../model/states/MagicWordsModel";
 import type { MagicWordVO } from "../../../model/states/vo/MagicWordVO";
 
 export class RichTextRow extends Container {
+    private readonly cfg = GameConfig.WORDS;
+
     private readonly AVATAR_SIZE = 64;
     private readonly PADDING = 12;
     private readonly MAX_WIDTH = 400; // Limits how wide the text can go
@@ -19,7 +22,7 @@ export class RichTextRow extends Container {
         const message = this.createMessageContent(vo);
 
         // 3. Layout Positioning
-        if (position === "left") {
+        if (position === this.cfg.DEFAULT_AVATAR_POSITION) {
             message.x = this.AVATAR_SIZE + this.PADDING;
             this.addChild(avatar, message);
         } else {
