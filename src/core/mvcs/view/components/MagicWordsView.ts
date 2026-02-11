@@ -1,9 +1,7 @@
-import { Container, Text } from 'pixi.js';
+import { Container } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 
 export class MagicWordsView extends AbstractView {
-    public static readonly BACK_CLICK_EVENT = 'BACK_CLICK_EVENT';
-
     private readonly contentContainer = new Container();
 
     public override init(): void {

@@ -1,8 +1,9 @@
 // src/core/config/GameConfig.ts
 export const GameConfig = {
     GLOBAL: {
-        BACK_BUTTON_X: 10,
-        BACK_BUTTON_Y: 35,
+        BACK_BUTTON_X: 20,
+        BACK_BUTTON_Y: 30,
+        BACK_BUTTON_GRAPHIC: '◀'
     },
     MAIN: {
         BUTTON_WIDTH: 240,

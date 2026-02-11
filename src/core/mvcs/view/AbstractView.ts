@@ -21,8 +21,8 @@ export abstract class AbstractView extends Container {
     protected createBackButton(): void {
         console.debug(`[${this.constructor.name}] Adding default back button.`);
         const backBtn = new Text({
-            text: '◀ BACK',
-            style: { fill: 0xffffff, fontSize: 24 }
+            text: GameConfig.GLOBAL.BACK_BUTTON_GRAPHIC,
+            style: { fill: 0xffffff, fontSize: 36 }
         });
 
         backBtn.interactive = true;
