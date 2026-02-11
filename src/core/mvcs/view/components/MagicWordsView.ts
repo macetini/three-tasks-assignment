@@ -22,7 +22,7 @@ export class MagicWordsView extends AbstractView {
 
         this.eventMode = 'static';
 
-        globalThis.addEventListener('keydown', this.onKeyDown);
+        globalThis.addEventListener('keydown', this.onArrowKeyDown);
 
         this.on('wheel', this.onMouseWheel, this);
 
@@ -35,7 +35,7 @@ export class MagicWordsView extends AbstractView {
     public override dispose(): void {
         super.dispose();
 
-        globalThis.removeEventListener('keydown', this.onKeyDown);
+        globalThis.removeEventListener('keydown', this.onArrowKeyDown);
 
         this.off('wheel', this.onMouseWheel, this);
 
@@ -61,11 +61,11 @@ export class MagicWordsView extends AbstractView {
         this.chatContainer.addChild(loadingText);
     }
 
-    private readonly onKeyDown = (event: KeyboardEvent): void => {
+    private readonly onArrowKeyDown = (event: KeyboardEvent): void => {
         if (event.key === 'ArrowUp') {
-            this.applyScroll(-this.SCROLL_STEP);
-        } else if (event.key === 'ArrowDown') {
             this.applyScroll(this.SCROLL_STEP);
+        } else if (event.key === 'ArrowDown') {
+            this.applyScroll(-this.SCROLL_STEP);
         }
     };
 

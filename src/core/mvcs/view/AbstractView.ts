@@ -31,7 +31,15 @@ export abstract class AbstractView extends Container {
 
         backBtn.on('pointertap', () => this.emit(AbstractMediator.BACK_CLICK_EVENT));
 
+        globalThis.addEventListener('keydown', this.onEscapeKeyDown);
+
         this.addChild(backBtn);
+    }
+
+    private readonly onEscapeKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === 'Escape') {
+            this.emit(AbstractMediator.BACK_CLICK_EVENT);
+        }
     }
 
     /**
@@ -60,6 +68,7 @@ export abstract class AbstractView extends Container {
             texture: false
         });
 
+        globalThis.removeEventListener('keydown', this.onEscapeKeyDown);
         console.debug(`[${this.constructor.name}] View disposed.`);
     }
 }
