@@ -1,4 +1,5 @@
-import type { Renderer, Sprite } from "pixi.js";
+// src/core/mvcs/command/PrepareCardsCommand.ts
+import type { Renderer } from "pixi.js";
 import { ModelType } from "../../../signal/type/ModelType";
 import { CardModel } from "../../model/states/CardModel";
 import { AbstractCommand } from "../AbstractCommand";
@@ -11,14 +12,12 @@ export class PrepareCardsCommand extends AbstractCommand {
         console.debug("[PrepareCardsCommand] Executing.");
         try {
             const renderer = this.payload as Renderer;
-
             const cardSprites = await this.assetService.getCards(renderer);
-
             const cardModel = this.modelMap.get<CardModel>(CardModel.NAME);
             cardModel.setCards(cardSprites);
 
-            this.signalBus.emit<Sprite[]>(ModelType.CARDS_PREPARED);
             console.debug("[PrepareCardsCommand] Cards prepared and Model updated.");
+            this.signalBus.emit(ModelType.CARDS_PREPARED);
         } catch (error) {
             console.error("[PrepareCardsCommand] Failed to prepare cards:", error);
             throw error;

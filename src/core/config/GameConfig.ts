@@ -25,8 +25,9 @@ export const GameConfig = {
         CONTENT_SCALER: 1000,
     },
     WORDS: {
-        API_URL: 'https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords',
-        DICEBEAR_URL: 'dicebear.com',
+        SOFTGAMES_URL: 'https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords',
+        DICEBEAR_URL: 'https://api.dicebear.com/9.x/fun-emoji/png?seed=default',
+        DICEBEAR_BASE_URL: 'dicebear.com',
         // We'll add more here tomorrow!
     },
     FLAME: {

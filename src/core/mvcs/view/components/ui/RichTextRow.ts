@@ -1,5 +1,5 @@
 // src/core/mvcs/view/components/ui/RichTextRow.ts
-import { Container, Sprite, Text } from "pixi.js";
+import { Cache, Container, Sprite, Text } from "pixi.js";
 import type { AvatarPosition } from "../../../model/states/MagicWordsModel";
 import type { MagicWordVO } from "../../../model/states/vo/MagicWordVO";
 
@@ -11,11 +11,11 @@ export class RichTextRow extends Container {
     constructor(vo: MagicWordVO, position: AvatarPosition) {
         super();
 
-        // 1. Avatar (Using the character name alias we loaded in AssetService)
-        const avatar = Sprite.from(vo.characterName);
+        const avatarAlias = Cache.has(vo.characterName) ? vo.characterName : "default";
+        const avatar = Sprite.from(avatarAlias);
+
         avatar.width = avatar.height = this.AVATAR_SIZE;
 
-        // 2. The Message (This fixes your TS error)
         const message = this.createMessageContent(vo);
 
         // 3. Layout Positioning
@@ -35,10 +35,13 @@ export class RichTextRow extends Container {
         const container = new Container();
 
         // Add Character Name at the top
-        const nameText = new Text(vo.characterName, {
-            fontSize: 14,
-            fontWeight: 'bold',
-            fill: 0xffffff
+        const nameText = new Text({
+            text: vo.characterName,
+            style: {
+                fontSize: 14,
+                fontWeight: 'bold',
+                fill: 0xffffff
+            }
         });
         container.addChild(nameText);
 
@@ -48,7 +51,14 @@ export class RichTextRow extends Container {
         // Loop through tokens to build the "Flow"
         vo.tokens.forEach(token => {
             if (token.type === 'text') {
-                const txt = new Text(token.value, { fontSize: 18, fill: 0xeeeeee });
+                const txt = new Text({
+                    text: token.value,
+                    style: {
+                        fontSize: 18,
+                        fill: 0xeeeeee
+                    }
+                });
+
                 txt.x = currentX;
                 txt.y = currentY;
                 container.addChild(txt);
@@ -62,7 +72,6 @@ export class RichTextRow extends Container {
                 container.addChild(emoji);
                 currentX += emoji.width + 4;
             }
-
             // Simple line wrap if a single line gets too long
             if (currentX > this.MAX_WIDTH) {
                 currentX = 0;

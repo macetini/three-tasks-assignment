@@ -1,5 +1,5 @@
 // src/core/mvcs/service/AssetService.ts
-import { extensions, Assets, ExtensionType, Sprite, Texture, type Renderer } from 'pixi.js';
+import { extensions, Assets, ExtensionType, Sprite, Texture, type Renderer, Cache } from 'pixi.js';
 import { CardsGenerator } from '../view/util/CardsGenerator';
 
 // Plugin for Dicebear

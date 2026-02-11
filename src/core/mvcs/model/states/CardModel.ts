@@ -3,7 +3,8 @@ import { Sprite } from 'pixi.js';
 
 export class CardModel {
     public static readonly NAME = 'cardModel';
-    
+
+    // No need for VO, it's just a collection of sprites
     private _cards: Sprite[] = [];
 
     public setCards(cards: Sprite[]): void {
