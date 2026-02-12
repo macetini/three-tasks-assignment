@@ -19,7 +19,7 @@ import { MainMenuMediator } from '../mvcs/view/mediators/MainMenuMediator';
 import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediator';
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
 import { SignalBus } from '../signal/SignalBus';
-import { ModelType } from '../signal/type/ModelType';
+import { ModelSignal } from '../signal/type/ModelSignal';
 
 export class GameContext {
     private readonly app: Application;
@@ -63,8 +63,8 @@ export class GameContext {
 
         // --- Command Mapping --- 
         console.log("[GameContext] Command Mapping.");
-        this.commandMap.map(ModelType.PREPARE_CARDS, PrepareCardsCommand);
-        this.commandMap.map(ModelType.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
+        this.commandMap.map(ModelSignal.PREPARE_CARDS, PrepareCardsCommand);
+        this.commandMap.map(ModelSignal.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
 
         // --- View & Mediator Mapping ---  
         console.log("[GameContext] View & Mediator Mapping.");

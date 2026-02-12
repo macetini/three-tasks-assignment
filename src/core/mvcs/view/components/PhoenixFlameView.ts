@@ -82,16 +82,15 @@ export class PhoenixFlameView extends AbstractView {
     }
 
     public override layout(width: number, height: number): void {
-        // 1. Reset container to top-left (0,0) so it doesn't offset anything else
         this.position.set(0, 0);
 
-        // 2. The hitArea is now simply the whole screen
         this.hitArea = new Rectangle(0, 0, width, height);
 
-        // 3. Set the default emitter position to bottom-center of the screen
         if (this.emitterPos.x === 0 && this.emitterPos.y === 0) {
             this.setEmitterPosition(width * 0.5, height * 0.85);
         }
+
+        console.debug(`[PhoenixFlameView] Using responsive layout. View positioned at (${this.x}, ${this.y})`);
     }
     private onPointerHandler(event: any): void {
         const localPos = event.getLocalPosition(this);

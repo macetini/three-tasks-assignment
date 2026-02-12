@@ -8,10 +8,11 @@ import { RichTextParser } from "../../util/RichTextParser";
 export class RichTextRow extends Container {
     private readonly cfg = GameConfig.WORDS;
 
-    private readonly AVATAR_SIZE = 58;
+    private readonly AVATAR_SIZE = 56;
     private readonly PADDING = 24;
     private readonly MAX_WIDTH = 250;
     private readonly MIN_WIDTH = 375;
+    private readonly LINE_HEIGHT = 28;
 
     private readonly background: Graphics;
     private readonly avatar: Sprite;
@@ -42,7 +43,8 @@ export class RichTextRow extends Container {
         const padding = 15;
         const cornerRadius = 15;
 
-        const bubbleColor = this.avatarPosition == this.cfg.DEFAULT_AVATAR_POSITION ? 0x2196F3 : 0x424242;
+        const bubbleColor =
+            this.avatarPosition == this.cfg.DEFAULT_AVATAR_POSITION ? 0x2196F3 : 0x424242;
 
         this.background.clear();
         this.background
@@ -63,19 +65,19 @@ export class RichTextRow extends Container {
      */
     public updateLayout(containerWidth: number): void {
         if (this.avatarPosition === this.cfg.DEFAULT_AVATAR_POSITION) {
-            this.avatar.x = 0;
+            this.avatar.x = 1;
             this.background.x = this.message.x = this.AVATAR_SIZE + this.PADDING;
         } else {
-            this.avatar.x = containerWidth - this.AVATAR_SIZE;
+            this.avatar.x = containerWidth - this.AVATAR_SIZE - 1;
             this.background.x = this.message.x = this.avatar.x - this.message.width - this.PADDING;
         }
     }
 
     private createMessageContent(vo: MagicWordVO): Container {
         const container = new Container();
-        
+
         let currentPos = { x: 0, y: this.addCharacterName(container, vo.characterName) };
-        
+
         vo.tokens.forEach(token => {
             if (token.type === RichTextParser.TEXT_TOKEN_TYPE) {
                 currentPos = this.addTextToken(container, token.value, currentPos);
@@ -129,10 +131,9 @@ export class RichTextRow extends Container {
     }
 
     private handleLineWrap(elementWidth: number, pos: { x: number, y: number }) {
-        const LINE_HEIGHT = 28;
 
         if (pos.x + elementWidth > this.MAX_WIDTH && pos.x > 0) {
-            return { x: 0, y: pos.y + LINE_HEIGHT };
+            return { x: 0, y: pos.y + this.LINE_HEIGHT };
         }
         return pos;
     }

@@ -1,6 +1,6 @@
 // src/core/mvcs/command/PrepareCardsCommand.ts
 import type { Renderer } from "pixi.js";
-import { ModelType } from "../../../signal/type/ModelType";
+import { ModelSignal } from "../../../signal/type/ModelSignal";
 import { CardModel } from "../../model/states/CardModel";
 import { AbstractCommand } from "../AbstractCommand";
 
@@ -17,7 +17,7 @@ export class PrepareCardsCommand extends AbstractCommand {
             cardModel.setCards(cardSprites);
 
             console.debug("[PrepareCardsCommand] Cards prepared and Model updated.");
-            this.signalBus.emit(ModelType.CARDS_PREPARED);
+            this.signalBus.emit(ModelSignal.CARDS_PREPARED);
         } catch (error) {
             console.error("[PrepareCardsCommand] Failed to prepare cards:", error);
             throw error;

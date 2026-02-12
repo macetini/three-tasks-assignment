@@ -1,6 +1,7 @@
 // src/core/mvcs/service/AssetService.ts
 import { extensions, Assets, ExtensionType, Sprite, Texture, type Renderer, Cache } from 'pixi.js';
 import { CardsGenerator } from '../view/util/CardsGenerator';
+import { FireGenerator } from '../view/util/FireGenerator';
 
 // Plugin for Dicebear
 const diceBearPlugin = {
@@ -30,7 +31,7 @@ extensions.add(diceBearPlugin);
 
 export class AssetService {
     private readonly cardsGenerator = new CardsGenerator();
-
+    private readonly fireGenerator = new FireGenerator();
 
     public async init(): Promise<void> {
         await Assets.init({});
@@ -49,6 +50,9 @@ export class AssetService {
         return this.cardsGenerator.bakeCardTextures(renderer, outlineTexture, cardTextures);
     }
 
+    public async getFlameTexture(renderer: Renderer): Promise<Texture> {
+        return this.fireGenerator.generateFlameTexture(renderer);
+    }
 
     /**
      * Loads a texture from a URL and aliases it so it can be 
@@ -69,8 +73,8 @@ export class AssetService {
     }
 
     /**
- * Returns a texture from the cache or a default one if it doesn't exist.
- */
+    * Returns a texture from the cache or a default one if it doesn't exist.
+    */
     public getTexture(alias: string): Texture {
         if (Cache.has(alias)) {
             return Texture.from(alias);

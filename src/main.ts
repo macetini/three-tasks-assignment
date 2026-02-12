@@ -2,6 +2,8 @@ import * as PIXI from 'pixi.js';
 import styles from './style/game.module.css';
 import { GameContext } from './core/context/GameContext';
 
+console.log('[main] Three Tasks Assignment Started');
+
 export class Game {
     private readonly app: PIXI.Application;
     private readonly gameContext: GameContext;
@@ -15,10 +17,10 @@ export class Game {
         console.log("[Game] Init Started.");
 
         globalThis.window.onerror = (msg, url, line, col, err) =>
-            console.error("[Global Error]", msg, url, line, col, err);
+            console.error("[Game] Global Error: ", msg, url, line, col, err);
 
         globalThis.window.onunhandledrejection = (e) =>
-            console.error("[Unhandled Promise Rejection]", e.reason);
+            console.error("[Game] Unhandled Promise Rejection: ", e.reason);
 
         await this.app.init({
             resizeTo: globalThis.window,
@@ -39,4 +41,5 @@ export class Game {
 
 const game = new Game();
 game.init();
-console.log('Three Tasks Assignment Finished');
+
+console.log('[main] Three Tasks Assignment Initialized');

@@ -1,5 +1,5 @@
 import { Sprite } from 'pixi.js';
-import { ModelType } from '../../../signal/type/ModelType';
+import { ModelSignal } from '../../../signal/type/ModelSignal';
 import { CardModel } from '../../model/states/CardModel';
 import { AbstractMediator } from '../AbstractMediator';
 import { AceOfShadowsView } from '../components/AceOfShadowsView';
@@ -8,13 +8,13 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
     public override onRegister(): void {
         super.onRegister();
 
-        this.signalBus.on<Sprite[]>(ModelType.CARDS_PREPARED, this.onCardsPrepared, this);
-        this.signalBus.emit(ModelType.PREPARE_CARDS, this.app.renderer);
+        this.signalBus.on<Sprite[]>(ModelSignal.CARDS_PREPARED, this.onCardsPrepared, this);
+        this.signalBus.emit(ModelSignal.PREPARE_CARDS, this.app.renderer);
     }
 
     public override onRemove(): void {
         this.view.stopStackingSequence();
-        this.signalBus.off(ModelType.CARDS_PREPARED, this.onCardsPrepared);
+        this.signalBus.off(ModelSignal.CARDS_PREPARED, this.onCardsPrepared);
 
         super.onRemove();
     }

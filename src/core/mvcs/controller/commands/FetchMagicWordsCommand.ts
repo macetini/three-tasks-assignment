@@ -1,7 +1,7 @@
 // src/core/mvcs/command/FetchMagicWordsCommand.ts
 import { Cache, type Texture } from "pixi.js";
 import { GameConfig } from "../../../config/GameConfig";
-import { ModelType } from "../../../signal/type/ModelType";
+import { ModelSignal } from "../../../signal/type/ModelSignal";
 import type { MagicWordsResponse } from "../../model/states/dto/MagicWordsResponse";
 import { MagicWordsModel } from "../../model/states/MagicWordsModel";
 import { MagicWordVO } from "../../model/states/vo/MagicWordVO";
@@ -15,7 +15,7 @@ export class FetchMagicWordsCommand extends AbstractCommand {
             await this.loadFailSafeAssets();
             await this.loadFeatureContent();
 
-            this.signalBus.emit(ModelType.MAGIC_WORDS_LOADED);
+            this.signalBus.emit(ModelSignal.MAGIC_WORDS_LOADED);
 
             console.debug("[FetchMagicWordsCommand] Magic Words Task Ready.");
         } catch (error) {

@@ -30,12 +30,14 @@ export class CardsGenerator {
      */
     public generateMainTextures(renderer: Renderer): Texture[] {
         console.debug(`[AssetService] Generating '${this.cfg.TEMPLATES_COUNT}' card textures.`);
+
         const cardTextures: Texture[] = [];
         for (let i = 0; i < this.cfg.TEMPLATES_COUNT; i++) {
             const randomSeed = Math.floor(Math.random() * 1000000);
             const voronoiTex = this.createVoronoiTexture(renderer, randomSeed);
             cardTextures.push(voronoiTex);
         }
+
         console.debug(`[AssetService] Finished Card Textures Generation: '${cardTextures.length}' cards generated.`);
         return cardTextures;
     }
@@ -43,17 +45,16 @@ export class CardsGenerator {
     private createVoronoiTexture(renderer: Renderer, seed: number): Texture {
         const width = this.cfg.WIDTH;
         const height = this.cfg.HEIGHT;
-        const g = new Graphics();
+        const graphics = new Graphics();
 
         const points = this.generatePatternPoints(seed, width, height);
-        this.drawVoronoiPattern(g, points, width, height);
+        this.drawVoronoiPattern(graphics, points, width, height);
 
-        const texture = renderer.generateTexture(g);
-        g.destroy();
+        const texture = renderer.generateTexture(graphics);
+        graphics.destroy();
 
         return texture;
     }
-
 
     /** 
      * Creates deterministic "attractor" points with a vibrant, multi - color palette.
@@ -76,18 +77,18 @@ export class CardsGenerator {
     /**
      * Handles the expensive pixel-looping to draw the cellular pattern.
      */
-    private drawVoronoiPattern(g: Graphics, points: any[], width: number, height: number): void {
-        g.rect(0, 0, width, height).fill({ color: 0x222222 }); // deep charcoal, good for tinting
+    private drawVoronoiPattern(graphics: Graphics, points: any[], width: number, height: number): void {
+        graphics.rect(0, 0, width, height).fill({ color: 0x222222 }); // deep charcoal, good for tinting
 
         const centerX = width * 0.5;
         const centerY = height * 0.5;
 
-        points.forEach((p, i) => {
-            g.moveTo(centerX, centerY)
-                .lineTo(p.x, p.y)
-                .lineTo(points[(i + 1) % points.length].x, points[(i + 1) % points.length].y)
+        points.forEach((point, index) => {
+            graphics.moveTo(centerX, centerY)
+                .lineTo(point.x, point.y)
+                .lineTo(points[(index + 1) % points.length].x, points[(index + 1) % points.length].y)
                 .closePath()
-                .fill({ color: p.color, alpha: 0.8 });
+                .fill({ color: point.color, alpha: 0.8 });
         });
     }
 
@@ -117,7 +118,6 @@ export class CardsGenerator {
 
             const cardSprite = new Sprite(finalTexture);
             cardSprite.anchor.set(0.5);
-
             bakedSprites.push(cardSprite);
         }
 
