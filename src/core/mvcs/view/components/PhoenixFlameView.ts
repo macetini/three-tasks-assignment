@@ -1,5 +1,5 @@
 // src/core/mvcs/view/components/PhoenixFlameView.ts
-import { Rectangle, Sprite, Texture } from 'pixi.js';
+import { Point, Rectangle, Sprite, Texture } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 import type { IFlameParticle } from './meta/IFlameParticle';
 
@@ -8,11 +8,16 @@ import type { IFlameParticle } from './meta/IFlameParticle';
  * Uses an object pooling strategy to maintain exactly 10 sprites.
  */
 export class PhoenixFlameView extends AbstractView {
-    
+
     private readonly MAX_PARTICLES = 10;
     private readonly FLAME_BASE_COLOR = 0xFFFFCC; // White hot base
     private readonly FLAME_CORE_COLOR = 0xFF8800; // Orange core
     private readonly FLAME_EMBERS_COLOR = 0xAA0000; // Cooling red embers            
+    private readonly FLAME_BLEND_MODE = 'add';
+
+    private readonly tempPoint = new Point(); // PRE-ALLOCATED: No GC on mouse move
+    private readonly PI = Math.PI; // Cached PI
+
 
     private readonly particles: IFlameParticle[] = [];
     private fireTexture!: Texture;
@@ -47,7 +52,7 @@ export class PhoenixFlameView extends AbstractView {
         for (let i = 0; i < this.MAX_PARTICLES; i++) {
             const sprite = new Sprite(this.fireTexture);
             sprite.anchor.set(0.5);
-            sprite.blendMode = 'add'; // Additive blending creates the white-hot core
+            sprite.blendMode = this.FLAME_BLEND_MODE; // Additive blending creates the white-hot core
 
             const particle: IFlameParticle = {
                 sprite,
@@ -69,15 +74,18 @@ export class PhoenixFlameView extends AbstractView {
      * @param delta - Normalized ticker delta
      */
     public update(delta: number): void {
-        this.particles.forEach(particle => {
-            // 1. Progress life cycle
-            particle.life -= 0.008 * delta * particle.speed;
+        const driftForce = 0.008 * delta;
+        // Classic loop for performance
+        const particlesLength = this.particles.length;
+        for (let i = 0; i < particlesLength; i++) {
+            const particle = this.particles[i];
+            particle.life -= driftForce * particle.speed;
 
             particle.sprite.y -= particle.speed * delta * 2.5;
             particle.sprite.x = particle.xOffset + Math.sin(particle.sprite.y * 0.05) * 15;
 
-            const size = Math.sin(particle.life * Math.PI) * 2.5;
-            particle.sprite.scale.set(size + (Math.random() * 0.1)); // Slight flicker
+            const size = Math.sin(particle.life * this.PI) * 2.5;
+            particle.sprite.scale.set(size);
 
             particle.sprite.alpha = particle.life;
 
@@ -94,7 +102,7 @@ export class PhoenixFlameView extends AbstractView {
             if (particle.life <= 0) {
                 this.resetParticle(particle);
             }
-        });
+        }
     }
 
     /**
@@ -130,8 +138,8 @@ export class PhoenixFlameView extends AbstractView {
      * Updates the emitter position based on the mouse pointer.
      */
     private onPointerHandler(event: any): void {
-        const localPos = event.getLocalPosition(this);
-        this.setEmitterPosition(localPos.x, localPos.y);
+        event.getLocalPosition(this, this.tempPoint);
+        this.setEmitterPosition(this.tempPoint.x, this.tempPoint.y);
     }
 
     /**
