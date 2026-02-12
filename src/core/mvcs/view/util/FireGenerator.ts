@@ -2,9 +2,18 @@
 import { Graphics, Texture, type Renderer } from "pixi.js";
 
 export class FireGenerator {
+
     /**
-     * Generates a procedural "Flame Petal" texture.
-     * It's a teardrop shape with a radial alpha gradient.
+     * Generates a procedurally generated flame texture, using multiple layers to create a soft glow effect.
+     * The generated texture is a 64x64 pixel image with a transparent background.
+     * The flame texture is drawn using two layers:
+     * - An outer soft glow (large, very transparent)
+     * - A "core" teardrop shape with a narrower top (created using Bezier curves)
+     * The result is a sharp, high-quality flame texture suitable for use in particle systems.
+     * 
+     * @param renderer - The active WebGL/WebGPU renderer used for texture baking.
+     * 
+     * @returns A procedurally generated flame texture.
      */
     public generateFlameTexture(renderer: Renderer): Texture {
         const graphics = new Graphics();
@@ -28,7 +37,7 @@ export class FireGenerator {
                 size * 0.2, size * 0.4, // Left curve
                 size / 2, size * 0.2    // Back to tip
             )
-            .fill({ color: 0xffffff, alpha: 0.8 });
+            .fill({ color: 'white', alpha: 0.8 });
 
         const texture = renderer.generateTexture({
             target: graphics,

@@ -4,9 +4,18 @@ import { ModelSignals } from "../../../signal/ModelSignals";
 import { AbstractCommand } from "../AbstractCommand";
 import { FlameModel } from "../../model/states/FlameModel";
 
+/**
+ * Command responsible for generating and distributing the Phoenix Flame texture.
+ * * This command handles the asynchronous procedural generation of the flame 
+ * sprite via the AssetService, updates the FlameModel with the result, 
+ * and notifies the application that the asset is ready for use.
+ */
 export class PrepareFlameCommand extends AbstractCommand {
+
     /**
+     * Executes the procedural texture generation flow.
      * @override
+     * @returns A promise that resolves when the texture is baked and stored.
      */
     public async execute(): Promise<void> {
         console.debug("[PrepareFlameCommand] Executing.");

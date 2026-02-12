@@ -1,4 +1,5 @@
 // src/core/mvcs/model/states/dto/MagicWordsResponse.ts
+
 /**
  * Representing the raw Data Transfer Object from the API.
  */

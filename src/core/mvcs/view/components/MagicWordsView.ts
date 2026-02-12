@@ -26,10 +26,11 @@ export class MagicWordsView extends AbstractView {
     private isDragging: boolean = false;
     private lastPointerY: number = 0;
 
+
     /**
      * Initializes the MagicWordsView.
-     * Adds the loading text and the chat container to the view.
-     * Sets the event mode to 'static' and adds event listeners for keyboard navigation, mouse wheel scrolling, and touch-drag navigation.
+     * Sets up event listeners for keyboard navigation, mouse wheel scrolling, and touch-drag navigation.
+     * Adds a loading text element to the view and sets the event mode to 'static'.
      */
     public override init(): void {
         super.init();
@@ -101,6 +102,12 @@ export class MagicWordsView extends AbstractView {
         this.loadingText.visible = false;
     }
 
+    /**
+     * 
+     * Called when the user presses the up or down arrow keys to scroll the content vertically.
+     * 
+     * @param event 
+     */
     private readonly onArrowKeyDown = (event: KeyboardEvent): void => {
         if (event.key === 'ArrowUp') {
             this.applyScroll(this.SCROLL_STEP);
@@ -121,6 +128,12 @@ export class MagicWordsView extends AbstractView {
         this.applyScroll(-event.deltaY * scrollSpeed);
     }
 
+
+    /**
+     * Called when the user starts dragging the content vertically.
+     * Sets the dragging flag to true and records the initial pointer Y position.
+     * @param event The event object passed by Pixi.js
+     */
     private onDragStart(event: any): void {
         this.isDragging = true;
         this.lastPointerY = event.global.y;

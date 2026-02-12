@@ -3,6 +3,13 @@ import { Container, Text } from 'pixi.js';
 import { GameConfig } from '../../config/GameConfig';
 import { AbstractMediator } from './AbstractMediator';
 
+/**
+ * Base class for all display components within the MVCS architecture.
+ * Provides a standardized lifecycle for:
+ * 1. Initialization and UI Injection (Back buttons, HUDs).
+ * 2. Responsive layout updates.
+ * 3. Memory-safe disposal and texture preservation.
+ */
 export abstract class AbstractView extends Container {
     public static readonly VIEW_ADDED_TO_ROOT_EVENT = 'viewAddedToRootEvent';
 
@@ -38,6 +45,9 @@ export abstract class AbstractView extends Container {
         this.addChild(backBtn);
     }
 
+    /**
+     * Global keyboard listener for navigation.
+     */
     private readonly onEscapeKeyDown = (event: KeyboardEvent): void => {
         if (event.key === 'Escape') {
             this.emit(AbstractMediator.BACK_CLICK_EVENT);
@@ -45,11 +55,12 @@ export abstract class AbstractView extends Container {
     }
 
     /**
+     * Lays out the view based on the provided dimensions.
+     * If either the width or height is less than or equal to 0, a warning is logged and the layout update is skipped.
+     * By default, the view remains at position (0,0) if no custom layout is provided.
      * 
-     * Called by the Mediator or Parent during the render phase.
-     * 
-     * @param width Width of the screen
-     * @param height Height of the screen
+     * @param width - The target layout width.
+     * @param height - The target layout height.
      */
     public layout(width: number, height: number): void {
         if (width <= 0 || height <= 0) {

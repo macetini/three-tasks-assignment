@@ -23,6 +23,10 @@ export class PhoenixFlameView extends AbstractView {
 
     private readonly emitterPos = { x: 0, y: 0 };
 
+    /**
+     * Initializes the PhoenixFlameView.
+     * Sets the event mode to 'static' and adds event listeners for pointer movement and pointer down events.
+     */
     public override init(): void {
         super.init();
 
@@ -32,6 +36,10 @@ export class PhoenixFlameView extends AbstractView {
         this.on('pointerdown', this.onPointerHandler, this);
     }
 
+    /**
+     * Removes all event listeners and cleans up the view for garbage collection.
+     * Should be called when the view is no longer needed.
+     */
     public override dispose(): void {
         super.dispose();
 
@@ -41,9 +49,13 @@ export class PhoenixFlameView extends AbstractView {
         // Clear references for GC
         this.particles.length = 0;
     }
-
+   
     /**
-     * Initializes the particle pool once the procedural texture is ready.
+     * Initializes the flame effect by creating MAX_PARTICLES sprites from the given texture.
+     * Each sprite is given a random life, speed, and x offset to create a staggered start.
+     * The sprites are then added to the view and stored in the particles array.
+     * 
+     * @param texture - Texture to use for the flame effect.
      */
     public setupFire(texture: Texture): void {
         this.fireTexture = texture;
@@ -67,10 +79,11 @@ export class PhoenixFlameView extends AbstractView {
     }
 
     /**
+     * Updates the flame particles based on the time delta.
+     * Adjusts position, scale, tint, alpha, and rotation for each particle.
+     * Particles are reset when their life reaches zero.
      * 
-     * Main animation loop for the fire effect.
-     * 
-     * @param delta - Normalized ticker delta
+     * @param delta - Time difference in milliseconds since the last frame update.
      */
     public update(delta: number): void {
         const driftForce = 0.008 * delta;
@@ -105,10 +118,11 @@ export class PhoenixFlameView extends AbstractView {
     }
 
     /**
+     * Resets a flame particle to its default state.
+     * Particles are given a new random life, speed, and x offset to create a natural spread.
+     * This method is called when a particle's life reaches zero.
      * 
-     * Resets the particle state.
-     * 
-     * @param particle - Particle to reset
+     * @param particle - The particle to reset.
      */
     private resetParticle(particle: any): void {
         particle.life = 1;
@@ -119,6 +133,14 @@ export class PhoenixFlameView extends AbstractView {
         particle.speed = 1 + Math.random() * 1.5;
     }
 
+    /**
+     * Called by the Mediator or Parent during the render phase.
+     * Positions the emitter at the center of the screen (50%, 85%).
+     * If the emitter position has not been set by interaction, it sets a default value.
+     * 
+     * @param width Width of the screen
+     * @param height Height of the screen
+     */
     public override layout(width: number, height: number): void {
         this.position.set(0, 0);
 

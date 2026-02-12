@@ -6,6 +6,7 @@ import { PrepareCardsCommand } from '../mvcs/controller/commands/PrepareCardsCom
 import { PrepareFlameCommand } from '../mvcs/controller/commands/PrepareFlameCommand';
 import { ModelMap } from '../mvcs/model/ModelMap';
 import { CardModel } from '../mvcs/model/states/CardModel';
+import { FlameModel } from '../mvcs/model/states/FlameModel';
 import { MagicWordsModel } from '../mvcs/model/states/MagicWordsModel';
 import { AssetService } from '../mvcs/service/AssetService';
 import { AceOfShadowsView } from '../mvcs/view/components/AceOfShadowsView';
@@ -19,10 +20,14 @@ import { MagicWordsMediator } from '../mvcs/view/mediators/MagicWordsMediator';
 import { MainMenuMediator } from '../mvcs/view/mediators/MainMenuMediator';
 import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediator';
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
-import { SignalBus } from '../signal/SignalBus';
 import { ModelSignals } from '../signal/ModelSignals';
-import { FlameModel } from '../mvcs/model/states/FlameModel';
+import { SignalBus } from '../signal/SignalBus';
 
+/**
+ * The GameContext is the Composition Root of the application.
+ * It is responsible for initializing the MVCS layers, mapping dependencies,
+ * and bootstrapping the core application lifecycle.
+ */
 export class GameContext {
     private readonly app: Application;
     private readonly assetService: AssetService;
@@ -32,6 +37,12 @@ export class GameContext {
     private readonly modelMap: ModelMap;
     private readonly commandMap: CommandMap;
 
+    /**
+     * Constructor for the GameContext class.
+     * Initializes the asset service, signal bus, model map, command map, and mediator map.
+     * 
+     * @param app - The Application instance, used for rendering.
+     */
     constructor(app: Application) {
         this.app = app;
 
@@ -53,6 +64,11 @@ export class GameContext {
         this.mediatorMap = new MediatorMap(this.app, this.signalBus, this.modelMap);
     }
 
+    /**
+     * Bootstraps the game context by initializing the asset service, mapping models, commands, views, and mediators.
+     * This function is responsible for setting up the MVCS architecture and should be called once the application is ready.
+     * It is an asynchronous function and should be called with the await keyword.
+     */
     public async bootstrap() {
         console.log("[GameContext] Bootstrap Started.");
 

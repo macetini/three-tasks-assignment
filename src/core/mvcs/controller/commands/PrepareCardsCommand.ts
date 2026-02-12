@@ -4,9 +4,20 @@ import { ModelSignals } from "../../../signal/ModelSignals";
 import { CardModel } from "../../model/states/CardModel";
 import { AbstractCommand } from "../AbstractCommand";
 
+/**
+ * Command responsible for the procedural generation of the 144-card stack.
+ * This command utilizes the AssetService to bake card textures at runtime,
+ * populates the CardModel with the resulting sprites, and notifies the
+ * application that the stack is ready for animation.
+ */
 export class PrepareCardsCommand extends AbstractCommand {
+
     /**
-     * @override
+     * Executes the command to prepare the cards.
+     * Retrieves the cards from the asset service and sets them on the card model.
+     * Emits the ModelSignals.CARDS_PREPARED signal once the cards are prepared.
+     * 
+     * @throws {Error} If the command fails to prepare the cards.
      */
     public async execute(): Promise<void> {
         console.debug("[PrepareCardsCommand] Executing.");
