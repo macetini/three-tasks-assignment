@@ -30,14 +30,14 @@ export abstract class AbstractMediator<T extends AbstractView> {
         this.setupResponsiveLayout();
 
         this.view.on(AbstractMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
-        this.view.once(AbstractView.VIEW_READY_EVENT, () => this.onViewReady());
+        this.view.once(AbstractView.VIEW_ADDED_TO_ROOT_EVENT, () => this.onViewAddedToRoot());
     }
 
     /**
      * 
      * Call this when the view has been added to the stage.
      */
-    protected onViewReady(): void {
+    protected onViewAddedToRoot(): void {
         console.debug(`[${this.constructor.name}] View Ready.`);
     }
 

@@ -10,8 +10,8 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
         this.signalBus.on(ModelSignals.CARDS_PREPARED, this.onCardsPrepared, this);
     }
 
-    protected override onViewReady(): void {
-        super.onViewReady();
+    protected override onViewAddedToRoot(): void {
+        super.onViewAddedToRoot();
         console.debug(`[${this.constructor.name}] Preparing cards.`);
         this.signalBus.emit(ModelSignals.PREPARE_CARDS, this.app.renderer);
     }

@@ -26,8 +26,6 @@ export class RootViewMediator extends AbstractMediator<RootView> {
     }
 
     public override onRemove(): void {
-        // INFO: Unnecessary but nice to follow convention,
-        // the root is never removed, the application exits.
         this.signalBus.off(ModelSignals.SWITCH_TASK, this.onSwitchTask);
         super.onRemove();
     }
@@ -54,9 +52,10 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         }
         this.mediatorMap.register(view);
         this.viewComponent.setView(view);
-
         view.init();
-        view.emit(AbstractView.VIEW_READY_EVENT);
+
+        // Called outside of mediator to avoid accidentally overriding the event
+        view.emit(AbstractView.VIEW_ADDED_TO_ROOT_EVENT);
     }
 
     protected override get viewComponent(): RootView {

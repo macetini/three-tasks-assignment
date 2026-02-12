@@ -4,7 +4,7 @@ import { GameConfig } from '../../config/GameConfig';
 import { AbstractMediator } from './AbstractMediator';
 
 export abstract class AbstractView extends Container {
-    public static readonly VIEW_READY_EVENT = 'viewReadyEvent';
+    public static readonly VIEW_ADDED_TO_ROOT_EVENT = 'viewAddedToRootEvent';
 
     /**
      * Called by the Mediator or Parent during the setup phase.

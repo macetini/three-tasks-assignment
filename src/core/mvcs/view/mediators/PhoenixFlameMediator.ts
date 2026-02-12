@@ -13,8 +13,8 @@ export class PhoenixFlameMediator extends AbstractMediator<PhoenixFlameView> {
         this.app.ticker.add(this.onUpdate, this);
     }
 
-    public override onViewReady(): void {
-        super.onViewReady();
+    public override onViewAddedToRoot(): void {
+        super.onViewAddedToRoot();
         this.signalBus.emit(ModelSignals.PREPARE_FLAME, this.app.renderer);
     }
 
