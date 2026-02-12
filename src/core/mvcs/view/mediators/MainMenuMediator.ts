@@ -1,5 +1,5 @@
 // src/core/mvcs/view/mediator/MainMenuMediator.ts
-import { ModelSignal } from '../../../signal/type/ModelSignal';
+import { ModelSignals } from '../../../signal/type/ModelSignals';
 import { AbstractMediator } from '../AbstractMediator';
 import { MainMenuView } from '../components/MainMenuView';
 
@@ -32,6 +32,6 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
 
     private readonly onMenuClick = (taskType: string): void => {
         console.debug('[MainMenuMediator] Click on the Menu Button Type: ', taskType);
-        this.signalBus.emit(ModelSignal.SWITCH_TASK, taskType);
+        this.signalBus.emit(ModelSignals.SWITCH_TASK, taskType);
     }
 }

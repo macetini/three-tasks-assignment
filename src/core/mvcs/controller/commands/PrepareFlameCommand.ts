@@ -1,6 +1,6 @@
 // src/core/mvcs/command/PrepareFlameCommand.ts
 import type { Renderer } from "pixi.js";
-import { ModelSignal } from "../../../signal/type/ModelSignal";
+import { ModelSignals } from "../../../signal/type/ModelSignals";
 import { AbstractCommand } from "../AbstractCommand";
 import { FlameModel } from "../../model/states/FlameModel";
 
@@ -20,7 +20,7 @@ export class PrepareFlameCommand extends AbstractCommand {
 
             console.debug("[PrepareFlameCommand] Flame texture prepared and Model updated.");
 
-            this.signalBus.emit(ModelSignal.FLAME_PREPARED);
+            this.signalBus.emit(ModelSignals.FLAME_PREPARED);
         } catch (error) {
             console.error("[PrepareFlameCommand] Failed to prepare flame:", error);
             throw error;

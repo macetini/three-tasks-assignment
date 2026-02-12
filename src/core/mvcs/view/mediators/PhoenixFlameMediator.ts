@@ -1,5 +1,6 @@
 // src/core/mvcs/mediators/PhoenixFlameMediator.ts
-import { Graphics, type Texture } from "pixi.js";
+import { ModelSignals } from "../../../signal/type/ModelSignals";
+import { FlameModel } from "../../model/states/FlameModel";
 import { AbstractMediator } from "../AbstractMediator";
 import type { PhoenixFlameView } from "../components/PhoenixFlameView";
 
@@ -8,28 +9,32 @@ export class PhoenixFlameMediator extends AbstractMediator<PhoenixFlameView> {
     public override onRegister(): void {
         super.onRegister();
 
-        const texture = this.createDummyFireTexture();
-        this.view.setupFire(texture);
-
+        this.signalBus.on(ModelSignals.FLAME_PREPARED, this.onFlamePrepared, this);        
         this.app.ticker.add(this.onUpdate, this);
     }
 
+    public override onViewReady(): void {
+        super.onViewReady();
+        this.signalBus.emit(ModelSignals.PREPARE_FLAME, this.app.renderer);
+    }
+
     public override onRemove(): void {
+        this.signalBus.off(ModelSignals.FLAME_PREPARED, this.onFlamePrepared);        
         this.app.ticker.remove(this.onUpdate, this);
         super.onRemove();
     }
 
-    private createDummyFireTexture(): Texture {
-        const g = new Graphics();
-        g.circle(0, 0, 32).fill({ color: 0xffffff, alpha: 1 });
-        const tex = this.app.renderer.generateTexture(g);
-        g.destroy();
-        return tex;
+    private readonly onFlamePrepared = (): void => {
+        const flameTexture = this.modelMap.get<FlameModel>(FlameModel.NAME).flameTexture;
+        this.view.setupFire(flameTexture);        
     }
 
     private readonly onUpdate = (): void => {
-        if (this.view) {
-            this.view.update(this.app.ticker.deltaTime);
-        }
+        this.viewComponent.update(this.app.ticker.deltaTime);
     }
+
+    protected override get viewComponent(): PhoenixFlameView {
+        return this.view;
+    }
+
 }

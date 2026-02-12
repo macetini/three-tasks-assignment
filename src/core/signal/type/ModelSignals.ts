@@ -1,5 +1,5 @@
 // src/core/signal/type/ModelType.ts
-export const ModelSignal = {
+export const ModelSignals = {
     SWITCH_TASK: 'switch_task',
     PREPARE_CARDS: 'prepare_cards',
     CARDS_PREPARED: 'cards_prepared',
@@ -9,4 +9,4 @@ export const ModelSignal = {
     FLAME_PREPARED: 'flame_prepared'
 } as const;
 
-export type ModelSignal = typeof ModelSignal[keyof typeof ModelSignal];
+export type ModelSignals = typeof ModelSignals[keyof typeof ModelSignals];

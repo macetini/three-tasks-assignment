@@ -1,10 +1,10 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
 import type { Application } from 'pixi.js';
 import type { SignalBus } from '../../signal/SignalBus';
-import { ModelSignal } from '../../signal/type/ModelSignal';
-import { TaskSignal } from '../../signal/type/TaskSignal';
+import { ModelSignals } from '../../signal/type/ModelSignals';
+import { TaskSignals } from '../../signal/type/TaskSignals';
 import type { ModelMap } from '../model/ModelMap';
-import type { AbstractView } from './AbstractView';
+import { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
 
 export abstract class AbstractMediator<T extends AbstractView> {
@@ -26,8 +26,19 @@ export abstract class AbstractMediator<T extends AbstractView> {
      */
     public onRegister(): void {
         console.debug(`[${this.constructor.name}] Mediator registered.`);
+
         this.setupResponsiveLayout();
+
         this.view.on(AbstractMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
+        this.view.once(AbstractView.VIEW_READY_EVENT, () => this.onViewReady());
+    }
+
+    /**
+     * 
+     * Call this when the view has been added to the stage.
+     */
+    protected onViewReady(): void {
+        console.debug(`[${this.constructor.name}] View Ready.`);
     }
 
     /**
@@ -42,7 +53,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
 
     private readonly onBackClickEvent = (): void => {
         console.debug('[AceOfShadowsMediator] Handling: ', AbstractMediator.BACK_CLICK_EVENT);
-        this.signalBus.emit(ModelSignal.SWITCH_TASK, TaskSignal.MAIN);
+        this.signalBus.emit(ModelSignals.SWITCH_TASK, TaskSignals.MAIN);
     }
 
     /**

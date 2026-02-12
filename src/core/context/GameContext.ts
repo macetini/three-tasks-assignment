@@ -3,6 +3,7 @@ import { Application, Text } from 'pixi.js';
 import { CommandMap } from '../mvcs/controller/CommandMap';
 import { FetchMagicWordsCommand } from '../mvcs/controller/commands/FetchMagicWordsCommand';
 import { PrepareCardsCommand } from '../mvcs/controller/commands/PrepareCardsCommand';
+import { PrepareFlameCommand } from '../mvcs/controller/commands/PrepareFlameCommand';
 import { ModelMap } from '../mvcs/model/ModelMap';
 import { CardModel } from '../mvcs/model/states/CardModel';
 import { MagicWordsModel } from '../mvcs/model/states/MagicWordsModel';
@@ -19,7 +20,8 @@ import { MainMenuMediator } from '../mvcs/view/mediators/MainMenuMediator';
 import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediator';
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
 import { SignalBus } from '../signal/SignalBus';
-import { ModelSignal } from '../signal/type/ModelSignal';
+import { ModelSignals } from '../signal/type/ModelSignals';
+import { FlameModel } from '../mvcs/model/states/FlameModel';
 
 export class GameContext {
     private readonly app: Application;
@@ -60,11 +62,13 @@ export class GameContext {
         console.log("[GameContext] Model Mapping.");
         this.modelMap.map(CardModel.NAME, new CardModel());
         this.modelMap.map(MagicWordsModel.NAME, new MagicWordsModel());
+        this.modelMap.map(FlameModel.NAME, new FlameModel());
 
         // --- Command Mapping --- 
         console.log("[GameContext] Command Mapping.");
-        this.commandMap.map(ModelSignal.PREPARE_CARDS, PrepareCardsCommand);
-        this.commandMap.map(ModelSignal.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
+        this.commandMap.map(ModelSignals.PREPARE_CARDS, PrepareCardsCommand);
+        this.commandMap.map(ModelSignals.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
+        this.commandMap.map(ModelSignals.PREPARE_FLAME, PrepareFlameCommand);
 
         // --- View & Mediator Mapping ---  
         console.log("[GameContext] View & Mediator Mapping.");
