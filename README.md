@@ -27,6 +27,7 @@ A high-performance interactive demo featuring three technical tasks, built with 
 - **Challenge:** Create a "great" fire effect limited to **exactly 10 sprites**.
 - **Solution:** Utilized additive blending (`blendMode: 'add'`) and procedural teardrop textures to create a high-density "plasma" look.
 - **Logic:** Implemented a sine-wave "flicker" and life-cycle tinting (White -> Orange -> Red).
+- **Add On:** Flame follows the mouse or pointer
 
 ## 🏗 Architecture
 The project follows a strict **MVCS** pattern to ensure decoupling:
