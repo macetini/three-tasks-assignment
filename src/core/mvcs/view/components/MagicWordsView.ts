@@ -4,7 +4,7 @@ import type { AvatarPosition } from '../../model/states/MagicWordsModel';
 import type { MagicWordVO } from '../../model/states/vo/MagicWordVO';
 import { AbstractView } from '../AbstractView';
 import { RichTextRow } from './ui/RichTextRow';
-
+import { gsap } from 'gsap';
 /**
  * View managing a scrollable chat-like interface with Rich Text support.
  * Handles keyboard, mouse wheel, and touch-drag navigation.
@@ -49,8 +49,6 @@ export class MagicWordsView extends AbstractView {
      * Should be called when the view is no longer needed.
      */
     public override dispose(): void {
-        super.dispose();
-
         globalThis.removeEventListener('keydown', this.onArrowKeyDown);
 
         this.off('wheel', this.onMouseWheel, this);
@@ -59,6 +57,10 @@ export class MagicWordsView extends AbstractView {
         this.off('pointermove', this.onDragMove, this);
         this.off('pointerup', this.onDragEnd, this);
         this.off('pointerupoutside', this.onDragEnd, this);
+
+        gsap.killTweensOf(this.chatContainer.children);
+
+        super.dispose();
     }
 
     /**
@@ -216,15 +218,40 @@ export class MagicWordsView extends AbstractView {
     ): void {
         if (words.length === 0) {
             console.warn("[MagicWordsView] New chat Words count is 0. Skipping.");
-            return
+            return;
         }
-
+        
         this.chatContainer.removeChildren();
-
+        this.currentY = 0;
+        gsap.killTweensOf(this.chatContainer.children);
+        
+        const newRows: RichTextRow[] = [];
         words.forEach((wordsRow) => {
             const position = options.positionProvider(wordsRow.characterName);
             const textRow = new RichTextRow(wordsRow, position, options.textureProvider);
+
             this.addRow(textRow);
+            newRows.push(textRow);
+            textRow.alpha = 0;
+        });
+        
+        this.playChatEntrance(newRows);
+    }
+
+    /**
+     * Animates chat rows sequentially for a "real-time" feel.
+     */
+    private playChatEntrance(rows: RichTextRow[]): void {
+        gsap.to(rows, {
+            alpha: 1,
+            x: 0,
+            duration: 0.4,
+            stagger: 0.08, // Time between each row appearing
+            ease: "power2.out",
+            onComplete: () => {
+                // Ensure layout is refreshed to handle final heights
+                this.emit('entrance_complete');
+            }
         });
     }
 
