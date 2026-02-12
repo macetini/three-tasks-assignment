@@ -41,7 +41,7 @@ export class MainMenuView extends AbstractView {
 
         const buttonText = new Text({
             text: label,
-            style: { fill: 0xffffff, fontSize: 16, fontWeight: 'bold' }
+            style: { fill: 'white', fontSize: 16, fontWeight: 'bold' }
         });
         buttonText.anchor.set(0.5);
         buttonText.position.set(

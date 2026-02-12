@@ -10,6 +10,13 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
         super.onRegister();
 
         this.signalBus.on(ModelSignals.MAGIC_WORDS_LOADED, this.onWordsLoaded, this);
+    }
+
+    protected override onViewAddedToRoot(): void {
+        super.onViewAddedToRoot();
+        this.viewComponent.showLoading();
+        this.triggerLayout();
+
         this.signalBus.emit(ModelSignals.FETCH_MAGIC_WORDS);
     }
 
@@ -20,6 +27,7 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
         const textureProvider = (id: string) => model.getTexture(id);
         const positionProvider = (name: string) => model.getPosition(name);
 
+        this.viewComponent.hideLoading();
         this.viewComponent.buildRows(words, { textureProvider, positionProvider });
 
         this.triggerLayout();
