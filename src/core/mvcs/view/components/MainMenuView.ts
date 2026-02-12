@@ -21,18 +21,20 @@ export class MainMenuView extends AbstractView {
         button.eventMode = 'static';
         button.visible = button.interactive = false;
 
-        const bg = new Graphics()
-            .roundRect(0, 0, this.cfg.BUTTON_WIDTH, this.cfg.BUTTON_HEIGHT, 8)
-            .fill({ color: 0x222222, alpha: 0.8 });
-
-        const btnTxt = new Text({
+        const buttonText = new Text({
             text: label,
             style: { fill: 0xffffff, fontSize: 16, fontWeight: 'bold' }
         });
-        btnTxt.anchor.set(0.5);
-        btnTxt.position.set(120, 25);
+        buttonText.anchor.set(0.5);
+        buttonText.position.set(
+            this.cfg.BUTTON_WIDTH * 0.5,
+            this.cfg.BUTTON_HEIGHT * 0.5);
 
-        button.addChild(bg, btnTxt);
+        const bg = new Graphics()
+            .roundRect(0, 0, this.cfg.BUTTON_WIDTH, this.cfg.BUTTON_HEIGHT, 8)
+            .fill({ color: 0x222222, alpha: 0.8 });
+            
+        button.addChild(bg, buttonText);
 
         button.on('pointertap', () => {
             this.emit(MainMenuView.MENU_CLICK_EVENT, taskType);

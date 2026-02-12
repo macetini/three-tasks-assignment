@@ -6,6 +6,7 @@ import { RichTextRow } from './ui/RichTextRow';
 
 export class MagicWordsView extends AbstractView {
     private readonly SCROLL_STEP = 40; // Pixels per key press
+    private readonly SCROLL_SPEED = 0.5;
 
     private readonly chatContainer = new Container();
 
@@ -15,7 +16,7 @@ export class MagicWordsView extends AbstractView {
     private lastPointerY: number = 0;
 
     public override init(): void {
-        super.init();
+        super.init();        
         this.addChildAt(this.chatContainer, 0);
 
         this.addLoadingText();
@@ -47,17 +48,16 @@ export class MagicWordsView extends AbstractView {
 
     private addLoadingText(): void {
         const loadingText = new Text({
-            text: "Loading Magic Words...",
+            text: "Loading Magic Words",
             style: {
                 fontSize: 24,
                 fill: 0xffffff,
-                align: 'center'
+                align: 'left'
             }
         });
-        loadingText.anchor.set(0.5);
         loadingText.position.set(
-            this.width * 0.5 + loadingText.width * 0.5,
-            this.height * 0.5);
+            this.chatContainer.width * 0.5,
+            this.chatContainer.y);
         this.chatContainer.addChild(loadingText);
     }
 
@@ -69,10 +69,9 @@ export class MagicWordsView extends AbstractView {
         }
     };
 
-    private onMouseWheel(event: WheelEvent): void {
-        // scrollDeltaY usually comes in as 100 or -100 per click
+    private onMouseWheel(event: WheelEvent): void {    
         // We invert it because wheel down = content moves up
-        const scrollSpeed = 0.5;
+        const scrollSpeed = this.SCROLL_SPEED;
         this.applyScroll(-event.deltaY * scrollSpeed);
     }
 
@@ -95,16 +94,13 @@ export class MagicWordsView extends AbstractView {
      * Shared logic for moving the container and clamping boundaries
      */
     private applyScroll(delta: number): void {
-        this.chatContainer.y += delta;
-
-        // Boundary Logic
-        // Adjust 600 based on your app height (or use this.app.screen.height)
-        const viewHeight = 600;
-        const minScroll = Math.min(0, viewHeight - this.chatContainer.height - 100);
-        const maxScroll = 50;
+        //Boundary Logic        
+        const viewHeight = 500; // It would be better to use screen height, but this will work on most devices
+        const minScroll = Math.min(0, viewHeight - this.chatContainer.height);
+        const maxScroll = 75;
 
         // Optimized clamp
-        this.chatContainer.y = Math.max(minScroll, Math.min(this.chatContainer.y, maxScroll));
+        this.chatContainer.y = Math.max(minScroll, Math.min(this.chatContainer.y + delta, maxScroll));
     }
 
     private onDragEnd(): void {

@@ -7,23 +7,22 @@ export class PhoenixFlameView extends AbstractView {
     private readonly MAX_PARTICLES = 10;
     private fireTexture!: Texture;
 
-    private emitterPos = { x: 0, y: 0 };
+    private readonly emitterPos = { x: 0, y: 0 };
 
     public override init(): void {
         super.init();
 
-        // 1. Enable interaction on the view itself
         this.eventMode = 'static';
 
-        // 2. Setup listeners
         this.on('pointermove', this.onPointerHandler, this);
         this.on('pointerdown', this.onPointerHandler, this);
     }
 
-    private onPointerHandler(event: any): void {
-        // Get the position relative to this container
-        const localPos = event.getLocalPosition(this);
-        this.setEmitterPosition(localPos.x, localPos.y);
+    public override dispose(): void {
+        super.dispose();
+
+        this.off('pointermove', this.onPointerHandler, this);
+        this.off('pointerdown', this.onPointerHandler, this);
     }
 
     public setupFire(texture: Texture): void {
@@ -49,21 +48,16 @@ export class PhoenixFlameView extends AbstractView {
 
     public update(delta: number): void {
         this.particles.forEach(p => {
-            // 1. Progress life (0 to 1)
             p.life -= 0.008 * delta * p.speed;
 
-            // 2. Movement: Rise up and wiggle
             p.sprite.y -= p.speed * delta * 2.5;
             p.sprite.x = p.xOffset + Math.sin(p.sprite.y * 0.05) * 15;
 
-            // 3. Scaling: Start small, grow in middle (heat expansion), shrink at top
             const size = Math.sin(p.life * Math.PI) * 2.5;
             p.sprite.scale.set(size + (Math.random() * 0.1)); // Slight flicker
 
-            // 4. Alpha & Color Life-cycle
             p.sprite.alpha = p.life;
 
-            // Senior Tip: White/Yellow base, fading to Orange/Red
             if (p.life > 0.6) {
                 p.sprite.tint = 0xFFFFCC; // White hot base
             } else if (p.life > 0.3) {
@@ -72,16 +66,14 @@ export class PhoenixFlameView extends AbstractView {
                 p.sprite.tint = 0xAA0000; // Cooling red embers
             }
 
-            // 5. Recycle
             if (p.life <= 0) {
                 this.resetParticle(p);
             }
         });
     }
 
-    // Update your resetParticle to use the emitterPos
     private resetParticle(p: any): void {
-        p.life = 1.0;
+        p.life = 1;
         // Particles spawn at the emitter position with a slight random spread
         p.xOffset = this.emitterPos.x + (Math.random() - 0.5) * 30;
         p.sprite.x = p.xOffset;
@@ -90,17 +82,20 @@ export class PhoenixFlameView extends AbstractView {
     }
 
     public override layout(width: number, height: number): void {
-        // 3. Define a hitArea so we can catch events even where there are no particles
-        // We make it cover the whole screen so you can drag anywhere
-        this.hitArea = new Rectangle(-width / 2, -height * 0.85, width, height);
+        // 1. Reset container to top-left (0,0) so it doesn't offset anything else
+        this.position.set(0, 0);
 
-        // Initial emitter position (relative to the view's 0,0)
+        // 2. The hitArea is now simply the whole screen
+        this.hitArea = new Rectangle(0, 0, width, height);
+
+        // 3. Set the default emitter position to bottom-center of the screen
         if (this.emitterPos.x === 0 && this.emitterPos.y === 0) {
-            this.setEmitterPosition(0, 0);
+            this.setEmitterPosition(width * 0.5, height * 0.85);
         }
-
-        // Position the whole container
-        this.position.set(width * 0.5, height * 0.85);
+    }
+    private onPointerHandler(event: any): void {
+        const localPos = event.getLocalPosition(this);
+        this.setEmitterPosition(localPos.x, localPos.y);
     }
 
     public setEmitterPosition(x: number, y: number): void {
