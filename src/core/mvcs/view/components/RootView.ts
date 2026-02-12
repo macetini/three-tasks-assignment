@@ -36,7 +36,7 @@ export class RootView extends AbstractView {
             const oldView = this.children[0] as AbstractView;
 
             console.debug(`[RootView] Transition: Removing ${oldView.constructor.name} -> Adding ${view.constructor.name}`);
-            
+
             if (oldView.dispose) {
                 oldView.dispose();
             }

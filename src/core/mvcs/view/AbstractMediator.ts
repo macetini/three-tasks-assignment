@@ -1,8 +1,8 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
 import type { Application } from 'pixi.js';
 import type { SignalBus } from '../../signal/SignalBus';
-import { ModelSignals } from '../../signal/type/ModelSignals';
-import { TaskSignals } from '../../signal/type/TaskSignals';
+import { ModelSignals } from '../../signal/ModelSignals';
+import { TaskSignals } from '../../signal/TaskSignals';
 import type { ModelMap } from '../model/ModelMap';
 import { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';

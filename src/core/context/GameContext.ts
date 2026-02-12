@@ -20,7 +20,7 @@ import { MainMenuMediator } from '../mvcs/view/mediators/MainMenuMediator';
 import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediator';
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
 import { SignalBus } from '../signal/SignalBus';
-import { ModelSignals } from '../signal/type/ModelSignals';
+import { ModelSignals } from '../signal/ModelSignals';
 import { FlameModel } from '../mvcs/model/states/FlameModel';
 
 export class GameContext {

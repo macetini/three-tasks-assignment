@@ -9,6 +9,7 @@ export const GameConfig = {
         BUTTON_WIDTH: 240,
         BUTTON_HEIGHT: 50,
         BUTTON_GAP: 15,
+        BUTTON_COLOR: 0x222222
     },
     CARDS: {
         TEMPLATES_COUNT: 12,

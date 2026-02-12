@@ -1,5 +1,5 @@
 // src/core/mvcs/view/mediator/MagicWordsMediator.ts
-import { ModelSignals } from '../../../signal/type/ModelSignals';
+import { ModelSignals } from '../../../signal/ModelSignals';
 import { MagicWordsModel } from '../../model/states/MagicWordsModel';
 import { AbstractMediator } from '../AbstractMediator';
 import { MagicWordsView } from '../components/MagicWordsView';

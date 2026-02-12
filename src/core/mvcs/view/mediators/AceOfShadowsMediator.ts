@@ -1,4 +1,4 @@
-import { ModelSignals } from '../../../signal/type/ModelSignals';
+import { ModelSignals } from '../../../signal/ModelSignals';
 import { CardModel } from '../../model/states/CardModel';
 import { AbstractMediator } from '../AbstractMediator';
 import { AceOfShadowsView } from '../components/AceOfShadowsView';

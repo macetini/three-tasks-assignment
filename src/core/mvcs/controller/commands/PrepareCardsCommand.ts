@@ -1,6 +1,6 @@
 // src/core/mvcs/command/PrepareCardsCommand.ts
 import type { Renderer } from "pixi.js";
-import { ModelSignals } from "../../../signal/type/ModelSignals";
+import { ModelSignals } from "../../../signal/ModelSignals";
 import { CardModel } from "../../model/states/CardModel";
 import { AbstractCommand } from "../AbstractCommand";
 

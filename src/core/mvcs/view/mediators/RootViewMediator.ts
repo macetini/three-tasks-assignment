@@ -1,5 +1,5 @@
-import { ModelSignals } from '../../../signal/type/ModelSignals';
-import { TaskSignals } from '../../../signal/type/TaskSignals';
+import { ModelSignals } from '../../../signal/ModelSignals';
+import { TaskSignals } from '../../../signal/TaskSignals';
 import { AbstractMediator } from '../AbstractMediator';
 import { AbstractView } from '../AbstractView';
 import { AceOfShadowsView } from '../components/AceOfShadowsView';

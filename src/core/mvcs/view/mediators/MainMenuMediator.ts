@@ -1,5 +1,5 @@
 // src/core/mvcs/view/mediator/MainMenuMediator.ts
-import { ModelSignals } from '../../../signal/type/ModelSignals';
+import { ModelSignals } from '../../../signal/ModelSignals';
 import { AbstractMediator } from '../AbstractMediator';
 import { MainMenuView } from '../components/MainMenuView';
 

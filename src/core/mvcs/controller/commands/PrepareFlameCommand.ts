@@ -1,6 +1,6 @@
 // src/core/mvcs/command/PrepareFlameCommand.ts
 import type { Renderer } from "pixi.js";
-import { ModelSignals } from "../../../signal/type/ModelSignals";
+import { ModelSignals } from "../../../signal/ModelSignals";
 import { AbstractCommand } from "../AbstractCommand";
 import { FlameModel } from "../../model/states/FlameModel";
 

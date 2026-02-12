@@ -1,5 +1,5 @@
 // src/core/mvcs/mediators/PhoenixFlameMediator.ts
-import { ModelSignals } from "../../../signal/type/ModelSignals";
+import { ModelSignals } from "../../../signal/ModelSignals";
 import { FlameModel } from "../../model/states/FlameModel";
 import { AbstractMediator } from "../AbstractMediator";
 import type { PhoenixFlameView } from "../components/PhoenixFlameView";

@@ -1,7 +1,7 @@
 // src/core/mvcs/command/FetchMagicWordsCommand.ts
 import { Cache, type Texture } from "pixi.js";
 import { GameConfig } from "../../../config/GameConfig";
-import { ModelSignals } from "../../../signal/type/ModelSignals";
+import { ModelSignals } from "../../../signal/ModelSignals";
 import type { MagicWordsResponse } from "../../model/states/dto/MagicWordsResponse";
 import { MagicWordsModel } from "../../model/states/MagicWordsModel";
 import { MagicWordVO } from "../../model/states/vo/MagicWordVO";

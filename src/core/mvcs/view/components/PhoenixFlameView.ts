@@ -18,7 +18,6 @@ export class PhoenixFlameView extends AbstractView {
     private readonly tempPoint = new Point(); // PRE-ALLOCATED: No GC on mouse move
     private readonly PI = Math.PI; // Cached PI
 
-
     private readonly particles: IFlameParticle[] = [];
     private fireTexture!: Texture;
 

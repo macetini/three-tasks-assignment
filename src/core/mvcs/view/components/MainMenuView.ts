@@ -2,19 +2,37 @@
 import { Container, Graphics, Text } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 import { GameConfig } from '../../../config/GameConfig';
+import { TaskSignals } from '../../../signal/TaskSignals';
 
+/**
+ * The primary navigation menu for the application.
+ * Displays buttons to navigate between the three technical tasks.
+ */
 export class MainMenuView extends AbstractView {
-    public static readonly MENU_CLICK_EVENT = 'menu_click_event';
+    /**
+     * The custom event emitted when a menu button is clicked.
+     */
+    public static readonly MENU_CLICK_EVENT = 'menuClickEvent';
 
     private readonly cfg = GameConfig.MAIN;
+
+    /**
+     * The collection of menu buttons.
+     */
     private readonly buttons: Container[] = [];
 
     public init(): void {
-        this.addButton("ACE OF SHADOWS", "CARDS");
-        this.addButton("MAGIC WORDS", "WORDS");
-        this.addButton("PHOENIX FLAME", "FLAME");
+        this.addButton("ACE OF SHADOWS", TaskSignals.CARDS);
+        this.addButton("MAGIC WORDS", TaskSignals.WORDS);
+        this.addButton("PHOENIX FLAME", TaskSignals.FLAME);
     }
 
+    /**
+     * Creates an interactive button with hover effects and labels.
+     * 
+     * @param label - The text displayed on the button.
+     * @param taskType - The string identifier for navigation.
+     */
     private addButton(label: string, taskType: string): void {
         const button = new Container();
         button.cursor = 'pointer';
@@ -32,8 +50,8 @@ export class MainMenuView extends AbstractView {
 
         const bg = new Graphics()
             .roundRect(0, 0, this.cfg.BUTTON_WIDTH, this.cfg.BUTTON_HEIGHT, 8)
-            .fill({ color: 0x222222, alpha: 0.8 });
-            
+            .fill({ color: this.cfg.BUTTON_COLOR, alpha: 0.8 });
+
         button.addChild(bg, buttonText);
 
         button.on('pointertap', () => {
@@ -60,7 +78,6 @@ export class MainMenuView extends AbstractView {
             totalHeight = button.y + this.cfg.BUTTON_HEIGHT;
             button.visible = button.interactive = true;
         });
-
         // Center whole menu
         this.y = height * 0.5 - totalHeight * 0.5;
         this.x = width * 0.5;
