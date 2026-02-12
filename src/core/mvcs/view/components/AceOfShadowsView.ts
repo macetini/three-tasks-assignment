@@ -33,7 +33,8 @@ export class AceOfShadowsView extends AbstractView {
         const scale = Math.min(width / this.cfg.CONTENT_SCALER, height / this.cfg.CONTENT_SCALER);
         this.scalableContent.scale.set(scale);
 
-        console.debug(`[AceOfShadowsView] Using custom layout. Layout scaled to ${scale}.`);
+        // Too much logging (enable if needed)
+        //console.debug(`[AceOfShadowsView] Using custom layout. Layout scaled to ${scale}.`);
     }
 
     public populateStack(cards: Sprite[]): void {

@@ -117,6 +117,9 @@ export class MagicWordsView extends AbstractView {
         let scale = Math.min(width / 375, height / 375);
         scale = Math.max(0, Math.min(scale, 1)); // No Clamp in Pixi :(
         this.chatContainer.scale.set(scale);
+
+        // Too much logging (enable if needed)
+        //console.debug(`[MagicWordsView] Using custom layout. Layout scaled to ${scale}.`);
     }
 
     public buildRows(
