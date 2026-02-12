@@ -3,7 +3,7 @@
 A high-performance interactive demo featuring three technical tasks, built with TypeScript and PixiJS v8.
 
 ## 🚀 Live Demo
-[[LINK]](https://macetini.github.io/three-tasks-assignment/)
+[LINK - https://macetini.github.io/three-tasks-assignment/](https://macetini.github.io/three-tasks-assignment/)
 
 ## 🛠 Tech Stack
 - **Engine:** PixiJS v8 (Latest)
