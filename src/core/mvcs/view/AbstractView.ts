@@ -22,6 +22,10 @@ export abstract class AbstractView extends Container {
         this.createBackButton();
     };
 
+    public onAddedToRoot(): void {
+        console.debug(`[${this.constructor.name}] View added to root.`);
+    }
+
     /**
      * Creates the default back button that every view except the root one will have.
      * 
@@ -31,7 +35,7 @@ export abstract class AbstractView extends Container {
         console.debug(`[${this.constructor.name}] Adding default back button.`);
         const backBtn = new Text({
             text: GameConfig.GLOBAL.BACK_BUTTON_GRAPHIC,
-            style: { fill: 0xffffff, fontSize: 36 }
+            style: { fill: 'white', fontSize: 36 }
         });
 
         backBtn.interactive = true;
@@ -67,7 +71,8 @@ export abstract class AbstractView extends Container {
             console.warn(`[${this.constructor.name}] Skipping layout update due to collapsed renderer.`);
             return;
         }
-        console.debug(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
+        // Too much logging (enable if needed)
+        //console.debug(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
     }
 
     /**

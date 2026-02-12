@@ -45,7 +45,7 @@ export class PhoenixFlameView extends AbstractView {
         // Clear references for GC
         this.particles.length = 0;
     }
-   
+
     /**
      * Initializes the flame effect by creating MAX_PARTICLES sprites from the given texture.
      * Each sprite is given a random life, speed, and x offset to create a staggered start.

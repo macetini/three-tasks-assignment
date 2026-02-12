@@ -1,8 +1,9 @@
 // src/core/mvcs/view/component/MainMenuView.ts
+import { gsap } from 'gsap';
 import { Container, Graphics, Text } from 'pixi.js';
-import { AbstractView } from '../AbstractView';
 import { GameConfig } from '../../../config/GameConfig';
 import { TaskSignals } from '../../../signal/TaskSignals';
+import { AbstractView } from '../AbstractView';
 
 /**
  * The primary navigation menu for the application.
@@ -20,11 +21,24 @@ export class MainMenuView extends AbstractView {
      * The collection of menu buttons.
      */
     private readonly buttons: Container[] = [];
+    private entranceTimeline: gsap.core.Timeline | null = null;
 
-    public init(): void {
-        this.addButton("ACE OF SHADOWS", TaskSignals.CARDS);
-        this.addButton("MAGIC WORDS", TaskSignals.WORDS);
-        this.addButton("PHOENIX FLAME", TaskSignals.FLAME);
+    public override onAddedToRoot(): void {
+        this.addButton("ACE OF SHADOWS", TaskSignals.CARDS, this.cfg.BUTTON_HEIGHT);
+        this.addButton("MAGIC WORDS", TaskSignals.WORDS, this.cfg.BUTTON_HEIGHT * 2);
+        this.addButton("PHOENIX FLAME", TaskSignals.FLAME, this.cfg.BUTTON_HEIGHT * 3);
+
+        super.onAddedToRoot();
+    }
+
+    /**
+    * 
+    * The Main Menu does not require navigation elements of its own.
+    * 
+    * @override
+    */
+    protected override createBackButton(): void {
+        // Intentional no-op: Root level has no "Back" destination.
     }
 
     /**
@@ -33,11 +47,14 @@ export class MainMenuView extends AbstractView {
      * @param label - The text displayed on the button.
      * @param taskType - The string identifier for navigation.
      */
-    private addButton(label: string, taskType: string): void {
+    private addButton(label: string, taskType: string, y: number = 0): void {
         const button = new Container();
         button.cursor = 'pointer';
         button.eventMode = 'static';
-        button.visible = button.interactive = false;
+
+        // Initial state for animation
+        button.alpha = 0;
+        button.position.set(Math.random() * 1000, y);
 
         const buttonText = new Text({
             text: label,
@@ -63,6 +80,23 @@ export class MainMenuView extends AbstractView {
     }
 
     /**
+     * Orchestrates a sequential entrance for the UI elements.
+     */
+    private playStaggeredEntrance(toX: number, toY: number = 0): void {
+        this.entranceTimeline?.kill();
+        this.entranceTimeline = gsap.timeline();
+
+        this.entranceTimeline.to(this.buttons, {
+            alpha: 1,
+            x: toX - this.cfg.BUTTON_WIDTH * 0.5,
+            y: (index: number) => toY + index * (this.cfg.BUTTON_HEIGHT + this.cfg.BUTTON_GAP),
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "back.out(1.7)",
+        });
+    }
+
+    /**
     * Aligns buttons vertically and centers the entire menu within 
     * the provided dimensions.
     * 
@@ -70,17 +104,8 @@ export class MainMenuView extends AbstractView {
     * @param height The current height of the Pixi screen
     */
     public override layout(width: number, height: number): void {
-        let totalHeight = 0;
-        this.buttons.forEach((button, index) => {
-            // Center buttons horizontally relative to this view's (0,0)
-            button.x = -this.cfg.BUTTON_WIDTH * 0.5;
-            button.y = index * (this.cfg.BUTTON_HEIGHT + this.cfg.BUTTON_GAP);
-            totalHeight = button.y + this.cfg.BUTTON_HEIGHT;
-            button.visible = button.interactive = true;
-        });
-        // Center whole menu
-        this.y = height * 0.5 - totalHeight * 0.5;
-        this.x = width * 0.5;
+        super.layout(width, height);
+        this.playStaggeredEntrance(width * 0.5, height * 0.25);
 
         // Too much logging (enable if needed)
         //console.debug(`[MainMenuView] Using responsive layout. View positioned at (${this.x}, ${this.y})`);

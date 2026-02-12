@@ -54,7 +54,8 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * has been added to the stage.
      */
     protected onViewAddedToRoot(): void {
-        console.debug(`[${this.constructor.name}] View added to Root.`);
+         this.triggerLayout();
+        this.view.onAddedToRoot();
     }
 
     /**
