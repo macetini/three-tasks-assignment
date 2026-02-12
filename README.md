@@ -34,3 +34,10 @@ The project follows a strict **MVCS** pattern to ensure decoupling:
 - **Views:** Handle rendering and local input.
 - **Mediators:** Bridge Views with the rest of the application.
 - **Services:** Handle heavy lifting like procedural asset generation.
+
+## 📄 License
+
+This project is licensed under the **Apache License 2.0**.  
+See the [LICENSE](./LICENSE) file for the full license text.
+
+Copyright © 2026 macetini@gmail.com
