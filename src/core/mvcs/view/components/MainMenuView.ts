@@ -66,8 +66,13 @@ export class MainMenuView extends AbstractView {
             this.cfg.BUTTON_HEIGHT * 0.5);
 
         const bg = new Graphics()
-            .roundRect(0, 0, this.cfg.BUTTON_WIDTH, this.cfg.BUTTON_HEIGHT, 8)
-            .fill({ color: this.cfg.BUTTON_COLOR, alpha: 0.8 });
+            .roundRect(0, 0,
+                this.cfg.BUTTON_WIDTH,
+                this.cfg.BUTTON_HEIGHT, 8)
+            .fill({
+                color: this.cfg.BUTTON_COLOR,
+                alpha: 0.8
+            });
 
         button.addChild(bg, buttonText);
 

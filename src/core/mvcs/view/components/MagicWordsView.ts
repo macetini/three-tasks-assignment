@@ -1,10 +1,10 @@
+import { gsap } from 'gsap';
 import { Container, Rectangle, Text, Texture } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
 import type { AvatarPosition } from '../../model/states/MagicWordsModel';
 import type { MagicWordVO } from '../../model/states/vo/MagicWordVO';
 import { AbstractView } from '../AbstractView';
 import { RichTextRow } from './ui/RichTextRow';
-import { gsap } from 'gsap';
 /**
  * View managing a scrollable chat-like interface with Rich Text support.
  * Handles keyboard, mouse wheel, and touch-drag navigation.
@@ -19,7 +19,6 @@ export class MagicWordsView extends AbstractView {
 
     private isDragging: boolean = false;
     private lastPointerY: number = 0;
-
 
     /**
      * Initializes the MagicWordsView.
@@ -58,7 +57,7 @@ export class MagicWordsView extends AbstractView {
         this.off('pointerup', this.onDragEnd, this);
         this.off('pointerupoutside', this.onDragEnd, this);
 
-        gsap.killTweensOf(this.chatContainer.children);
+        gsap.killTweensOf(this.chatContainer.children);        
 
         super.dispose();
     }
@@ -220,11 +219,11 @@ export class MagicWordsView extends AbstractView {
             console.warn("[MagicWordsView] New chat Words count is 0. Skipping.");
             return;
         }
-        
+
         this.chatContainer.removeChildren();
         this.currentY = 0;
         gsap.killTweensOf(this.chatContainer.children);
-        
+
         const newRows: RichTextRow[] = [];
         words.forEach((wordsRow) => {
             const position = options.positionProvider(wordsRow.characterName);
@@ -234,7 +233,7 @@ export class MagicWordsView extends AbstractView {
             newRows.push(textRow);
             textRow.alpha = 0;
         });
-        
+
         this.playChatEntrance(newRows);
     }
 
@@ -242,16 +241,12 @@ export class MagicWordsView extends AbstractView {
      * Animates chat rows sequentially for a "real-time" feel.
      */
     private playChatEntrance(rows: RichTextRow[]): void {
+        gsap.killTweensOf(rows);
         gsap.to(rows, {
-            alpha: 1,
-            x: 0,
-            duration: 0.4,
-            stagger: 0.08, // Time between each row appearing
-            ease: "power2.out",
-            onComplete: () => {
-                // Ensure layout is refreshed to handle final heights
-                this.emit('entrance_complete');
-            }
+            alpha: 1,            
+            duration: 2,
+            stagger: 0.25, // Time between each row appearing
+            ease: "power2.out"
         });
     }
 
