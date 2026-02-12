@@ -66,6 +66,8 @@ export class PhoenixFlameView extends AbstractView {
                 p.sprite.tint = 0xAA0000; // Cooling red embers
             }
 
+            p.sprite.rotation = Math.cos(p.sprite.y * 0.05) * 0.2;
+
             if (p.life <= 0) {
                 this.resetParticle(p);
             }
