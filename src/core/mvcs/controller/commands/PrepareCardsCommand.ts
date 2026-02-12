@@ -11,7 +11,6 @@ import { AbstractCommand } from "../AbstractCommand";
  * application that the stack is ready for animation.
  */
 export class PrepareCardsCommand extends AbstractCommand {
-
     /**
      * Executes the command to prepare the cards.
      * Retrieves the cards from the asset service and sets them on the card model.

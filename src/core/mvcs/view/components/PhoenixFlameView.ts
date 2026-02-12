@@ -2,18 +2,14 @@
 import { Point, Rectangle, Sprite, Texture } from 'pixi.js';
 import { AbstractView } from '../AbstractView';
 import type { IFlameParticle } from './meta/IFlameParticle';
+import { GameConfig } from '../../../config/GameConfig';
 
 /**
  * View responsible for the "Phoenix Flame" effect.
  * Uses an object pooling strategy to maintain exactly 10 sprites.
  */
 export class PhoenixFlameView extends AbstractView {
-
-    private readonly MAX_PARTICLES = 10;
-    private readonly FLAME_BASE_COLOR = 0xFFFFCC; // White hot base
-    private readonly FLAME_CORE_COLOR = 0xFF8800; // Orange core
-    private readonly FLAME_EMBERS_COLOR = 0xAA0000; // Cooling red embers            
-    private readonly FLAME_BLEND_MODE = 'add';
+    private readonly cfg = GameConfig.FLAME;
 
     private readonly tempPoint = new Point(); // PRE-ALLOCATED: No GC on mouse move
     private readonly PI = Math.PI; // Cached PI
@@ -60,10 +56,10 @@ export class PhoenixFlameView extends AbstractView {
     public setupFire(texture: Texture): void {
         this.fireTexture = texture;
 
-        for (let i = 0; i < this.MAX_PARTICLES; i++) {
+        for (let i = 0; i < this.cfg.MAX_PARTICLES; i++) {
             const sprite = new Sprite(this.fireTexture);
             sprite.anchor.set(0.5);
-            sprite.blendMode = this.FLAME_BLEND_MODE; // Additive blending creates the white-hot core
+            sprite.blendMode = this.cfg.FLAME_BLEND_MODE; // Additive blending creates the white-hot core
 
             const particle: IFlameParticle = {
                 sprite,
@@ -102,11 +98,11 @@ export class PhoenixFlameView extends AbstractView {
             particle.sprite.alpha = particle.life;
 
             if (particle.life > 0.6) {
-                particle.sprite.tint = this.FLAME_BASE_COLOR; // White hot base
+                particle.sprite.tint = this.cfg.FLAME_BASE_COLOR; // White hot base
             } else if (particle.life > 0.3) {
-                particle.sprite.tint = this.FLAME_CORE_COLOR; // Orange core
+                particle.sprite.tint = this.cfg.FLAME_CORE_COLOR; // Orange core
             } else {
-                particle.sprite.tint = this.FLAME_EMBERS_COLOR; // Cooling red embers
+                particle.sprite.tint = this.cfg.FLAME_EMBERS_COLOR; // Cooling red embers
             }
 
             particle.sprite.rotation = Math.cos(particle.sprite.y * 0.05) * 0.2;

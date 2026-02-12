@@ -1,4 +1,5 @@
 import { Container, Rectangle, Text, Texture } from 'pixi.js';
+import { GameConfig } from '../../../config/GameConfig';
 import type { AvatarPosition } from '../../model/states/MagicWordsModel';
 import type { MagicWordVO } from '../../model/states/vo/MagicWordVO';
 import { AbstractView } from '../AbstractView';
@@ -9,14 +10,7 @@ import { RichTextRow } from './ui/RichTextRow';
  * Handles keyboard, mouse wheel, and touch-drag navigation.
  */
 export class MagicWordsView extends AbstractView {
-    private readonly SCROLL_STEP = 40; // Pixels per key press
-    private readonly SCROLL_SPEED = 0.5;
-    private readonly MAX_SCROLL_HEIGHT = 75;
-    private readonly MIN_SCROLL_HEIGHT = 600; // It would be better to use screen height, but this will work on most devices
-    private readonly MIN_SCREEN_WIDTH = 375; // It would be better to use screen width, but this will work on most devices
-    private readonly MAX_SCALE = 1.3;
-    private readonly CHAT_CONTAINER_Y_OFFSET = 85;
-    private readonly LINE_PADDING = 20;
+    private readonly cfg = GameConfig.WORDS;
 
     private readonly chatContainer = new Container();
     private loadingText!: Text;
@@ -110,9 +104,9 @@ export class MagicWordsView extends AbstractView {
      */
     private readonly onArrowKeyDown = (event: KeyboardEvent): void => {
         if (event.key === 'ArrowUp') {
-            this.applyScroll(this.SCROLL_STEP);
+            this.applyScroll(this.cfg.SCROLL_STEP);
         } else if (event.key === 'ArrowDown') {
-            this.applyScroll(-this.SCROLL_STEP);
+            this.applyScroll(-this.cfg.SCROLL_STEP);
         }
     };
 
@@ -124,7 +118,7 @@ export class MagicWordsView extends AbstractView {
      */
     private onMouseWheel(event: WheelEvent): void {
         // We invert it because wheel down = content moves up
-        const scrollSpeed = this.SCROLL_SPEED;
+        const scrollSpeed = this.cfg.SCROLL_SPEED;
         this.applyScroll(-event.deltaY * scrollSpeed);
     }
 
@@ -164,9 +158,9 @@ export class MagicWordsView extends AbstractView {
      */
     private applyScroll(delta: number): void {
         //Boundary Logic        
-        const viewHeight = this.MIN_SCROLL_HEIGHT;
+        const viewHeight = this.cfg.MIN_SCROLL_HEIGHT;
         const minScroll = Math.min(0, viewHeight - this.chatContainer.height);
-        const maxScroll = this.MAX_SCROLL_HEIGHT;
+        const maxScroll = this.cfg.MAX_SCROLL_HEIGHT;
 
         // Optimized clamp
         this.chatContainer.y = Math.max(minScroll, Math.min(this.chatContainer.y + delta, maxScroll));
@@ -193,10 +187,10 @@ export class MagicWordsView extends AbstractView {
         this.loadingText.position.set(width * 0.5, height * 0.5);
         this.chatContainer.position.set(
             width * 0.5 - this.chatContainer.width * 0.5,
-            this.CHAT_CONTAINER_Y_OFFSET);
+            this.cfg.CHAT_CONTAINER_Y_OFFSET);
 
-        let scale = Math.min(width / this.MIN_SCREEN_WIDTH, height / this.MIN_SCREEN_WIDTH);
-        scale = Math.max(1, Math.min(scale, this.MAX_SCALE));
+        let scale = Math.min(width / this.cfg.MIN_SCREEN_WIDTH, height / this.cfg.MIN_SCREEN_WIDTH);
+        scale = Math.max(1, Math.min(scale, this.cfg.MAX_SCALE));
 
         this.chatContainer.scale.set(scale);
 
@@ -245,7 +239,7 @@ export class MagicWordsView extends AbstractView {
     public addRow(wordsRow: RichTextRow): void {
         wordsRow.y = this.currentY;
         this.chatContainer.addChild(wordsRow);
-        this.currentY += wordsRow.height + this.LINE_PADDING;
+        this.currentY += wordsRow.height + this.cfg.LINE_PADDING;
 
     }
 }

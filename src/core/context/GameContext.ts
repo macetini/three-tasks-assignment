@@ -22,6 +22,7 @@ import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediato
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
 import { ModelSignals } from '../signal/ModelSignals';
 import { SignalBus } from '../signal/SignalBus';
+import { GameConfig } from '../config/GameConfig';
 
 /**
  * The GameContext is the Composition Root of the application.
@@ -29,6 +30,8 @@ import { SignalBus } from '../signal/SignalBus';
  * and bootstrapping the core application lifecycle.
  */
 export class GameContext {
+    private readonly cfg = GameConfig.GLOBAL;
+
     private readonly app: Application;
     private readonly assetService: AssetService;
     private readonly signalBus: SignalBus;
@@ -69,42 +72,76 @@ export class GameContext {
      * This function is responsible for setting up the MVCS architecture and should be called once the application is ready.
      * It is an asynchronous function and should be called with the await keyword.
      */
-    public async bootstrap() {
+    /**
+     * Orchestrates the asynchronous initialization of the application.
+     */
+    public async bootstrap(): Promise<void> {
         console.log("[GameContext] Bootstrap Started.");
 
+        // 1. Infrastructure Services
         await this.assetService.init();
 
-        // --- Model Mapping ---
-        console.log("[GameContext] Model Mapping.");
+        // 2. MVCS Layer Setup
+        this.mapModels();
+        this.mapCommands();
+        this.mapMediators();
+
+        // 3. Application Entry Point
+        this.initializeRootView();
+
+        // 4. Developer HUD
+        if (this.cfg.DEBUG) {
+            this.addDebugInfo();
+        }
+
+        console.log("[GameContext] Bootstrap Finished.");
+    }
+
+    /**
+     * Registers singleton model instances for global state management.
+     */
+    private mapModels(): void {
+        console.log("[GameContext] Mapping Models...");
         this.modelMap.map(CardModel.NAME, new CardModel());
         this.modelMap.map(MagicWordsModel.NAME, new MagicWordsModel());
         this.modelMap.map(FlameModel.NAME, new FlameModel());
+    }
 
-        // --- Command Mapping --- 
-        console.log("[GameContext] Command Mapping.");
+    /**
+     * Maps global signals to their respective business logic Commands.
+     */
+    private mapCommands(): void {
+        console.log("[GameContext] Mapping Commands...");
         this.commandMap.map(ModelSignals.PREPARE_CARDS, PrepareCardsCommand);
         this.commandMap.map(ModelSignals.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
         this.commandMap.map(ModelSignals.PREPARE_FLAME, PrepareFlameCommand);
+    }
 
-        // --- View & Mediator Mapping ---  
-        console.log("[GameContext] View & Mediator Mapping.");
+    /**
+     * Defines the relationship between Display Objects and their Mediators.
+     */
+    private mapMediators(): void {
+        console.log("[GameContext] Mapping Mediators...");
         this.mediatorMap.map(RootView, RootViewMediator);
         this.mediatorMap.map(MainMenuView, MainMenuMediator);
         this.mediatorMap.map(AceOfShadowsView, AceOfShadowsMediator);
         this.mediatorMap.map(MagicWordsView, MagicWordsMediator);
         this.mediatorMap.map(PhoenixFlameView, PhoenixFlameMediator);
-        //        
+    }
 
-        // --- Initialization ---
-        console.log("[GameContext] Initialization.");
+    /**
+     * Instantiates the Root container and attaches it to the Pixi Stage.
+     */
+    private initializeRootView(): void {
+        console.log("[GameContext] Initializing Root Display...");
         const rootView = new RootView();
+
+        // RootView initialization
         rootView.init();
         this.app.stage.addChild(rootView);
+
+        // Registering with the mediator map triggers the RootViewMediator
         this.mediatorMap.register(rootView);
-
-        this.addDebugInfo();
-
-        console.log("[GameContext] Bootstrap Finished.");
     }
 
     private addDebugInfo(): void {

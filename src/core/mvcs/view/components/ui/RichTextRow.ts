@@ -12,20 +12,6 @@ import { RichTextParser } from "../../util/RichTextParser";
 export class RichTextRow extends Container {
     private readonly cfg = GameConfig.WORDS;
 
-    private readonly AVATAR_SIZE = 56;
-    private readonly PADDING = 24;
-    private readonly MAX_WIDTH = 250;
-    private readonly MIN_WIDTH = 375;
-    private readonly LINE_HEIGHT = 28;
-    private readonly EMOJI_SIZE = 22;
-
-    private readonly BUBBLE_LEFT_COLOR = 0x2196F3;
-    private readonly BUBBLE_RIGHT_COLOR = 0x424242;
-    private readonly BUBBLE_STROKE_COLOR = 0x222222;
-    private readonly BUBBLE_STROKE_WIDTH = 2;
-    private readonly BUBBLE_PADDING = 15;
-    private readonly BUBBLE_CORNER_RADIUS = 15;
-
     private readonly background: Graphics;
     private readonly avatar: Sprite;
     private readonly message: Container;
@@ -48,14 +34,14 @@ export class RichTextRow extends Container {
         this.background = new Graphics();
 
         this.avatar = new Sprite(this.textureProvider(vo.characterName));
-        this.avatar.width = this.avatar.height = this.AVATAR_SIZE;
+        this.avatar.width = this.avatar.height = this.cfg.AVATAR_SIZE;
 
         this.message = this.createMessageContent(vo);
         this.addChild(this.background, this.avatar, this.message);
 
         this.drawBubble();
 
-        this.updateLayout(this.MIN_WIDTH);
+        this.updateLayout(this.cfg.MIN_WIDTH);
     }
 
     /**
@@ -68,21 +54,21 @@ export class RichTextRow extends Container {
         const bubbleColor =
             this.avatarPosition ==
                 this.cfg.DEFAULT_AVATAR_POSITION ?
-                this.BUBBLE_LEFT_COLOR : this.BUBBLE_RIGHT_COLOR;
+                this.cfg.BUBBLE_LEFT_COLOR : this.cfg.BUBBLE_RIGHT_COLOR;
 
         this.background.clear();
         this.background
             .roundRect(
-                -this.BUBBLE_PADDING,
-                -this.BUBBLE_PADDING * 0.5,
-                this.message.width + (this.BUBBLE_PADDING * 2),
-                this.message.height + this.BUBBLE_PADDING,
-                this.BUBBLE_CORNER_RADIUS
+                -this.cfg.BUBBLE_PADDING,
+                -this.cfg.BUBBLE_PADDING * 0.5,
+                this.message.width + (this.cfg.BUBBLE_PADDING * 2),
+                this.message.height + this.cfg.BUBBLE_PADDING,
+                this.cfg.BUBBLE_CORNER_RADIUS
             )
             .fill({ color: bubbleColor, alpha: 1 })
             .stroke({
-                color: this.BUBBLE_STROKE_COLOR,
-                width: this.BUBBLE_STROKE_WIDTH
+                color: this.cfg.BUBBLE_STROKE_COLOR,
+                width: this.cfg.BUBBLE_STROKE_WIDTH
             });
     }
 
@@ -102,10 +88,10 @@ export class RichTextRow extends Container {
     public updateLayout(containerWidth: number): void {
         if (this.avatarPosition === this.cfg.DEFAULT_AVATAR_POSITION) {
             this.avatar.x = 1;
-            this.background.x = this.message.x = this.AVATAR_SIZE + this.PADDING;
+            this.background.x = this.message.x = this.cfg.AVATAR_SIZE + this.cfg.PADDING;
         } else {
-            this.avatar.x = containerWidth - this.AVATAR_SIZE - 1;
-            this.background.x = this.message.x = this.avatar.x - this.message.width - this.PADDING;
+            this.avatar.x = containerWidth - this.cfg.AVATAR_SIZE - 1;
+            this.background.x = this.message.x = this.avatar.x - this.message.width - this.cfg.PADDING;
         }
     }
 
@@ -196,7 +182,7 @@ export class RichTextRow extends Container {
      */
     private addEmojiToken(container: Container, emojiId: string, pos: { x: number, y: number }) {
         const emoji = new Sprite(this.textureProvider(emojiId));
-        emoji.width = emoji.height = this.EMOJI_SIZE;
+        emoji.width = emoji.height = this.cfg.EMOJI_SIZE;
 
         pos = this.handleLineWrap(emoji.width, pos);
 
@@ -222,8 +208,8 @@ export class RichTextRow extends Container {
      */
     private handleLineWrap(elementWidth: number, pos: { x: number, y: number }) {
 
-        if (pos.x + elementWidth > this.MAX_WIDTH && pos.x > 0) {
-            return { x: 0, y: pos.y + this.LINE_HEIGHT };
+        if (pos.x + elementWidth > this.cfg.MAX_WIDTH && pos.x > 0) {
+            return { x: 0, y: pos.y + this.cfg.LINE_HEIGHT };
         }
         return pos;
     }

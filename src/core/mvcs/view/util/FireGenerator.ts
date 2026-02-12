@@ -1,7 +1,9 @@
 // src/core/mvcs/view/util/FireGenerator.ts
 import { Graphics, Texture, type Renderer } from "pixi.js";
+import { GameConfig } from "../../../config/GameConfig";
 
 export class FireGenerator {
+    private readonly cfg = GameConfig.FLAME;
 
     /**
      * Generates a procedurally generated flame texture, using multiple layers to create a soft glow effect.
@@ -17,7 +19,7 @@ export class FireGenerator {
      */
     public generateFlameTexture(renderer: Renderer): Texture {
         const graphics = new Graphics();
-        const size = 64;
+        const size = this.cfg.TEXTURE_SIZE;
 
         // We draw multiple layers to create a "soft" feel without external assets
         // Layer 1: The outer soft glow (large, very transparent)
@@ -41,7 +43,7 @@ export class FireGenerator {
 
         const texture = renderer.generateTexture({
             target: graphics,
-            resolution: 2, // Keep it sharp
+            resolution: this.cfg.TEXTURE_RESOLUTION, // Keep it sharp
             antialias: true
         });
 
