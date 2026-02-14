@@ -88,6 +88,8 @@ export class MainMenuView extends AbstractView {
      * Orchestrates a sequential entrance for the UI elements.
      */
     private playStaggeredEntrance(toX: number, toY: number = 0): void {
+        if (this.buttons.length === 0) return;
+        
         this.entranceTimeline?.kill();
         this.entranceTimeline = gsap.timeline();
 
