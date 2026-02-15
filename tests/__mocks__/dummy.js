@@ -8,39 +8,88 @@ const eventMethods = {
   emit: jest.fn().mockReturnThis(),
 };
 
+// Helper to create a position object that actually stores values
+const createPoint = (target) => ({
+  x: 0,
+  y: 0,
+  set(x, y) {
+    this.x = x;
+    this.y = y;
+    // Also update the target if it has x/y properties
+    if (target) {
+      target.x = x;
+      target.y = y;
+    }
+  },
+});
+
 export class Container {
   constructor() {
     Object.assign(this, eventMethods);
     this.children = [];
-    this.position = { set: jest.fn() };
-    this.scale = { set: jest.fn(), x: 1, y: 1 };
     this.visible = true;
+    this.alpha = 1;
     this.x = 0;
     this.y = 0;
-    this.parent = null; // Track the parent
+    // Pass 'this' so that position.set(10, 20) updates this.x and this.y
+    this.position = createPoint(this);
+    this.scale = createPoint();
+    this.parent = null;
   }
 
   addChild(...args) {
-    args.forEach((c) => {
-      if (c) {
-        // Real Pixi behavior: Remove from old parent before adding to new one
-        if (c.parent) {
-          const index = c.parent.children.indexOf(c);
-          if (index > -1) c.parent.children.splice(index, 1);
+    args.forEach((child) => {
+      if (child) {
+        // 1. If child already has a parent, remove it from that parent's children array
+        if (child.parent && child.parent.children) {
+          const index = child.parent.children.indexOf(child);
+          if (index > -1) {
+            child.parent.children.splice(index, 1);
+          }
         }
-        c.parent = this;
-        this.children.push(c);
+        // 2. Set new parent and add to this container
+        child.parent = this;
+        this.children.push(child);
       }
     });
     return args[0];
   }
 
-  removeChild() {}
+  addChildAt(child, index) {
+    if (child) {
+      if (child.parent && child.parent.children) {
+        const oldIndex = child.parent.children.indexOf(child);
+        if (oldIndex > -1) child.parent.children.splice(oldIndex, 1);
+      }
+      child.parent = this;
+      this.children.splice(index, 0, child);
+    }
+    return child;
+  }
+  removeChild(child) {
+    if (!child) return;
+    const index = this.children.indexOf(child);
+    if (index > -1) {
+      this.children.splice(index, 1);
+      child.parent = null; // Clean up the reference
+    }
+  }
+
+  removeChildren() {
+    this.children.forEach((child) => {
+      child.parent = null;
+    });
+    this.children = [];
+  }
+
+  // Add destroy to fix the dispose error
+  destroy() {
+    return jest.fn();
+  }
 
   toGlobal() {
     return { x: 0, y: 0 };
   }
-
   toLocal() {
     return { x: 0, y: 0 };
   }
@@ -49,24 +98,25 @@ export class Container {
 export class Sprite extends Container {
   constructor() {
     super();
-    this.anchor = { set: jest.fn() };
+    this.anchor = createPoint();
     this.rotation = 0;
-    this.alpha = 1;
   }
 }
 
 export class Text extends Container {
-  constructor() {
+  constructor(optionsOrText) {
+    // Add this param
     super();
-    this.style = {};
-    this.anchor = { set: jest.fn() };
+    this.text =
+      typeof optionsOrText === "string"
+        ? optionsOrText
+        : optionsOrText?.text || "";
+    this.style = optionsOrText?.style || {};
+    this.anchor = createPoint();
   }
 }
 
 export class Graphics extends Container {
-  constructor() {
-    super();
-  }
   beginFill() {
     return this;
   }
@@ -92,6 +142,37 @@ export class Point {
   }
 }
 
+export class Rectangle {
+  constructor(x = 0, y = 0, width = 0, height = 0) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  // Adding this satisfies SonarLint S2094
+  contains(x, y) {
+    return (
+      x >= this.x &&
+      x <= this.x + this.width &&
+      y >= this.y &&
+      y <= this.y + this.height
+    );
+  }
+}
+
+export class Texture {
+  // Class field declarations (Satisfies S7757)
+  valid = true;
+  width = 100;
+  height = 100;
+
+  static from() {
+    return new Texture();
+  }
+  static EMPTY = new Texture();
+}
+
 export const gsap = {
   to: jest.fn(),
   killTweensOf: jest.fn(),
@@ -102,4 +183,13 @@ export const gsap = {
   })),
 };
 
-export default { Container, Sprite, Point, Text, Graphics, gsap };
+export default {
+  Container,
+  Sprite,
+  Point,
+  Text,
+  Graphics,
+  Rectangle,
+  Texture,
+  gsap,
+};
