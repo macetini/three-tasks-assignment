@@ -2,6 +2,7 @@ import { gsap } from 'gsap';
 import { Container, Point, Sprite } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
 import { TaskView } from '../TaskView';
+import { CardAnimator } from '../util/CardAnimator';
 
 /**
  * View responsible for the Ace of Shadows card stacking animation.
@@ -92,35 +93,12 @@ export class AceOfShadowsView extends TaskView {
                 ease: "back.out(1.2)",
                 onComplete: () => {
                     if (index === cards.length - 1) {
-                        this.playDeckSettlingEffect();
+                        CardAnimator.playSettle(this.stackA, () => this.startStackingSequence(this.stackA, this.stackB));
                     }
                 }
             });
         });
     }
-
-
-    /**
-     * Play a settling animation on the deck stack after it has been populated.
-     * This animation is a slight bulge and squash effect to give the impression that the deck is settling.
-     * Once the animation has finished, the actual task sequence is started.
-     */
-    private playDeckSettlingEffect(): void {
-        gsap.to(this.stackA.scale, {
-            x: 1.05, // Slight bulge
-            y: 0.92, // Slight squash
-            duration: 0.1,
-            yoyo: true, // Snap back to 1.0
-            repeat: 1,
-            ease: "sine.in",
-            onComplete: () => {
-                // Settle: Bounces back to normal size
-                // Now start the actual task sequence
-                this.startStackingSequence(this.stackA, this.stackB);
-            }
-        });
-    }
-
 
     /**
      * Starts the stacking sequence for the Ace of Shadows task.
@@ -144,49 +122,17 @@ export class AceOfShadowsView extends TaskView {
                 this.moveTopCardToTargetStack(fromStack, toStack);
             } else {
                 this.sequence?.kill();
-                // The Finale plays, then we swap and restart                
-                this.playTaskCompleteFinale(fromStack, toStack);
+                // The Finale plays, then we swap and restart                                
+                CardAnimator.playFinale(
+                    toStack,
+                    this.cfg.Y_CONTENT_OFFSET,
+                    () => {
+                        const swapFrom = toStack;
+                        const swapTo = fromStack;
+                        this.startStackingSequence(swapFrom, swapTo)
+                    });
             }
         }, [], this.cfg.DELAY_SEC);
-    }
-
-
-    /**
-     * Plays the finale animation for the Ace of Shadows task.
-     * This animation is triggered once all cards have been moved from the source stack to the target stack.
-     * The animation consists of a squash and stretch of the final stack, followed by a bouncy leap and a final settle.
-     * Once the animation has finished, the stacking sequence is restarted with the stacks swapped.
-     * 
-     * @param originStack The source stack that the cards were moved from.
-     * @param targetStack The target stack that the cards were moved to.
-     */
-    private playTaskCompleteFinale(originStack: Container, targetStack: Container): void {
-        const finaleTl = gsap.timeline({
-            onComplete: () => {
-                this.startStackingSequence(targetStack, originStack);
-            }
-        });
-
-        // 1. Squash and Stretch the final stack
-        finaleTl.to(targetStack.scale, {
-            x: 1.1,
-            y: 0.8,
-            duration: 0.15,
-            ease: "power2.in"
-        });
-        finaleTl.to(targetStack, {
-            y: this.cfg.Y_CONTENT_OFFSET - 40, // Relative leap from its ground position
-            duration: 0.4,
-            yoyo: true,
-            repeat: 1,
-            ease: "back.out(2)"
-        });
-        finaleTl.to(targetStack.scale, {
-            x: 1,
-            y: 1,
-            duration: 0.6,
-            ease: "elastic.out(1.1, 0.3)"
-        }, "-=0.4"); // Overlap with the leap
     }
 
     /**

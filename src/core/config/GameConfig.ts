@@ -25,8 +25,8 @@ export const GameConfig = {
         X_Y_INITIAL_POSITION: 200,
         Y_CONTENT_OFFSET: 100,
         Y_CARD_OFFSET: 2,
-        DURATION_SEC: 0.2,
-        DELAY_SEC: .1,
+        DURATION_SEC: 2,
+        DELAY_SEC: 1,
         CONTENT_SCALER: 1000
     },
     WORDS: {
