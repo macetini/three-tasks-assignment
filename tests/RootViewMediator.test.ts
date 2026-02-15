@@ -14,7 +14,7 @@ describe('RootViewMediator', () => {
     let mockApp: any;
 
     beforeEach(() => {
-        // 1. Setup Mock RootView
+        // Setup Mock RootView
         mockView = new RootView() as any;
         jest.spyOn(mockView, 'setView');
         // Define activeView as a getter for testing
@@ -23,7 +23,7 @@ describe('RootViewMediator', () => {
             configurable: true
         });
 
-        // 2. Mock Services
+        // Mock Services
         mockSignalBus = {
             on: jest.fn(),
             off: jest.fn(),
@@ -40,7 +40,7 @@ describe('RootViewMediator', () => {
             screen: { width: 1024, height: 768 }
         };
 
-        // 3. Instantiate and Inject
+        // Instantiate and Inject
         mediator = new RootViewMediator(mockView);
         (mediator as any).view = mockView;
         (mediator as any).signalBus = mockSignalBus;
@@ -63,7 +63,6 @@ describe('RootViewMediator', () => {
     test('onSwitchTask should create new View and register it', () => {
         // Simulate switching to CARDS
         (mediator as any).onSwitchTask(TaskSignals.CARDS);
-
         // Verify Mediator logic
         expect(mockMediatorMap.register).toHaveBeenCalledWith(expect.any(AceOfShadowsView));
         expect(mockView.setView).toHaveBeenCalledWith(expect.any(AceOfShadowsView));
