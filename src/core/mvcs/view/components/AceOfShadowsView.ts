@@ -56,13 +56,15 @@ export class AceOfShadowsView extends TaskView {
         //console.debug(`[AceOfShadowsView] Using custom layout. Layout scaled to ${scale}.`);
     }
 
+
     /**
      * Populates the stackA with the given array of sprites.
-     * Each sprite is centered, positioned with a slight rotation and a y offset
-     * based on its index in the array.
-     * The sprites are also stored in the cards array for later use.
+     * Each sprite is initially positioned at the center of the screen with an alpha of 0.
+     * The sprites are then animated to their final positions with a easing function.
+     * The animation is staggered by a small amount to create a "settle" effect.
+     * When the animation is complete, the playDeckSettlingEffect method is called.
      * 
-     * @param cards The array of sprites to populate the stack with.
+     * @param cards - The array of sprites to populate the stack with.
      */
     public populateStack(cards: Sprite[]): void {
         const { Y_CARD_OFFSET, ROTATION_VARIANCE } = this.cfg;
@@ -89,7 +91,6 @@ export class AceOfShadowsView extends TaskView {
                 delay: index * 0.01,
                 ease: "back.out(1.2)",
                 onComplete: () => {
-                    // When the very last card lands...
                     if (index === cards.length - 1) {
                         this.playDeckSettlingEffect();
                     }
@@ -98,9 +99,11 @@ export class AceOfShadowsView extends TaskView {
         });
     }
 
+
     /**
-     * A physical "impact" effect once the deck is full.
-     * Squashes the stack and then bounces it back to simulate weight.
+     * Play a settling animation on the deck stack after it has been populated.
+     * This animation is a slight bulge and squash effect to give the impression that the deck is settling.
+     * Once the animation has finished, the actual task sequence is started.
      */
     private playDeckSettlingEffect(): void {
         gsap.to(this.stackA.scale, {
@@ -118,11 +121,18 @@ export class AceOfShadowsView extends TaskView {
         });
     }
 
+
     /**
-     * Starts the stacking sequence of cards from stack A to stack B.
-     * The sequence will repeat indefinitely until stack A is empty.
-     * When stack A is empty, the sequence will be killed.
-     * The delay between each card move is defined by GameConfig.CARDS.DELAY_SEC.
+     * Starts the stacking sequence for the Ace of Shadows task.
+     * This sequence is responsible for animating the movement of cards between two stacks.
+     * The sequence is infinite and will continue to loop until it is manually killed.
+     * The sequence is composed of two parts: the first part moves the top card from the source stack to the target stack,
+     * and the second part plays a finale animation once all cards have been moved.
+     * The finale animation is a radial "pop" and a gentle float to signal completion.
+     * Once the finale has finished, the stacks are swapped and the sequence is restarted.
+     * 
+     * @param fromStack The source stack to move cards from.
+     * @param toStack The target stack to move cards to.
      */
     public startStackingSequence(fromStack: Container, toStack: Container): void {
         console.debug("[AceOfShadowsView] Stacking Sequence Started.");
@@ -140,9 +150,15 @@ export class AceOfShadowsView extends TaskView {
         }, [], this.cfg.DELAY_SEC);
     }
 
+
     /**
-     * Celebratory effect triggered once all 144 cards have moved.
-     * Uses a radial "pop" and a gentle float to signal completion.
+     * Plays the finale animation for the Ace of Shadows task.
+     * This animation is triggered once all cards have been moved from the source stack to the target stack.
+     * The animation consists of a squash and stretch of the final stack, followed by a bouncy leap and a final settle.
+     * Once the animation has finished, the stacking sequence is restarted with the stacks swapped.
+     * 
+     * @param originStack The source stack that the cards were moved from.
+     * @param targetStack The target stack that the cards were moved to.
      */
     private playTaskCompleteFinale(originStack: Container, targetStack: Container): void {
         const finaleTl = gsap.timeline({
@@ -189,13 +205,17 @@ export class AceOfShadowsView extends TaskView {
         this.cards.length = 0;
     }
 
+
     /**
-     * Moves the top card from stack A to stack B.
-     * If stack A is empty, logs a debug message and does nothing.
-     * Otherwise, removes the top card from stack A, adds it to stack B, and tweens it to its new position.
-     * The card's rotation is slightly randomized on each move.
-     * The duration of the tween is defined by GameConfig.CARDS.DURATION_SEC.
-     */
+     * Moves the top card from the source stack to the target stack.
+     * This function first captures the global position of the card in the source stack,
+     * then moves the card to the animation layer (the top layer) and sets its local position.
+     * Finally, it animates the card to the target stack's position (with a random rotation),
+     * and on completion, moves the card to the final destination stack.
+     * 
+     * @param fromStack The source stack to move the card from.
+     * @param toStack The target stack to move the card to.
+    */
     public moveTopCardToTargetStack(fromStack: Container, toStack: Container): void {
         if (fromStack.children.length === 0) return;
 
@@ -207,27 +227,22 @@ export class AceOfShadowsView extends TaskView {
 
         gsap.killTweensOf(card);
 
-        // 1. Capture Global Position        
         const globalPos = fromStack.toGlobal(new Point(card.x, card.y));
 
-        // 2. Move to Animation Layer (The Top Layer)
         this.animationLayer.addChild(card);
 
-        // 3. Set Local Position in Animation Layer
         const layerPos = this.animationLayer.toLocal(globalPos);
         card.position.set(layerPos.x, layerPos.y);
 
         const targetY = -(toStack.children.length) * this.cfg.Y_CARD_OFFSET;
 
         gsap.to(card, {
-            x: toStack.x, // Move toward the target stack's x
-            y: toStack.y + targetY, // Move toward the target stack's y + offset
+            x: toStack.x,
+            y: toStack.y + targetY,
             rotation: (Math.random() - 0.5) * this.cfg.ROTATION_VARIANCE,
             duration: this.cfg.DURATION_SEC,
             ease: "sine.inOut",
             onComplete: () => {
-                // 4. On landing, move the card to the final destination stack
-                // This puts it back into the stack's local coordinate system
                 toStack.addChild(card);
                 card.position.set(0, targetY);
             }
