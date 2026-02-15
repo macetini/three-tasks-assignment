@@ -15,7 +15,6 @@ const createPoint = (target) => ({
   set(x, y) {
     this.x = x;
     this.y = y;
-    // Also update the target if it has x/y properties
     if (target) {
       target.x = x;
       target.y = y;
@@ -23,6 +22,8 @@ const createPoint = (target) => ({
   },
 });
 
+/** * PIXI BASE CLASSES
+ */
 export class Container {
   constructor() {
     Object.assign(this, eventMethods);
@@ -31,7 +32,6 @@ export class Container {
     this.alpha = 1;
     this.x = 0;
     this.y = 0;
-    // Pass 'this' so that position.set(10, 20) updates this.x and this.y
     this.position = createPoint(this);
     this.scale = createPoint();
     this.parent = null;
@@ -40,14 +40,10 @@ export class Container {
   addChild(...args) {
     args.forEach((child) => {
       if (child) {
-        // 1. If child already has a parent, remove it from that parent's children array
         if (child.parent && child.parent.children) {
           const index = child.parent.children.indexOf(child);
-          if (index > -1) {
-            child.parent.children.splice(index, 1);
-          }
+          if (index > -1) child.parent.children.splice(index, 1);
         }
-        // 2. Set new parent and add to this container
         child.parent = this;
         this.children.push(child);
       }
@@ -66,12 +62,13 @@ export class Container {
     }
     return child;
   }
+
   removeChild(child) {
     if (!child) return;
     const index = this.children.indexOf(child);
     if (index > -1) {
       this.children.splice(index, 1);
-      child.parent = null; // Clean up the reference
+      child.parent = null;
     }
   }
 
@@ -82,7 +79,6 @@ export class Container {
     this.children = [];
   }
 
-  // Add destroy to fix the dispose error
   destroy() {
     return jest.fn();
   }
@@ -105,7 +101,6 @@ export class Sprite extends Container {
 
 export class Text extends Container {
   constructor(optionsOrText) {
-    // Add this param
     super();
     this.text =
       typeof optionsOrText === "string"
@@ -133,6 +128,18 @@ export class Graphics extends Container {
   circle() {
     return this;
   }
+  moveTo() {
+    return this;
+  }
+  lineTo() {
+    return this;
+  }
+  closePath() {
+    return this;
+  }
+  poly() {
+    return this;
+  }
 
   // Legacy/Common methods
   beginFill() {
@@ -153,7 +160,6 @@ export class Graphics extends Container {
   endFill() {
     return this;
   }
-
   clear() {
     return this;
   }
@@ -177,8 +183,6 @@ export class Rectangle {
     this.width = width;
     this.height = height;
   }
-
-  // Adding this satisfies SonarLint S2094
   contains(x, y) {
     return (
       x >= this.x &&
@@ -190,17 +194,47 @@ export class Rectangle {
 }
 
 export class Texture {
-  // Class field declarations (Satisfies S7757)
   valid = true;
   width = 100;
   height = 100;
-
   static from() {
     return new Texture();
   }
   static EMPTY = new Texture();
 }
 
+/** * PIXI v8 SPECIFIC EXPORTS
+ */
+export const Color = class {
+  static from() {
+    return new Color();
+  }
+  setValue() {
+    return this;
+  }
+};
+
+export const Assets = {
+  init: jest.fn(() => Promise.resolve()),
+  load: jest.fn(() => Promise.resolve({})),
+  add: jest.fn(),
+  loadBundle: jest.fn(),
+};
+
+export const Cache = {
+  has: jest.fn().mockReturnValue(false),
+  get: jest.fn(),
+  set: jest.fn(),
+};
+
+export const extensions = { add: jest.fn() };
+export const ExtensionType = {
+  LoadParser: "load-parser",
+  Asset: "asset",
+};
+
+/** * THIRD PARTY
+ */
 export const gsap = {
   to: jest.fn(),
   killTweensOf: jest.fn(),
@@ -211,6 +245,8 @@ export const gsap = {
   })),
 };
 
+/** * DEFAULT EXPORT
+ */
 export default {
   Container,
   Sprite,
@@ -219,5 +255,10 @@ export default {
   Graphics,
   Rectangle,
   Texture,
+  Assets,
+  Cache,
+  Color,
+  extensions,
+  ExtensionType,
   gsap,
 };

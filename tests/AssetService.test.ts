@@ -1,52 +1,12 @@
-import { describe, test, expect, beforeEach, jest } from '@jest/globals';
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { Assets, Cache } from 'pixi.js';
 
-// 1. Virtual mock covering ALL required exports from pixi.js
-jest.unstable_mockModule('pixi.js', () => ({
-    __esModule: true,
-    Color: class {
-        static from() { return {}; }
-        setValue() { return this; }
-    },
-    Graphics: class {
-        // All drawing methods must return 'this' for chaining
-        roundRect() { return this; }
-        rect() { return this; }
-        moveTo() { return this; }
-        lineTo() { return this; }
-        closePath() { return this; }
-        clear() { return this; }
-        fill() { return this; }
-        stroke() { return this; }
-        circle() { return this; }
-        poly() { return this; }
-        destroy() { }
-    },
-    Assets: {
-        init: jest.fn(() => Promise.resolve()),
-        load: jest.fn()
-    },
-    Cache: {
-        has: jest.fn(),
-        get: jest.fn()
-    },
-    Texture: {
-        from: jest.fn(() => ({ destroy: jest.fn() })),
-        EMPTY: {}
-    },
-    Sprite: class {
-        destroy = jest.fn();
-        anchor = { set: jest.fn() };
-    },
-    Container: class {
-        addChild = jest.fn();
-        removeChildren = jest.fn();
-        destroy = jest.fn();
-    },
-    extensions: { add: jest.fn() },
-    ExtensionType: { LoadParser: 1 }
-}), { virtual: true });
+// 1. Tell Jest to use dummy.js when anything asks for 'pixi.js'
+jest.unstable_mockModule('pixi.js', () =>
+    // This cast to 'any' tells TS: "Don't look for a module definition, just import the file"
+    import('./__mocks__/dummy.js' as any)
+);
 
-const { Assets, Cache } = await import('pixi.js');
 const { AssetService } = await import('../src/core/mvcs/service/AssetService');
 
 describe('AssetService', () => {
