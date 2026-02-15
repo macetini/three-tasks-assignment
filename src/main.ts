@@ -1,49 +1,45 @@
-import { describe, test, expect, beforeEach, jest } from '@jest/globals';
+import * as PIXI from 'pixi.js';
+import styles from './style/game.module.css';
+import { GameContext } from './core/context/GameContext';
 
-// Point the mock to your new file
-jest.unstable_mockModule('pixi.js', () => import('./__mocks__/pixi.js'));
+console.log('[main] Three Tasks Assignment Started');
 
-// Dynamic imports
-const { Assets, Cache } = await import('pixi.js');
-const { AssetService } = await import('../src/core/mvcs/service/AssetService');
+export class Game {
+    private readonly app: PIXI.Application;
+    private readonly gameContext: GameContext;
 
-describe('AssetService', () => {
-    let service: any;
-    let mockRenderer: any;
+    constructor() {
+        this.app = new PIXI.Application();
+        this.gameContext = new GameContext(this.app);
+    }
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        service = new AssetService();
+    public async init(): Promise<void> {
+        console.log("[Game] Init Started.");
 
-        (Assets.init as any).mockResolvedValue(undefined);
+        globalThis.window.onerror = (msg, url, line, col, err) =>
+            console.error("[Game] Global Error: ", msg, url, line, col, err);
 
-        mockRenderer = {
-            render: jest.fn(),
-            generateTexture: jest.fn(() => ({
-                destroy: jest.fn(),
-                valid: true
-            }))
-        };
-    });
+        globalThis.window.onunhandledrejection = (e) =>
+            console.error("[Game] Unhandled Promise Rejection: ", e.reason);
 
-    test('loadRemoteTexture should return texture on success', async () => {
-        const mockTex = { id: 'test-tex' };
-        (Assets.load as any).mockResolvedValue(mockTex);
-        const result = await service.loadRemoteTexture('avatar', 'url');
-        expect(result).toBe(mockTex);
-    });
+        await this.app.init({
+            resizeTo: globalThis.window,
+            autoDensity: true,
+            antialias: true,
+            resolution: window.devicePixelRatio || 1,
+            backgroundColor: 0x1099bb
 
-    test('getTexture should return from cache', () => {
-        (Cache.has as any).mockReturnValue(true);
-        const result = service.getTexture('hero');
-        expect(result).toBeDefined();
-    });
+        });
+        this.app.canvas.className = styles.gameCanvas;
+        const gameContainer = document.getElementById('game-container') || document.body;
+        gameContainer.appendChild(this.app.canvas);
 
-    test('getCards should call generator methods', async () => {
-        const genSpy = jest.spyOn(service['cardsGenerator'], 'bakeCardTextures')
-            .mockResolvedValue([]);
-        const result = await service.getCards(mockRenderer);
-        expect(Array.isArray(result)).toBe(true);
-        expect(genSpy).toHaveBeenCalled();
-    });
-});
+        this.gameContext.bootstrap();
+        console.log("[Game] Init Finished.");
+    }
+}
+
+const game = new Game();
+game.init();
+
+console.log('[main] Three Tasks Assignment Initialized');
