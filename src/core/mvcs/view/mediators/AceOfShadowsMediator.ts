@@ -38,7 +38,7 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
     public override onRemove(): void {
         this.viewComponent.stopStackingSequence();
         this.signalBus.off(ModelSignals.CARDS_PREPARED, this.onCardsPrepared);
-        
+
         super.onRemove();
     }
 
@@ -49,7 +49,6 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
     private onCardsPrepared(): void {
         const cards = this.modelMap.get<CardModel>(CardModel.NAME).cards;
         this.viewComponent.populateStack(cards);
-        this.viewComponent.startStackingSequence();
     }
 
     protected override get viewComponent(): AceOfShadowsView {
