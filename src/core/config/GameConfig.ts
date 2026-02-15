@@ -22,6 +22,7 @@ export const GameConfig = {
         VORONOI_POINT_COUNT: 10,
         GAP: 500,
         ROTATION_VARIANCE: 0.5,
+        X_Y_INITIAL_POSITION: 200,
         Y_CONTENT_OFFSET: 100,
         Y_CARD_OFFSET: 2,
         DURATION_SEC: 2,

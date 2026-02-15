@@ -36,8 +36,9 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
      * Stops the stacking sequence of cards and removes the listener for the ModelSignals.CARDS_PREPARED signal.
      */
     public override onRemove(): void {
-        this.view.stopStackingSequence();
+        this.viewComponent.stopStackingSequence();
         this.signalBus.off(ModelSignals.CARDS_PREPARED, this.onCardsPrepared);
+        
         super.onRemove();
     }
 
@@ -47,18 +48,12 @@ export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
      */
     private onCardsPrepared(): void {
         const cards = this.modelMap.get<CardModel>(CardModel.NAME).cards;
-        this.view.populateStack(cards);
-        this.view.startStackingSequence();
+        this.viewComponent.populateStack(cards);
+        this.viewComponent.startStackingSequence();
     }
 
-
-    /**
-     * Returns the view component. Can be cast to the specific view type.
-     * In this case, it returns an instance of AceOfShadowsView.
-     * 
-     * @returns {AceOfShadowsView} The view component.
-     */
     protected override get viewComponent(): AceOfShadowsView {
         return this.view;
     }
+
 }

@@ -64,14 +64,36 @@ export class AceOfShadowsView extends TaskView {
      * @param cards The array of sprites to populate the stack with.
      */
     public populateStack(cards: Sprite[]): void {
+        const { Y_CARD_OFFSET, ROTATION_VARIANCE } = this.cfg;
+
         cards.forEach((card, index) => {
             card.anchor.set(0.5);
-            card.y = -(index * this.cfg.Y_CARD_OFFSET);
-            card.rotation = (Math.random() - 0.5) * this.cfg.ROTATION_VARIANCE;
+
+            const targetY = -(index * Y_CARD_OFFSET);
+            const targetRotation = (Math.random() - 0.5) * ROTATION_VARIANCE;
+
+            card.alpha = 0;
+            card.position.set(this.cfg.X_Y_INITIAL_POSITION, this.cfg.X_Y_INITIAL_POSITION);
+            card.rotation = Math.PI;
 
             this.cards.push(card);
             this.stackA.addChild(card);
-        })
+
+            gsap.to(card, {
+                x: 0,
+                y: targetY,
+                rotation: targetRotation,
+                alpha: 1,
+                duration: 0.6,
+                delay: index * 0.01,
+                ease: "back.out(1.2)",
+                onComplete: () => {
+                    if (index === cards.length - 1) {
+                        this.startStackingSequence();
+                    }
+                }
+            });
+        });
     }
 
     /**
