@@ -22,6 +22,7 @@ jest.mock(
         this.x = 0;
         this.y = 0;
       }
+      // Methods defined here satisfy SonarLint S2094
       addChild(...args) {
         args.forEach((c) => {
           if (c) this.children.push(c);
@@ -44,6 +45,9 @@ jest.mock(
         this.alpha = 1;
         this.visible = true;
       }
+      destroy() {
+        return jest.fn();
+      }
     },
     Text: class {
       constructor() {
@@ -51,6 +55,9 @@ jest.mock(
         this.style = {};
         this.anchor = { set: jest.fn() };
         this.position = { set: jest.fn(), x: 0, y: 0 };
+      }
+      updateText() {
+        return jest.fn();
       }
     },
     Graphics: class {
@@ -84,7 +91,6 @@ jest.mock(
   }),
   { virtual: true },
 );
-// GSAP MOCKS
 
 jest.mock(
   "gsap",
@@ -97,41 +103,6 @@ jest.mock(
         to: jest.fn().mockReturnThis(),
         kill: jest.fn().mockReturnThis(),
       })),
-    },
-  }),
-  { virtual: true },
-);
-
-jest.mock(
-  "pixi.js",
-  () => ({
-    Container: class {
-      constructor() {
-        this.children = [];
-        this.position = { set: () => {} };
-        this.scale = { set: () => {}, x: 1, y: 1 };
-        this.addChild = (...args) =>
-          args.forEach((c) => c && this.children.push(c));
-        this.toGlobal = () => ({ x: 0, y: 0 });
-        this.toLocal = () => ({ x: 0, y: 0 });
-      }
-    },
-    Sprite: class {
-      constructor() {
-        this.anchor = { set: () => {} };
-        this.position = { set: () => {} };
-        this.scale = { set: () => {}, x: 1, y: 1 };
-      }
-    },
-    Point: class {
-      constructor(x = 0, y = 0) {
-        this.x = x;
-        this.y = y;
-      }
-      set(x, y) {
-        this.x = x;
-        this.y = y;
-      }
     },
   }),
   { virtual: true },
