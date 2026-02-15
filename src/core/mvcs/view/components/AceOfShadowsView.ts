@@ -20,7 +20,6 @@ export class AceOfShadowsView extends TaskView {
     private readonly cards: Sprite[] = [];
 
     private sequence: gsap.core.Timeline | null = null;
-    private readonly tempPoint = new Point();
 
     private readonly animationLayer = new Container();
 
@@ -104,11 +103,12 @@ export class AceOfShadowsView extends TaskView {
      * Squashes the stack and then bounces it back to simulate weight.
      */
     private playDeckSettlingEffect(): void {
-        // Impact: The whole stack "compresses" slightly
         gsap.to(this.stackA.scale, {
             x: 1.05, // Slight bulge
             y: 0.92, // Slight squash
             duration: 0.1,
+            yoyo: true, // Snap back to 1.0
+            repeat: 1,
             ease: "sine.in",
             onComplete: () => {
                 // Settle: Bounces back to normal size
@@ -125,14 +125,16 @@ export class AceOfShadowsView extends TaskView {
      * The delay between each card move is defined by GameConfig.CARDS.DELAY_SEC.
      */
     public startStackingSequence(fromStack: Container, toStack: Container): void {
+        console.debug("[AceOfShadowsView] Stacking Sequence Started.");
         this.sequence?.kill();
-
         this.sequence = gsap.timeline({ repeat: -1 });
+
         this.sequence.call(() => {
             if (fromStack.children.length > 0) {
                 this.moveTopCardToTargetStack(fromStack, toStack);
             } else {
                 this.sequence?.kill();
+                // The Finale plays, then we swap and restart                
                 this.playTaskCompleteFinale(fromStack, toStack);
             }
         }, [], this.cfg.DELAY_SEC);
@@ -142,35 +144,33 @@ export class AceOfShadowsView extends TaskView {
      * Celebratory effect triggered once all 144 cards have moved.
      * Uses a radial "pop" and a gentle float to signal completion.
      */
-    private playTaskCompleteFinale(fromStack: Container, toStack: Container): void {
-        const finaleTl = gsap.timeline();
+    private playTaskCompleteFinale(originStack: Container, targetStack: Container): void {
+        const finaleTl = gsap.timeline({
+            onComplete: () => {
+                this.startStackingSequence(targetStack, originStack);
+            }
+        });
 
         // 1. Squash and Stretch the final stack
-        finaleTl.to(this.stackB.scale, {
+        finaleTl.to(targetStack.scale, {
             x: 1.1,
             y: 0.8,
             duration: 0.15,
             ease: "power2.in"
         });
-
-        // 2. The "Victory Pop" - Jump up and return to normal
-        finaleTl.to(this.stackB, {
-            y: this.cfg.Y_CONTENT_OFFSET - 40, // Leap upward
+        finaleTl.to(targetStack, {
+            y: this.cfg.Y_CONTENT_OFFSET - 40, // Relative leap from its ground position
             duration: 0.4,
             yoyo: true,
             repeat: 1,
             ease: "back.out(2)"
         });
-
-        finaleTl.to(this.stackB.scale, {
+        finaleTl.to(targetStack.scale, {
             x: 1,
             y: 1,
             duration: 0.6,
-            ease: "elastic.out(1, 0.3)",
-            onComplete: () => {
-                this.startStackingSequence(this.stackB, this.stackA);
-            }
-        }, "-=0.4"); // Overlap with the leap                 
+            ease: "elastic.out(1.1, 0.3)"
+        }, "-=0.4"); // Overlap with the leap
     }
 
     /**
@@ -200,11 +200,15 @@ export class AceOfShadowsView extends TaskView {
         if (fromStack.children.length === 0) return;
 
         const card = fromStack.children.at(-1) as Sprite;
+        if (!card) {
+            console.warn("[AceOfShadowsView] Trying to move a card that doesn't exist.");
+            return;
+        }
+
         gsap.killTweensOf(card);
 
-        // 1. Capture Global Position
-        this.tempPoint.set(card.x, card.y);
-        const globalPos = fromStack.toGlobal(this.tempPoint);
+        // 1. Capture Global Position        
+        const globalPos = fromStack.toGlobal(new Point(card.x, card.y));
 
         // 2. Move to Animation Layer (The Top Layer)
         this.animationLayer.addChild(card);
