@@ -15,17 +15,6 @@ export class RootView extends AbstractView {
     }
 
     /**
-     * 
-     * The RootView serves as the main stage container and does not require 
-     * navigation elements of its own.
-     * 
-     * * @override
-     */
-    protected override createBackButton(): void {
-        // Intentional no-op: Root level has no "Back" destination.
-    }
-
-    /**
      * Completely replaces the current view with a new one.
      * Handles the cleanup of the previous view to prevent memory leaks.
      * 

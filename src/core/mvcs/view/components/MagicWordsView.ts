@@ -3,13 +3,13 @@ import { Container, Rectangle, Text, Texture } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
 import type { AvatarPosition } from '../../model/states/MagicWordsModel';
 import type { MagicWordVO } from '../../model/states/vo/MagicWordVO';
-import { AbstractView } from '../AbstractView';
+import { TaskView } from '../TaskView';
 import { RichTextRow } from './ui/RichTextRow';
 /**
  * View managing a scrollable chat-like interface with Rich Text support.
  * Handles keyboard, mouse wheel, and touch-drag navigation.
  */
-export class MagicWordsView extends AbstractView {
+export class MagicWordsView extends TaskView {
     private readonly cfg = GameConfig.WORDS;
 
     private readonly chatContainer = new Container();
@@ -196,7 +196,7 @@ export class MagicWordsView extends AbstractView {
         this.chatContainer.scale.set(scale);
 
         // Too much logging (enable if needed)
-        console.debug(`[MagicWordsView] Using custom layout. Layout scaled to ${scale}.`);
+        //console.debug(`[MagicWordsView] Using custom layout. Layout scaled to ${scale}.`);
     }
 
     /**

@@ -1,14 +1,14 @@
 import { gsap } from 'gsap';
 import { Container, Point, Sprite } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
-import { AbstractView } from '../AbstractView';
+import { TaskView } from '../TaskView';
 
 /**
  * View responsible for the Ace of Shadows card stacking animation.
  * Handles the coordinated movement of 144 cards between two stacks
  * with responsive scaling and smooth GSAP transitions.
  */
-export class AceOfShadowsView extends AbstractView {
+export class AceOfShadowsView extends TaskView {
     public static readonly CARD_BACK_CLICK_EVENT = 'cardBackClickEvent';
 
     private readonly cfg = GameConfig.CARDS;

@@ -1,7 +1,7 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
 import type { Application } from 'pixi.js';
-import type { SignalBus } from '../../signal/SignalBus';
 import { ModelSignals } from '../../signal/ModelSignals';
+import type { SignalBus } from '../../signal/SignalBus';
 import { TaskSignals } from '../../signal/TaskSignals';
 import type { ModelMap } from '../model/ModelMap';
 import { AbstractView } from './AbstractView';
@@ -93,7 +93,6 @@ export abstract class AbstractMediator<T extends AbstractView> {
     private readonly onResize = (): void => {
         this.triggerLayout();
     };
-
 
     /**
      * Triggers the layout of the View, checking for a valid screen size first.

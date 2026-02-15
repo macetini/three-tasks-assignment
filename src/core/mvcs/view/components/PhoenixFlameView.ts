@@ -1,14 +1,14 @@
 // src/core/mvcs/view/components/PhoenixFlameView.ts
 import { Point, Rectangle, Sprite, Texture } from 'pixi.js';
-import { AbstractView } from '../AbstractView';
-import type { IFlameParticle } from './meta/IFlameParticle';
 import { GameConfig } from '../../../config/GameConfig';
+import { TaskView } from '../TaskView';
+import type { IFlameParticle } from './meta/IFlameParticle';
 
 /**
  * View responsible for the "Phoenix Flame" effect.
  * Uses an object pooling strategy to maintain exactly 10 sprites.
  */
-export class PhoenixFlameView extends AbstractView {
+export class PhoenixFlameView extends TaskView {
     private readonly cfg = GameConfig.FLAME;
 
     private readonly tempPoint = new Point(); // PRE-ALLOCATED: No GC on mouse move

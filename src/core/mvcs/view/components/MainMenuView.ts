@@ -32,16 +32,6 @@ export class MainMenuView extends AbstractView {
     }
 
     /**
-    * 
-    * The Main Menu does not require navigation elements of its own.
-    * 
-    * @override
-    */
-    protected override createBackButton(): void {
-        // Intentional no-op: Root level has no "Back" destination.
-    }
-
-    /**
      * Creates an interactive button with hover effects and labels.
      * 
      * @param label - The text displayed on the button.
@@ -89,7 +79,7 @@ export class MainMenuView extends AbstractView {
      */
     private playStaggeredEntrance(toX: number, toY: number = 0): void {
         if (this.buttons.length === 0) return;
-        
+
         this.entranceTimeline?.kill();
         this.entranceTimeline = gsap.timeline();
 

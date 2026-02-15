@@ -1,7 +1,5 @@
 // src/core/mvcs/views/AbstractView.ts
-import { Container, Text } from 'pixi.js';
-import { GameConfig } from '../../config/GameConfig';
-import { AbstractMediator } from './AbstractMediator';
+import { Container } from 'pixi.js';
 
 /**
  * Base class for all display components within the MVCS architecture.
@@ -19,43 +17,15 @@ export abstract class AbstractView extends Container {
      */
     public init(): void {
         console.debug(`[${this.constructor.name}] View initialized.`);
-        this.createBackButton();
     };
 
+    /**
+     * Called by the Mediator or Parent after the view has been added to the stage.
+     * Triggers a layout update and logs a debug message to indicate that the view
+     * has been added to the stage.
+     */
     public onAddedToRoot(): void {
         console.debug(`[${this.constructor.name}] View added to root.`);
-    }
-
-    /**
-     * Creates the default back button that every view except the root one will have.
-     * 
-     * NOTE: This is not the best way to do it, but for a prototype it will do the job.
-     */
-    protected createBackButton(): void {
-        console.debug(`[${this.constructor.name}] Adding default back button.`);
-        const backBtn = new Text({
-            text: GameConfig.GLOBAL.BACK_BUTTON_GRAPHIC,
-            style: { fill: 'white', fontSize: 36 }
-        });
-
-        backBtn.interactive = true;
-        backBtn.cursor = 'pointer';
-        backBtn.position.set(GameConfig.GLOBAL.BACK_BUTTON_X, GameConfig.GLOBAL.BACK_BUTTON_Y);
-
-        backBtn.on('pointertap', () => this.emit(AbstractMediator.BACK_CLICK_EVENT));
-
-        globalThis.addEventListener('keydown', this.onEscapeKeyDown);
-
-        this.addChild(backBtn);
-    }
-
-    /**
-     * Global keyboard listener for navigation.
-     */
-    private readonly onEscapeKeyDown = (event: KeyboardEvent): void => {
-        if (event.key === 'Escape') {
-            this.emit(AbstractMediator.BACK_CLICK_EVENT);
-        }
     }
 
     /**
@@ -69,7 +39,6 @@ export abstract class AbstractView extends Container {
     public layout(width: number, height: number): void {
         if (width <= 0 || height <= 0) {
             console.warn(`[${this.constructor.name}] Skipping layout update due to collapsed renderer.`);
-            return;
         }
         // Too much logging (enable if needed)
         //console.debug(`[${this.constructor.name}] Using default layout. View remains at (0,0).`);
@@ -86,7 +55,6 @@ export abstract class AbstractView extends Container {
             texture: false
         });
 
-        globalThis.removeEventListener('keydown', this.onEscapeKeyDown);
         console.debug(`[${this.constructor.name}] View disposed.`);
     }
 }
