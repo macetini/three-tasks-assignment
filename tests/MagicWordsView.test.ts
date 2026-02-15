@@ -54,10 +54,7 @@ describe('MagicWordsView', () => {
     });
 
     test('onArrowKeyDown should trigger scroll on ArrowUp/Down', () => {
-        // We cast to any to spy on the private method
-        const scrollSpy = jest.spyOn(view as any, 'applyScroll');
-
-        // KeyDown simulation
+        const scrollSpy = jest.spyOn(view as any, 'applyScroll');        
         view['onArrowKeyDown']({ key: 'ArrowUp' } as KeyboardEvent);
 
         expect(scrollSpy).toHaveBeenCalled();
@@ -67,11 +64,9 @@ describe('MagicWordsView', () => {
         const removeEventListenerSpy = jest.spyOn(globalThis, 'removeEventListener');
 
         view.dispose();
-
-        // Verify keyboard listener removal
+        
         expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
-
-        // Verify GSAP cleanup
+        
         expect(gsap.killTweensOf).toHaveBeenCalled();
     });
 

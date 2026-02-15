@@ -72,5 +72,4 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
     protected override get viewComponent(): MagicWordsView {
         return this.view;
     }
-
 }

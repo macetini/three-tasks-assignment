@@ -117,15 +117,43 @@ export class Text extends Container {
 }
 
 export class Graphics extends Container {
+  // Pixi v8 modern API
+  fill() {
+    return this;
+  }
+  stroke() {
+    return this;
+  }
+  roundRect() {
+    return this;
+  }
+  rect() {
+    return this;
+  }
+  circle() {
+    return this;
+  }
+
+  // Legacy/Common methods
   beginFill() {
     return this;
   }
   drawRect() {
     return this;
   }
+  drawCircle() {
+    return this;
+  }
+  drawRoundedRect() {
+    return this;
+  }
+  lineStyle() {
+    return this;
+  }
   endFill() {
     return this;
   }
+
   clear() {
     return this;
   }
