@@ -5,6 +5,7 @@ import type { AvatarPosition } from '../../model/states/MagicWordsModel';
 import type { MagicWordVO } from '../../model/states/vo/MagicWordVO';
 import { TaskView } from '../TaskView';
 import { RichTextRow } from './ui/RichTextRow';
+
 /**
  * View managing a scrollable chat-like interface with Rich Text support.
  * Handles keyboard, mouse wheel, and touch-drag navigation.
@@ -13,9 +14,11 @@ export class MagicWordsView extends TaskView {
     private readonly cfg = GameConfig.WORDS;
 
     private readonly chatContainer = new Container();
+    private readonly chatRows: RichTextRow[] = [];
+
     private loadingText!: Text;
 
-    private currentY: number = 0;
+    //private currentY: number = 0;
 
     private isDragging: boolean = false;
     private lastPointerY: number = 0;
@@ -57,7 +60,7 @@ export class MagicWordsView extends TaskView {
         this.off('pointerup', this.onDragEnd, this);
         this.off('pointerupoutside', this.onDragEnd, this);
 
-        gsap.killTweensOf(this.chatContainer.children);        
+        gsap.killTweensOf(this.chatContainer.children);
 
         super.dispose();
     }
@@ -80,7 +83,6 @@ export class MagicWordsView extends TaskView {
         this.loadingText.visible = false;
         this.addChild(this.loadingText);
     }
-
 
     /**
      * Shows the loading text.
@@ -123,10 +125,10 @@ export class MagicWordsView extends TaskView {
         this.applyScroll(-event.deltaY * scrollSpeed);
     }
 
-
     /**
      * Called when the user starts dragging the content vertically.
      * Sets the dragging flag to true and records the initial pointer Y position.
+     * 
      * @param event The event object passed by Pixi.js
      */
     private onDragStart(event: any): void {
@@ -137,6 +139,7 @@ export class MagicWordsView extends TaskView {
     /**
      * Called when the user drags the content vertically.
      * Updates the last pointer Y position and applies the delta to the content.
+     * 
      * @param event The event object passed by Pixi.js
      */
     private onDragMove(event: any): void {
@@ -155,6 +158,7 @@ export class MagicWordsView extends TaskView {
      * - Minimum scroll: the maximum between 0 and the view height minus the chat container height.
      * - Maximum scroll: the maximum scroll height.
      * The chat container's y position is updated to be the maximum of the minimum scroll and the minimum of the maximum scroll and the current y position plus the delta.
+     * 
      * @param {number} delta - The scroll delta to apply.
      */
     private applyScroll(delta: number): void {
@@ -167,6 +171,9 @@ export class MagicWordsView extends TaskView {
         this.chatContainer.y = Math.max(minScroll, Math.min(this.chatContainer.y + delta, maxScroll));
     }
 
+    /**
+     * Sets the dragging flag to false. 
+     */
     private onDragEnd(): void {
         this.isDragging = false;
     }
@@ -185,15 +192,23 @@ export class MagicWordsView extends TaskView {
     public override layout(width: number, height: number): void {
         this.hitArea = new Rectangle(0, 0, width, height); // Hit area, for dragging or mouse scroll
 
+        let scale = Math.min(width / this.cfg.MIN_SCREEN_WIDTH, height / this.cfg.MIN_SCREEN_WIDTH);
+        scale = Math.max(1, Math.min(scale, this.cfg.MAX_SCALE));
+
+        let contY = 0;
+        this.chatRows.forEach(row => {
+            row.position.set(0, contY);
+            row.updateLayout(scale)//(this.cfg.MIN_SCREEN_WIDTH, scale);
+            contY += row.height + this.cfg.LINE_PADDING * scale;
+
+        });
+
         this.loadingText.position.set(width * 0.5, height * 0.5);
         this.chatContainer.position.set(
             width * 0.5 - this.chatContainer.width * 0.5,
             this.cfg.CHAT_CONTAINER_Y_OFFSET);
 
-        let scale = Math.min(width / this.cfg.MIN_SCREEN_WIDTH, height / this.cfg.MIN_SCREEN_WIDTH);
-        scale = Math.max(1, Math.min(scale, this.cfg.MAX_SCALE));
-
-        this.chatContainer.scale.set(scale);
+        //this.chatContainer.scale.set(scale);
 
         // Too much logging (enable if needed)
         //console.debug(`[MagicWordsView] Using custom layout. Layout scaled to ${scale}.`);
@@ -221,7 +236,7 @@ export class MagicWordsView extends TaskView {
         }
 
         this.chatContainer.removeChildren();
-        this.currentY = 0;
+        //this.currentY = 0;
         gsap.killTweensOf(this.chatContainer.children);
 
         const newRows: RichTextRow[] = [];
@@ -243,7 +258,7 @@ export class MagicWordsView extends TaskView {
     private playChatEntrance(rows: RichTextRow[]): void {
         gsap.killTweensOf(rows);
         gsap.to(rows, {
-            alpha: 1,            
+            alpha: 1,
             duration: 2,
             stagger: 0.25, // Time between each row appearing
             ease: "power2.out"
@@ -259,9 +274,11 @@ export class MagicWordsView extends TaskView {
      * @param wordsRow The RichTextRow to add to the chat container.
      */
     public addRow(wordsRow: RichTextRow): void {
-        wordsRow.y = this.currentY;
+        //wordsRow.y = this.currentY;
         this.chatContainer.addChild(wordsRow);
-        this.currentY += wordsRow.height + this.cfg.LINE_PADDING;
+        //this.currentY += wordsRow.height + this.cfg.LINE_PADDING;
+
+        this.chatRows.push(wordsRow);
 
     }
 }
