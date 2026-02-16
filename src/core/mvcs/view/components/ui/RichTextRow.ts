@@ -16,13 +16,12 @@ export class RichTextRow extends Container {
 
     private readonly avatar: Sprite;
     private readonly textContainer: Container = new Container();
-    private readonly background: Graphics;
+    private readonly background: Graphics = new Graphics();
 
     private readonly avatarPosition: AvatarPosition;
     private readonly textureProvider: (id: string) => Texture;
 
-    private readonly textTokens: Text[] = [];
-    private readonly emojiTokens: Sprite[] = [];
+    private oldScale: number = 0;
 
     /**
      * Constructs a new RichTextRow instance.
@@ -39,38 +38,34 @@ export class RichTextRow extends Container {
         this.textureProvider = textureProvider;
         this.avatarPosition = position;
 
-        this.background = new Graphics();
-
         this.avatar = new Sprite(this.textureProvider(vo.characterName));
-        this.avatar.width = this.avatar.height = this.cfg.AVATAR_SIZE;
-
-        //this.message = this.createMessageContent(vo);
-        //this.addChild(this.background, this.avatar, this.message);
-
-        //this.createMessageContent(vo);
         this.addChild(this.background, this.avatar, this.textContainer);
-
-        //this.drawBubble();
-
-        //this.updateLayout(this.cfg.MIN_WIDTH);
     }
 
     /**
-     * Updates the layout of the RichTextRow based on the provided container width.
-     * This method is responsible for positioning the avatar, bubble, and message
-     * content horizontally based on the avatar position.
-     * If the avatar position is the default value, the avatar is positioned on the left
-     * edge of the container and the bubble and message content are positioned to the right
-     * of the avatar. If the avatar position is not the default value, the avatar is positioned on the
-     * right edge of the container and the bubble and message content are positioned to the left
-     * of the avatar.
+     * Updates the layout of the RichTextRow based on the provided scale.
+     * If the absolute difference between the old scale and the new scale is less than 0.01, the method does nothing.
+     * Otherwise, it destroys all its children, redraws the avatar and the chat bubble, and updates the position of its child elements.
+     * This method is called by the RichTextRow's parent when the view's layout needs to be updated, such as when the screen size changes.
      * 
-     * @param containerWidth The width of the container that the RichTextRow is a child of.
+     * @param scale The new scale to update the layout with.
      */
-    public updateLayout(scale: number = 1): void {
+    public updateLayout(scale: number): void {
+        // Too much logging (enable if needed)
+        //console.debug(`[${this.constructor.name}] Layout update requested. View New Scale: ${scale} - Old Scale: ${this.oldScale} - Diff: ${Math.abs(this.oldScale - scale)}`);
+
+        if (Math.abs(this.oldScale - scale) < this.cfg.SCALE_THRESHOLD) {
+            this.oldScale = scale;
+            return;
+        }
+
+        // NOTE: Redrawing the all the rows seems to be marginally more efficient 
+        // that updating the scale (style) of the existing rows.
+        this.destroyTextRows();
 
         this.avatar.width = this.avatar.height = this.cfg.AVATAR_SIZE * scale;
         this.createMessageContent(this.rawData, scale);
+
         this.drawBubble();
 
         if (this.avatarPosition === this.cfg.DEFAULT_AVATAR_POSITION) {
@@ -81,8 +76,21 @@ export class RichTextRow extends Container {
             this.background.x = this.textContainer.x = this.avatar.x - this.textContainer.width - this.cfg.PADDING;
         }
 
+        this.oldScale = scale;
+
         // Too much logging (enable if needed)
         //console.debug(`[${this.constructor.name}] Layout updated. View scale: ${scale}`);
+    }
+
+    /**
+     * Destroys all the children of the textContainer, freeing up any GPU memory used by Text objects.
+     *This method is called by the RichTextRow's parent when the view's layout needs to be updated, such as when the screen size changes.
+     */
+    private destroyTextRows(): void {        
+        while (this.textContainer.children.length > 0) {
+            const child = this.textContainer.children[0];            
+            child.destroy({ children: true, texture: true });
+        }
     }
 
     /**
@@ -92,6 +100,8 @@ export class RichTextRow extends Container {
      * If the avatar is on the right side, the bubble color is BUBBLE_RIGHT_COLOR.
      */
     private drawBubble(): void {
+        this.background.clear();
+
         const bubbleColor =
             this.avatarPosition ==
                 this.cfg.DEFAULT_AVATAR_POSITION ?
@@ -122,13 +132,10 @@ export class RichTextRow extends Container {
      * @param vo The MagicWordVO instance containing the character name and RichTextTokens.
      * @returns A new Container instance containing the character name and RichTextTokens.
      */
-    private createMessageContent(vo: MagicWordVO, scale: number = 1): void {// Container {
-        //const messageContainer = new Container();
-
+    private createMessageContent(vo: MagicWordVO, scale: number): void {
         const initY = this.addCharacterName(this.textContainer, vo.characterName, scale);
 
         let currentPos = { x: 0, y: initY, scale: scale };
-
         vo.tokens.forEach(token => {
             if (token.type === RichTextParser.TEXT_TOKEN_TYPE) {
                 currentPos = this.addTextToken(this.textContainer, token.value, currentPos);
@@ -136,8 +143,6 @@ export class RichTextRow extends Container {
                 currentPos = this.addEmojiToken(this.textContainer, token.value, currentPos);
             }
         });
-
-        //return messageContainer;
     }
 
     /**
@@ -172,19 +177,15 @@ export class RichTextRow extends Container {
     private addTextToken(container: Container, value: string, pos: { x: number, y: number, scale: number }): { x: number, y: number, scale: number } {
         const words = value.split(' ');
 
-        words.forEach(word => {
-            const txt = new Text({
-                text: word + " ",
-                style: { fontSize: 18 * pos.scale, fill: 'white' }
-            });
+        words.forEach((word) => {
+            const text = new Text({ text: word + " " });
 
-            pos = this.handleLineWrap(txt.width, pos);
+            text.style = { fontSize: 18 * pos.scale, fill: 'white' };
+            pos = this.handleLineWrap(text.width, pos);
 
-            txt.position.set(pos.x, pos.y);
-            container.addChild(txt);
-            pos.x += txt.width;
-
-            this.textTokens.push(txt);
+            text.position.set(pos.x, pos.y);
+            container.addChild(text);
+            pos.x += text.width;
         });
 
         return pos;
@@ -211,8 +212,6 @@ export class RichTextRow extends Container {
         emoji.position.set(pos.x, pos.y - 1);
         container.addChild(emoji);
         pos.x += emoji.width + 4;
-
-        this.emojiTokens.push(emoji);
 
         return pos;
     }

@@ -195,11 +195,11 @@ export class MagicWordsView extends TaskView {
         let scale = Math.min(width / this.cfg.MIN_SCREEN_WIDTH, height / this.cfg.MIN_SCREEN_WIDTH);
         scale = Math.max(1, Math.min(scale, this.cfg.MAX_SCALE));
 
-        let contY = 0;
+        let containerYpos = 0;
         this.chatRows.forEach(row => {
-            row.position.set(0, contY);
-            row.updateLayout(scale)//(this.cfg.MIN_SCREEN_WIDTH, scale);
-            contY += row.height + this.cfg.LINE_PADDING * scale;
+            row.position.set(0, containerYpos);
+            row.updateLayout(scale);
+            containerYpos += row.height + this.cfg.LINE_PADDING * scale;
 
         });
 
@@ -207,8 +207,6 @@ export class MagicWordsView extends TaskView {
         this.chatContainer.position.set(
             width * 0.5 - this.chatContainer.width * 0.5,
             this.cfg.CHAT_CONTAINER_Y_OFFSET);
-
-        //this.chatContainer.scale.set(scale);
 
         // Too much logging (enable if needed)
         //console.debug(`[MagicWordsView] Using custom layout. Layout scaled to ${scale}.`);
@@ -236,7 +234,6 @@ export class MagicWordsView extends TaskView {
         }
 
         this.chatContainer.removeChildren();
-        //this.currentY = 0;
         gsap.killTweensOf(this.chatContainer.children);
 
         const newRows: RichTextRow[] = [];
@@ -274,10 +271,7 @@ export class MagicWordsView extends TaskView {
      * @param wordsRow The RichTextRow to add to the chat container.
      */
     public addRow(wordsRow: RichTextRow): void {
-        //wordsRow.y = this.currentY;
         this.chatContainer.addChild(wordsRow);
-        //this.currentY += wordsRow.height + this.cfg.LINE_PADDING;
-
         this.chatRows.push(wordsRow);
 
     }
