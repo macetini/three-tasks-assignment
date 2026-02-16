@@ -84,11 +84,11 @@ export class RichTextRow extends Container {
 
     /**
      * Destroys all the children of the textContainer, freeing up any GPU memory used by Text objects.
-     *This method is called by the RichTextRow's parent when the view's layout needs to be updated, such as when the screen size changes.
+     * This method is called by the RichTextRow's parent when the view's layout needs to be updated, such as when the screen size changes.
      */
-    private destroyTextRows(): void {        
+    private destroyTextRows(): void {
         while (this.textContainer.children.length > 0) {
-            const child = this.textContainer.children[0];            
+            const child = this.textContainer.children[0];
             child.destroy({ children: true, texture: true });
         }
     }

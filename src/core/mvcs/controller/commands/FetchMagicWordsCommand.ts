@@ -42,7 +42,6 @@ export class FetchMagicWordsCommand extends AbstractCommand {
         }
     }
 
-
     /**
      * Loads the fail-safe assets required for the MagicWords feature.
      * This currently only includes the Dicebear emoji asset.
@@ -51,7 +50,6 @@ export class FetchMagicWordsCommand extends AbstractCommand {
     private async loadFailSafeAssets(): Promise<void> {
         await this.assetService.loadRemoteTexture("default", this.cfg.DICEBEAR_URL);
     }
-
 
     /**
      * Fetches the MagicWords API and populates the MagicWordsModel with the data.

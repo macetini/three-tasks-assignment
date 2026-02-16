@@ -72,9 +72,6 @@ export class GameContext {
      * This function is responsible for setting up the MVCS architecture and should be called once the application is ready.
      * It is an asynchronous function and should be called with the await keyword.
      */
-    /**
-     * Orchestrates the asynchronous initialization of the application.
-     */
     public async bootstrap(): Promise<void> {
         console.log("[GameContext] Bootstrap Started.");
 

@@ -13,15 +13,21 @@ export class AceOfShadowsView extends TaskView {
 
     private readonly cfg = GameConfig.CARDS;
 
+    /**
+     * Containers for the two card stacks.
+     */
     private readonly stackA = new Container();
     private readonly stackB = new Container();
+
+    /**
+     * Container for the card animations.
+     */
+    private readonly animationLayer = new Container();
 
     protected readonly scalableContent = new Container();
     private readonly cards: Sprite[] = [];
 
     private sequence: gsap.core.Timeline | null = null;
-
-    private readonly animationLayer = new Container();
 
     /**
      * Initializes the Ace of Shadows view by adding the scalable content to the view,
@@ -55,7 +61,6 @@ export class AceOfShadowsView extends TaskView {
         // Too much logging (enable if needed)
         //console.debug(`[AceOfShadowsView] Using custom layout. Layout scaled to ${scale}.`);
     }
-
 
     /**
      * Populates the stackA with the given array of sprites.
@@ -154,7 +159,6 @@ export class AceOfShadowsView extends TaskView {
         });
     }
 
-
     /**
      * Plays a finale animation on the target container.
      * This animation consists of three distinct parts:
@@ -207,7 +211,6 @@ export class AceOfShadowsView extends TaskView {
         });
         this.cards.length = 0;
     }
-
 
     /**
      * Moves the top card from the source stack to the target stack.

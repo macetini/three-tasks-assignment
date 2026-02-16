@@ -10,12 +10,15 @@ export interface IFlameParticle {
     /** The visual representation of the particle on the PixiJS stage. */
     sprite: Sprite;
 
-    /** * Current normalized life of the particle (1.0 to 0.0). 
+    /**
+     * Current normalized life of the particle (1.0 to 0.0). 
      * Used to drive alpha, scale, and tint transitions.
      */
     life: number;
 
-    /** The vertical velocity multiplier for this specific particle. */
+    /**
+     * The vertical velocity multiplier for this specific particle.
+     */
     speed: number;
 
     /** * The horizontal anchor point used for the swaying animation. 

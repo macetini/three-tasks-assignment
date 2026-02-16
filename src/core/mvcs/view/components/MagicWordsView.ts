@@ -18,8 +18,6 @@ export class MagicWordsView extends TaskView {
     private chatRows: RichTextRow[] = [];
     private loadingText!: Text;
 
-    //private currentY: number = 0;
-
     private isDragging: boolean = false;
     private lastPointerY: number = 0;
 
