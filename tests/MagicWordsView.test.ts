@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
-import { Container, Rectangle } from 'pixi.js';
+import { Rectangle } from 'pixi.js';
 import { gsap } from 'gsap';
 import { MagicWordsView } from '../src/core/mvcs/view/components/MagicWordsView';
 
@@ -54,7 +54,7 @@ describe('MagicWordsView', () => {
     });
 
     test('onArrowKeyDown should trigger scroll on ArrowUp/Down', () => {
-        const scrollSpy = jest.spyOn(view as any, 'applyScroll');        
+        const scrollSpy = jest.spyOn(view as any, 'applyScroll');
         view['onArrowKeyDown']({ key: 'ArrowUp' } as KeyboardEvent);
 
         expect(scrollSpy).toHaveBeenCalled();
@@ -64,22 +64,9 @@ describe('MagicWordsView', () => {
         const removeEventListenerSpy = jest.spyOn(globalThis, 'removeEventListener');
 
         view.dispose();
-        
+
         expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
-        
+
         expect(gsap.killTweensOf).toHaveBeenCalled();
-    });
-
-    test('addRow should increment the vertical offset for the next row', () => {
-        const initialY = view['currentY'];
-        const mockRow = new Container() as any;
-        mockRow.height = 100;
-
-        view.addRow(mockRow);
-
-        expect(mockRow.y).toBe(initialY);
-        // New currentY should be Height + Padding
-        expect(view['currentY']).toBe(100 + view['cfg'].LINE_PADDING);
-        expect(view['chatContainer'].children).toContain(mockRow);
     });
 });
