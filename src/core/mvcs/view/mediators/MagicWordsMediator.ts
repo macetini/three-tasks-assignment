@@ -40,8 +40,10 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
      * Logs a debug message indicating the number of chat rows rendered.
      */
     private onWordsLoaded(): void {
+        console.log("[MagicWordsView] MagicWords loaded.");
         const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
-        const words = model.words;
+        const words = model.words;        
+        console.debug(`[MagicWordsView] New chat Words count is ${words.length}.`);
 
         const textureProvider = (id: string) => model.getTexture(id);
         const positionProvider = (name: string) => model.getPosition(name);
@@ -51,7 +53,7 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
 
         this.triggerLayout();
 
-        console.debug(`[MagicWordsMediator] Rendered ${words.length} chat rows.`);
+        this.viewComponent.playChatEntrance();
     }
 
 

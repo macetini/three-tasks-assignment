@@ -14,8 +14,8 @@ export class MagicWordsView extends TaskView {
     private readonly cfg = GameConfig.WORDS;
 
     private readonly chatContainer = new Container();
-    private readonly chatRows: RichTextRow[] = [];
 
+    private chatRows: RichTextRow[] = [];
     private loadingText!: Text;
 
     //private currentY: number = 0;
@@ -228,33 +228,36 @@ export class MagicWordsView extends TaskView {
             positionProvider: (name: string) => AvatarPosition
         }
     ): void {
-        if (words.length === 0) {
-            console.warn("[MagicWordsView] New chat Words count is 0. Skipping.");
-            return;
-        }
-
-        this.chatContainer.removeChildren();
+        this.destroyRows();
         gsap.killTweensOf(this.chatContainer.children);
 
-        const newRows: RichTextRow[] = [];
+        this.chatRows = [];
         words.forEach((wordsRow) => {
             const position = options.positionProvider(wordsRow.characterName);
             const textRow = new RichTextRow(wordsRow, position, options.textureProvider);
 
             this.addRow(textRow);
-            newRows.push(textRow);
             textRow.alpha = 0;
         });
 
-        this.playChatEntrance(newRows);
+        console.debug(`[MagicWordsView] Built: ${words.length} new chat rows.`);
     }
+
+    private destroyRows(): void {
+        while (this.chatContainer.children.length > 0) {
+            const child = this.chatContainer.children[0];
+            child.destroy({ children: true, texture: true });
+        }
+    }
+
 
     /**
      * Animates chat rows sequentially for a "real-time" feel.
      */
-    private playChatEntrance(rows: RichTextRow[]): void {
-        gsap.killTweensOf(rows);
-        gsap.to(rows, {
+    public playChatEntrance(): void {
+        console.debug("[MagicWordsView] Starting chat entrance animation.");
+        gsap.killTweensOf(this.chatRows);
+        gsap.to(this.chatRows, {
             alpha: 1,
             duration: 2,
             stagger: 0.25, // Time between each row appearing
