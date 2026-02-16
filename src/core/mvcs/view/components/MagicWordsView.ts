@@ -258,6 +258,7 @@ export class MagicWordsView extends TaskView {
         console.debug("[MagicWordsView] Starting chat entrance animation.");
         gsap.killTweensOf(this.chatRows);
         gsap.to(this.chatRows, {
+            delay: 0.5,
             alpha: 1,
             duration: 2,
             stagger: 0.25, // Time between each row appearing

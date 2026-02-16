@@ -2,7 +2,6 @@ import { gsap } from 'gsap';
 import { Container, Point, Sprite } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
 import { TaskView } from '../TaskView';
-import { CardAnimator } from '../util/CardAnimator';
 
 /**
  * View responsible for the Ace of Shadows card stacking animation.
@@ -93,7 +92,7 @@ export class AceOfShadowsView extends TaskView {
                 ease: "back.out(1.2)",
                 onComplete: () => {
                     if (index === cards.length - 1) {
-                        CardAnimator.playSettle(this.stackA, () => this.startStackingSequence(this.stackA, this.stackB));
+                        this.playSettle(this.stackA, () => this.startStackingSequence(this.stackA, this.stackB));
                     }
                 }
             });
@@ -123,7 +122,7 @@ export class AceOfShadowsView extends TaskView {
             } else {
                 this.sequence?.kill();
                 // The Finale plays, then we swap and restart                                
-                CardAnimator.playFinale(
+                this.playFinale(
                     toStack,
                     this.cfg.Y_CONTENT_OFFSET,
                     () => {
@@ -133,6 +132,64 @@ export class AceOfShadowsView extends TaskView {
                     });
             }
         }, [], this.cfg.DELAY_SEC);
+    }
+
+    /**
+     * Plays a settling animation on the target container.
+     * This animation is a slight bulge and squash effect to give the impression that the target is settling.
+     * Once the animation has finished, the provided onComplete callback is triggered.
+     * 
+     * @param target - The container to animate.
+     * @param [onComplete] - Optional callback to execute once the animation has finished.
+     */
+
+    private playSettle(target: Container, onComplete?: () => void): void {
+        gsap.to(target.scale, {
+            x: 1.05, y: 0.92,
+            duration: 0.1,
+            yoyo: true,
+            repeat: 1,
+            ease: "sine.in",
+            onComplete
+        });
+    }
+
+
+    /**
+     * Plays a finale animation on the target container.
+     * This animation consists of three distinct parts:
+     * 1. A squash and stretch of the target container to give the impression of settling.
+     * 2. A bouncy leap to give the impression of energy release.
+     * 3. A final settle to bring the target back to its original state.
+     * Once the animation has finished, the provided onComplete callback is triggered.
+     * 
+     * @param target - The container to animate.
+     * @param groundY - The position on the y-axis where the target should settle.
+     * @param [onComplete] - Optional callback to execute once the animation has finished.
+     */
+    private playFinale(target: Container, groundY: number, onComplete?: () => void): void {
+        const tl = gsap.timeline({ onComplete });
+
+        tl.to(target.scale, {
+            delay: this.cfg.DELAY_SEC * 1.2, // Make last card delay a little bit longer
+            x: 1.1, y: 0.8,
+            duration: 0.15,
+            ease: "power2.in"
+        });
+
+        tl.to(target, {
+            y: groundY - 40,
+            duration: 0.2,
+            yoyo: true,
+            repeat: 1,
+            ease: "sine.inOut"
+        });
+
+        tl.to(target.scale, {
+            x: 1, y: 1,
+            duration: 0.3,
+            ease: "elastic.out(1.1, 0.3)"
+        });
     }
 
     /**
