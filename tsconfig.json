@@ -11,7 +11,7 @@
     "allowImportingTsExtensions": true,    
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
+    "moduleDetection": "auto",
     "noEmit": true,
 
     /* Linting */

@@ -24,7 +24,7 @@ export class FireGenerator {
         // We draw multiple layers to create a "soft" feel without external assets
         // Layer 1: The outer soft glow (large, very transparent)
         graphics.circle(size * 0.5, size * 0.5, size * 0.5)
-            .fill({ color: 0xffffff, alpha: 0.2 });
+            .fill({ color: 'white', alpha: 0.2 });
 
         // Layer 2: The "Core" teardrop shape
         // We use a bit of math to make it narrower at the top
@@ -32,12 +32,12 @@ export class FireGenerator {
             .bezierCurveTo(
                 size * 0.8, size * 0.4, // Right curve
                 size * 0.9, size * 0.9, // Bottom right
-                size / 2, size * 0.95   // Bottom center
+                size * 0.5, size * 0.95   // Bottom center
             )
             .bezierCurveTo(
                 size * 0.1, size * 0.9, // Bottom left
                 size * 0.2, size * 0.4, // Left curve
-                size / 2, size * 0.2    // Back to tip
+                size * 0.5, size * 0.2    // Back to tip
             )
             .fill({ color: 'white', alpha: 0.8 });
 

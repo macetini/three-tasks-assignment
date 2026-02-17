@@ -1,8 +1,6 @@
 // src/core/mvcs/mediators/AbstractMediator.ts
 import type { Application } from 'pixi.js';
-import { ModelSignals } from '../../signal/ModelSignals';
 import type { SignalBus } from '../../signal/SignalBus';
-import { TaskSignals } from '../../signal/TaskSignals';
 import type { ModelMap } from '../model/ModelMap';
 import { AbstractView } from './AbstractView';
 import type { MediatorMap } from './MediatorMap';
@@ -42,9 +40,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
     public onRegister(): void {
         console.debug(`[${this.constructor.name}] Mediator registered.`);
 
-        this.setupResponsiveLayout();
-
-        this.view.on(AbstractMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
+        this.setupResponsiveLayout();       
         this.view.once(AbstractView.VIEW_ADDED_TO_ROOT_EVENT, () => this.onViewAddedToRoot());
     }
 
@@ -66,18 +62,8 @@ export abstract class AbstractMediator<T extends AbstractView> {
      */
     public onRemove(): void {
         console.debug(`[${this.constructor.name}] Mediator removed.`);
-        this.app.renderer.off('resize', this.onResize);
-        this.viewComponent.off(AbstractMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
-    }
-
-    /**
-     * Handles the back click event by emitting the ModelSignals.SWITCH_TASK signal
-     * with the TaskSignals.MAIN payload.
-     */
-    private readonly onBackClickEvent = (): void => {
-        console.debug('[AceOfShadowsMediator] Handling: ', AbstractMediator.BACK_CLICK_EVENT);
-        this.signalBus.emit(ModelSignals.SWITCH_TASK, TaskSignals.MAIN);
-    }
+        this.app.renderer.off('resize', this.onResize);        
+    }    
 
     /**
      * Sets up the responsive layout for the view by triggering a layout update

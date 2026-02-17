@@ -3,7 +3,6 @@ import { Assets, Cache } from 'pixi.js';
 
 // 1. Tell Jest to use dummy.js when anything asks for 'pixi.js'
 jest.unstable_mockModule('pixi.js', () =>
-    // This cast to 'any' tells TS: "Don't look for a module definition, just import the file"
     import('./__mocks__/dummy.js' as any)
 );
 

@@ -1,14 +1,14 @@
 // src/core/mvcs/mediators/PhoenixFlameMediator.ts
 import { ModelSignals } from "../../../signal/ModelSignals";
 import { FlameModel } from "../../model/states/FlameModel";
-import { AbstractMediator } from "../AbstractMediator";
 import type { PhoenixFlameView } from "../components/PhoenixFlameView";
+import { TaskMediator } from "../TaskMediator";
 
 /**
  * Mediator for the Phoenix Flame task.
  * Handles the lifecycle of the fire effect, from texture preparation to frame updates.
  */
-export class PhoenixFlameMediator extends AbstractMediator<PhoenixFlameView> {
+export class PhoenixFlameMediator extends TaskMediator<PhoenixFlameView> {
 
     /**
      * Called after the view is registered.

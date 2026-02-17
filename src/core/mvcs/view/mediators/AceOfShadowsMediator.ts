@@ -1,15 +1,15 @@
 // src/core/mvcs/view/mediator/AceOfShadowsMediator.ts
 import { ModelSignals } from '../../../signal/ModelSignals';
 import { CardModel } from '../../model/states/CardModel';
-import { AbstractMediator } from '../AbstractMediator';
 import { AceOfShadowsView } from '../components/AceOfShadowsView';
+import { TaskMediator } from '../TaskMediator';
 
 /**
  * Mediator for the Ace of Shadows feature.
  * Coordinates between the CardModel (data) and AceOfShadowsView (rendering).
  * Handles the triggering of procedural card generation and the resulting animation flow.
  */
-export class AceOfShadowsMediator extends AbstractMediator<AceOfShadowsView> {
+export class AceOfShadowsMediator extends TaskMediator<AceOfShadowsView> {
 
     /**
      * Registers the mediator to listen for the ModelSignals.CARDS_PREPARED signal.

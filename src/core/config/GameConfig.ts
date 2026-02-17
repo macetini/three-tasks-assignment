@@ -47,11 +47,11 @@ export const GameConfig = {
         BUBBLE_STROKE_WIDTH: 2,
         BUBBLE_PADDING: 15,
         BUBBLE_CORNER_RADIUS: 15,
-        SCROLL_STEP: 40, // Pixels per key press
+        SCROLL_STEP: 40, // Pixels per key press/drag/scroll
         SCROLL_SPEED: 0.5,
         MAX_SCROLL_HEIGHT: 75,
-        MIN_SCROLL_HEIGHT: 600, // It would be better to use screen height, but this will work on most devices
-        MIN_SCREEN_WIDTH: 375, // It would be better to use screen width, but this will work on most devices
+        MIN_SCROLL_HEIGHT: 600,
+        MIN_SCREEN_WIDTH: 375,
         MAX_SCALE: 2,
         SCALE_THRESHOLD: 0.01,
         CHAT_CONTAINER_Y_OFFSET: 85,

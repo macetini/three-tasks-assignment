@@ -1,15 +1,15 @@
 // src/core/mvcs/view/mediator/MagicWordsMediator.ts
 import { ModelSignals } from '../../../signal/ModelSignals';
 import { MagicWordsModel } from '../../model/states/MagicWordsModel';
-import { AbstractMediator } from '../AbstractMediator';
 import { MagicWordsView } from '../components/MagicWordsView';
+import { TaskMediator } from '../TaskMediator';
 
 /**
  * Mediator for the Magic Words chat feature.
  * Manages the lifecycle of data fetching, loading state visualization, 
  * and the distribution of Model data to the View via functional providers.
  */
-export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
+export class MagicWordsMediator extends TaskMediator<MagicWordsView> {
 
     /**
      * Called after the view is registered.
@@ -42,7 +42,7 @@ export class MagicWordsMediator extends AbstractMediator<MagicWordsView> {
     private onWordsLoaded(): void {
         console.log("[MagicWordsView] MagicWords loaded.");
         const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
-        const words = model.words;        
+        const words = model.words;
         console.debug(`[MagicWordsView] New chat Words count is ${words.length}.`);
 
         const textureProvider = (id: string) => model.getTexture(id);
