@@ -1,0 +1,162 @@
+digraph G {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+    compound=true;
+
+    // --- NODES ---
+
+    // External Dependencies
+    subgraph cluster_externals {
+        label="External Dependencies";
+        style=filled;
+        color=lightgrey;
+        node [style=filled, color=white];
+
+        pixi_js [label="pixi.js"];
+        gsap [label="gsap"];
+        jest [label="jest"];
+    }
+
+    // Root files
+    package_json [label="package.json"];
+    jest_setup [label="jest.setup.mjs"];
+
+    // Source files
+    subgraph cluster_src {
+        label="src";
+
+        main_ts [label="main.ts"];
+
+        subgraph cluster_style {
+            label="style";
+            style_css [label="game.module.css"];
+        }
+
+        subgraph cluster_core {
+            label="core";
+
+            subgraph cluster_config {
+                label="config";
+                game_config_ts [label="GameConfig.ts"];
+            }
+
+            subgraph cluster_context {
+                label="context";
+                game_context_ts [label="GameContext.ts"];
+            }
+
+            subgraph cluster_signal {
+                label="signal";
+                signal_bus_ts [label="SignalBus.ts"];
+                model_signals_ts [label="ModelSignals.ts"];
+                task_signals_ts [label="TaskSignals.ts"];
+            }
+
+            subgraph cluster_mvcs {
+                label="mvcs";
+
+                subgraph cluster_controller {
+                    label="controller";
+                    command_map_ts [label="CommandMap.ts"];
+                    subgraph cluster_commands {
+                        label="commands";
+                        prepare_cards_command_ts [label="PrepareCardsCommand.ts"];
+                        fetch_magic_words_command_ts [label="FetchMagicWordsCommand.ts"];
+                        prepare_flame_command_ts [label="PrepareFlameCommand.ts"];
+                    }
+                }
+
+                subgraph cluster_model {
+                    label="model";
+                    model_map_ts [label="ModelMap.ts"];
+                    subgraph cluster_states {
+                        label="states";
+                        card_model_ts [label="CardModel.ts"];
+                        magic_words_model_ts [label="MagicWordsModel.ts"];
+                        flame_model_ts [label="FlameModel.ts"];
+                    }
+                }
+
+                subgraph cluster_service {
+                    label="service";
+                    asset_service_ts [label="AssetService.ts"];
+                }
+
+                subgraph cluster_view {
+                    label="view";
+                    mediator_map_ts [label="MediatorMap.ts"];
+                    abstract_view_ts [label="AbstractView.ts"];
+                    abstract_mediator_ts [label="AbstractMediator.ts"];
+
+                    subgraph cluster_components {
+                        label="components";
+                        root_view_ts [label="RootView.ts"];
+                        main_menu_view_ts [label="MainMenuView.ts"];
+                        ace_of_shadows_view_ts [label="AceOfShadowsView.ts"];
+                        magic_words_view_ts [label="MagicWordsView.ts"];
+                        phoenix_flame_view_ts [label="PhoenixFlameView.ts"];
+                    }
+
+                    subgraph cluster_mediators {
+                        label="mediators";
+                        root_view_mediator_ts [label="RootViewMediator.ts"];
+                        main_menu_mediator_ts [label="MainMenuMediator.ts"];
+                        ace_of_shadows_mediator_ts [label="AceOfShadowsMediator.ts"];
+                        magic_words_mediator_ts [label="MagicWordsMediator.ts"];
+                        phoenix_flame_mediator_ts [label="PhoenixFlameMediator.ts"];
+                    }
+                }
+            }
+        }
+    }
+
+    // Test files
+    subgraph cluster_tests {
+        label="tests";
+        ace_of_shadows_mediator_test_ts [label="AceOfShadowsMediator.test.ts"];
+        root_view_mediator_test_ts [label="RootViewMediator.test.ts"];
+    }
+
+    // --- DEPENDENCIES ---
+
+    // main.ts (Application Entry Point)
+    main_ts -> game_context_ts;
+    main_ts -> style_css;
+    main_ts -> pixi_js;
+
+    // GameContext.ts (Composition Root)
+    game_context_ts -> command_map_ts;
+    game_context_ts -> model_map_ts;
+    game_context_ts -> mediator_map_ts;
+    game_context_ts -> asset_service_ts;
+    game_context_ts -> signal_bus_ts;
+    game_context_ts -> game_config_ts;
+    game_context_ts -> root_view_ts; // Initializes RootView
+
+    // Mediators
+    root_view_mediator_ts -> {ace_of_shadows_view_ts, magic_words_view_ts, main_menu_view_ts, phoenix_flame_view_ts, root_view_ts};
+    root_view_mediator_ts -> {model_signals_ts, task_signals_ts, abstract_mediator_ts, abstract_view_ts};
+    main_menu_mediator_ts -> {model_signals_ts, abstract_mediator_ts, main_menu_view_ts};
+    ace_of_shadows_mediator_ts -> {model_signals_ts, abstract_mediator_ts, ace_of_shadows_view_ts};
+
+    // Abstract classes
+    abstract_mediator_ts -> {signal_bus_ts, model_map_ts, pixi_js, abstract_view_ts};
+    abstract_view_ts -> pixi_js;
+
+    // Views
+    {root_view_ts, main_menu_view_ts, ace_of_shadows_view_ts, magic_words_view_ts, phoenix_flame_view_ts} -> abstract_view_ts;
+
+    // Mappings
+    game_context_ts -> {prepare_cards_command_ts, fetch_magic_words_command_ts, prepare_flame_command_ts} [label="maps commands"];
+    game_context_ts -> {card_model_ts, flame_model_ts, magic_words_model_ts} [label="maps models"];
+    game_context_ts -> {root_view_mediator_ts, main_menu_mediator_ts, ace_of_shadows_mediator_ts, magic_words_mediator_ts, phoenix_flame_mediator_ts} [label="maps mediators"];
+
+    // Tests
+    root_view_mediator_test_ts -> {jest, root_view_mediator_ts, root_view_ts, main_menu_view_ts, ace_of_shadows_view_ts, model_signals_ts, task_signals_ts};
+    ace_of_shadows_mediator_test_ts -> {jest, ace_of_shadows_mediator_ts, ace_of_shadows_view_ts, card_model_ts, model_signals_ts, pixi_js};
+    {root_view_mediator_test_ts, ace_of_shadows_mediator_test_ts} -> jest_setup [style=dashed, color=gray, label="uses mocks"];
+
+    // Jest Setup
+    jest_setup -> {jest, pixi_js, gsap};
+}
+
