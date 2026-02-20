@@ -1,55 +1,52 @@
 import { vi } from 'vitest';
 
-// Minimal PIXI v8 mock
 vi.mock('pixi.js', () => {
-    const MockContainer = class {        
-        addChild = vi.fn();
-        removeChild = vi.fn();
-        destroy = vi.fn();
-        
-        position = { set: vi.fn(), x: 0, y: 0 };
-        scale = { set: vi.fn(), x: 1, y: 1 };
-        visible = true;
-        alpha = 1;
+    class MockContainer {
+        public addChild = vi.fn();
+        public removeChild = vi.fn();
+        public destroy = vi.fn();
+        public position = { set: vi.fn(), x: 0, y: 0 };
+        public scale = { set: vi.fn(), x: 1, y: 1 };
+        public anchor = { set: vi.fn(), x: 0, y: 0 };
+        public visible = true;
+        public alpha = 1;
 
-        emit = vi.fn().mockReturnThis();
-        on = vi.fn().mockReturnThis();
-        once = vi.fn().mockReturnThis();
-        off = vi.fn().mockReturnThis();
-    };
-    // Define the mock as a class
-    class MockApplication {
-        public init = vi.fn().mockResolvedValue(true);
-        public stage = new MockContainer();
-        public ticker = {
-            add: vi.fn(),
-            remove: vi.fn(),
-            FPS: 60
-        };
-        public screen = { width: 1920, height: 1080 };
-        public renderer = { width: 1920, height: 1080 };
+        public emit = vi.fn().mockReturnThis();
+        public on = vi.fn().mockReturnThis();
+        public once = vi.fn().mockReturnThis();
+        public off = vi.fn().mockReturnThis();
+    }
+
+    class MockSprite extends MockContainer {
+        public static readonly from = vi.fn().mockImplementation(() => new MockSprite());
+    }
+
+    class MockText extends MockContainer {
+        public text = '';
+        public style = {};
     }
 
     return {
-        // Change this line to return the Class directly
-        Application: MockApplication,
+        Application: vi.fn().mockImplementation(() => ({
+            init: vi.fn().mockResolvedValue(true),
+            stage: new MockContainer(),
+            ticker: { add: vi.fn(), remove: vi.fn(), FPS: 60 },
+            screen: { width: 1920, height: 1080 },
+            renderer: {
+                width: 1920,
+                height: 1080,
+                on: vi.fn(),
+                off: vi.fn()
+            },
+        })),
         Container: MockContainer,
-
-        Sprite: class extends MockContainer {
-            public static readonly from = vi.fn(() => (
-                { anchor: { set: vi.fn() } }));
-        },
-
-        Text: class extends MockContainer {
-            style = {};
-            text = '';
-        },
-
+        Sprite: MockSprite,
+        Text: MockText,
         Assets: {
             init: vi.fn().mockResolvedValue(true),
             load: vi.fn().mockResolvedValue({}),
             add: vi.fn(),
         },
-        // Add any others if the compiler complains
+        UPDATE_PRIORITY: { HIGH: 50, LOW: -50, DEFAULT: 0 },
     };
 });

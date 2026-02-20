@@ -18,7 +18,6 @@ export abstract class TaskView extends AbstractView {
      */
     public init(): void {
         super.init();
-        console.debug(`[${this.constructor.name}] View initialized.`);
         this.createBackButton();
     };
 

@@ -22,15 +22,12 @@ describe('RootViewMediator', () => {
         };
 
         mediator = new RootViewMediator(mockView);
-        
-        // Use your new setters
-        mediator.setSignalBus(new SignalBus());
-        mediator.setMediatorMap({ 
-            register: vi.fn(), 
-            unregister: vi.fn() 
-        } as any);
 
-        // We skip setApp() entirely for this unit test!
+        mediator.setSignalBus(new SignalBus());
+        mediator.setMediatorMap({
+            register: vi.fn(),
+            unregister: vi.fn()
+        } as any);
     });
 
     it('should successfully register and initialize main menu without crashing', () => {
@@ -39,9 +36,12 @@ describe('RootViewMediator', () => {
     });
 
     it('should respond to task switch signals', () => {
-        mediator.onRegister();
+        const registerSpy = vi.spyOn(mediator['mediatorMap'], 'register');
+
+        mediator.onRegister();        
+
         (mediator as any).signalBus.emit(ModelSignals.SWITCH_TASK, TaskSignals.CARDS);
-        
-        expect(mediator['mediatorMap'].register).toHaveBeenCalled();
+
+        expect(registerSpy).toHaveBeenCalled();
     });
 });

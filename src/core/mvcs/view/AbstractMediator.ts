@@ -70,7 +70,11 @@ export abstract class AbstractMediator<T extends AbstractView> {
 
         this.app.renderer.on('resize', this.onResize);
     }
-    
+
+    /**
+     * Event listener for the 'resize' event on the PIXI renderer.
+     * Triggers a layout update when the event is triggered.
+     */
     private readonly onResize = (): void => {
         this.triggerLayout();
     };
