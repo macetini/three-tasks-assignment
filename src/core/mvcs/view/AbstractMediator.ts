@@ -40,7 +40,48 @@ export abstract class AbstractMediator<T extends AbstractView> {
     public onRegister(): void {
         console.debug(`[${this.constructor.name}] Mediator registered.`);
 
-        this.setupResponsiveLayout();       
+        this.setupResponsiveLayout();
+        this.initListener();
+    }
+
+    /**
+     * Called when the mediator is no longer needed.
+     * Removes all event listeners and cleans up the mediator for garbage collection.
+     * Offs the 'resize' event listener on the PIXI renderer and the
+     * AbstractMediator.BACK_CLICK_EVENT event listener on the view component.
+     */
+    public onRemove(): void {
+        console.debug(`[${this.constructor.name}] Mediator removed.`);
+        if (this.app?.renderer?.off) {
+            this.app.renderer.off('resize', this.onResize);
+        }
+    }
+
+    /**
+     * Sets up the responsive layout for the view by triggering a layout update
+     * via requestAnimationFrame and adding a listener for the 'resize' event on the
+     * PIXI renderer. This ensures that the view is always laid out according to the
+     * current screen size and resolution.
+     */
+    // Inside AbstractMediator.ts
+    protected setupResponsiveLayout(): void {
+        // If there's no renderer (like in a Unit Test), just skip it.
+        if (!this.app?.renderer?.on) return;
+
+        this.app.renderer.on('resize', this.onResize);
+    }
+    
+    private readonly onResize = (): void => {
+        this.triggerLayout();
+    };
+
+    /**
+     * Initializes a one-time event listener for the AbstractView.VIEW_ADDED_TO_ROOT_EVENT.
+     * When the event is triggered, the onViewAddedToRoot() method is called to handle
+     * the view's addition to the stage, including responsive layout updates and
+     * logging debug messages.
+     */
+    private initListener(): void {
         this.view.once(AbstractView.VIEW_ADDED_TO_ROOT_EVENT, () => this.onViewAddedToRoot());
     }
 
@@ -55,32 +96,6 @@ export abstract class AbstractMediator<T extends AbstractView> {
     }
 
     /**
-     * Called when the mediator is no longer needed.
-     * Removes all event listeners and cleans up the mediator for garbage collection.
-     * Offs the 'resize' event listener on the PIXI renderer and the
-     * AbstractMediator.BACK_CLICK_EVENT event listener on the view component.
-     */
-    public onRemove(): void {
-        console.debug(`[${this.constructor.name}] Mediator removed.`);
-        this.app.renderer.off('resize', this.onResize);        
-    }    
-
-    /**
-     * Sets up the responsive layout for the view by triggering a layout update
-     * via requestAnimationFrame and adding a listener for the 'resize' event on the
-     * PIXI renderer. This ensures that the view is always laid out according to the
-     * current screen size and resolution.
-     */
-    protected setupResponsiveLayout(): void {
-        requestAnimationFrame(() => this.triggerLayout());
-        this.app.renderer.on('resize', this.onResize);
-    }
-
-    private readonly onResize = (): void => {
-        this.triggerLayout();
-    };
-
-    /**
      * Triggers the layout of the View, checking for a valid screen size first.
      * If the screen size is invalid, a warning is logged and the layout is skipped.
      * Otherwise, the View is laid out at the current screen size.
@@ -88,7 +103,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * @remarks
      * This method is typically called by the Mediator in response to a resize event.
      */
-    protected triggerLayout(): void {
+    protected triggerLayout_old(): void {
         const { width, height } = this.app.screen;
 
         // A generic sanity check: don't layout if the renderer is collapsed
@@ -98,11 +113,33 @@ export abstract class AbstractMediator<T extends AbstractView> {
         }
 
         // Run the guard check. If it passes, execute the layout.
-        if (this.isValidLayout(width, height)) {
+        if (this.isLayoutValid(width, height)) {
             this.view.layout(width, height);
         } else {
             console.warn('[AbstractMediator] Layout validation failed.');
         }
+    }
+
+    protected triggerLayout(): void {
+        if (!this.app?.screen) {
+            console.debug("[AbstractMediator] Layout skipped: App/Screen not available.");
+            return;
+        }
+
+        const { width, height } = this.app.screen;
+
+        if (width <= 0 || height <= 0) {
+            console.warn('[AbstractMediator] Skipping layout update due to collapsed renderer');
+            return;
+        }
+
+        const isLayoutValid = this.isLayoutValid(width, height);
+        if (!isLayoutValid) {
+            console.warn('[AbstractMediator] Layout validation failed.');
+            return;
+        }
+
+        this.view.layout(width, height);
     }
 
     /**
@@ -114,7 +151,7 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * @param height - The target layout height.
      * @returns True if dimensions are within a realistic range.
      */
-    protected isValidLayout(width: number, height: number): boolean {
+    protected isLayoutValid(width: number, height: number): boolean {
         return width > 0 && height > 0;
     }
 

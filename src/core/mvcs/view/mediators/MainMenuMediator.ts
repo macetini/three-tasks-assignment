@@ -31,7 +31,7 @@ export class MainMenuMediator extends AbstractMediator<MainMenuView> {
      * @param height - The target layout height.
      * @returns True if dimensions are within a realistic range.
      */
-    protected override isValidLayout(width: number, height: number): boolean {
+    protected override isLayoutValid(width: number, height: number): boolean {
         if (width < 0 || height < 0) {
             console.warn('[MainMenuMediator] Suppressing impossible dimensions.');
             return false;

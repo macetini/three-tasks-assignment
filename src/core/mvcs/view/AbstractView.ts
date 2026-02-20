@@ -9,6 +9,11 @@ import { Container } from 'pixi.js';
  * 3. Memory-safe disposal and texture preservation.
  */
 export abstract class AbstractView extends Container {
+    /**     
+     * Dispatched when the view is added to the stage.
+     * 
+     * @see RootViewMediator.addAndRegister
+     */
     public static readonly VIEW_ADDED_TO_ROOT_EVENT = 'viewAddedToRootEvent';
 
     /**

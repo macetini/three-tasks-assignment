@@ -1,5 +1,6 @@
 // src/core/context/GameContext.ts
 import { Application, Text } from 'pixi.js';
+import { GameConfig } from '../config/GameConfig';
 import { CommandMap } from '../mvcs/controller/CommandMap';
 import { FetchMagicWordsCommand } from '../mvcs/controller/commands/FetchMagicWordsCommand';
 import { PrepareCardsCommand } from '../mvcs/controller/commands/PrepareCardsCommand';
@@ -22,7 +23,6 @@ import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediato
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
 import { ModelSignals } from '../signal/ModelSignals';
 import { SignalBus } from '../signal/SignalBus';
-import { GameConfig } from '../config/GameConfig';
 
 /**
  * The GameContext is the Composition Root of the application.
