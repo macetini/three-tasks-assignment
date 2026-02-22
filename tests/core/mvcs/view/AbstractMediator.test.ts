@@ -2,10 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AbstractMediator } from '../../../../src/core/mvcs/view/AbstractMediator';
 import { AbstractView } from '../../../../src/core/mvcs/view/AbstractView';
 
-class AbstractMediatorMock extends AbstractMediator<any> { }
+class TestMediator extends AbstractMediator<AbstractView> {
+    public get viewRef() { return this.view; }
+}
 
 describe('AbstractMediator', () => {
-    let testMediator: AbstractMediatorMock;
+    let testMediator: TestMediator;
     let mockView: any;
     let mockApp: any;
 
@@ -24,8 +26,13 @@ describe('AbstractMediator', () => {
             screen: { width: 800, height: 600 }
         };
 
-        testMediator = new AbstractMediatorMock(mockView);
+        testMediator = new TestMediator(mockView);
         testMediator.setApp(mockApp);
+    });
+
+    it('assigns the view', () => {
+        const mediator = new TestMediator(mockView);
+        expect(mediator.viewRef).toBe(mockView);
     });
 
     it('should register a resize listener on the renderer during onRegister', () => {
@@ -53,8 +60,9 @@ describe('AbstractMediator', () => {
 
     it('should skip layout if the screen width or height is 0 (Guard Check)', () => {
         mockApp.screen.width = 0;
+        mockApp.screen.height = 0;
         testMediator.onRegister();
-        
+
         (testMediator as any).triggerLayout();
         expect(mockView.layout).not.toHaveBeenCalled();
     });
