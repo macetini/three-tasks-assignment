@@ -1,3 +1,4 @@
+// src/core/pixi/DiceBearPlugin.ts
 import { ExtensionType, Texture, type LoaderParser } from 'pixi.js';
 
 /**

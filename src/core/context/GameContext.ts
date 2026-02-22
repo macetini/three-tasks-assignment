@@ -103,6 +103,7 @@ export class GameContext {
     */
     private configureEngine(): void {
         console.log("[GameContext] Configuring PixiJS Extensions...");
+
         extensions.add(DiceBearPlugin);
     }
 
@@ -111,6 +112,7 @@ export class GameContext {
      */
     private mapModels(): void {
         console.log("[GameContext] Mapping Models...");
+
         this.modelMap.map(CardModel.NAME, new CardModel());
         this.modelMap.map(MagicWordsModel.NAME, new MagicWordsModel());
         this.modelMap.map(FlameModel.NAME, new FlameModel());
@@ -121,6 +123,7 @@ export class GameContext {
      */
     private mapCommands(): void {
         console.log("[GameContext] Mapping Commands...");
+
         this.commandMap.map(ModelSignals.PREPARE_CARDS, PrepareCardsCommand);
         this.commandMap.map(ModelSignals.FETCH_MAGIC_WORDS, FetchMagicWordsCommand);
         this.commandMap.map(ModelSignals.PREPARE_FLAME, PrepareFlameCommand);
@@ -131,6 +134,7 @@ export class GameContext {
      */
     private mapMediators(): void {
         console.log("[GameContext] Mapping Mediators...");
+
         this.mediatorMap.map(RootView, RootViewMediator);
         this.mediatorMap.map(MainMenuView, MainMenuMediator);
         this.mediatorMap.map(AceOfShadowsView, AceOfShadowsMediator);
@@ -154,6 +158,8 @@ export class GameContext {
     }
 
     private addDebugInfo(): void {
+        console.log("[GameContext] Adding Debug Info...");
+
         const textTemplate = "FPS: %1 Avg: %2";
         const fpsText: Text = new Text({
             text: textTemplate.replace("%1", "0").replace("%2", "0"),
