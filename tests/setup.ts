@@ -28,14 +28,23 @@ vi.mock('pixi.js', async (importOriginal) => {
         public static readonly from = vi.fn().mockImplementation(() => new MockSprite());
     }
 
-    class MockGraphics extends MockContainer {
-        public roundRect = vi.fn().mockReturnThis();
-        public rect = vi.fn().mockReturnThis();
-        public stroke = vi.fn().mockReturnThis();
-        public fill = vi.fn().mockReturnThis();
-        public moveTo = vi.fn().mockReturnThis();
-        public lineTo = vi.fn().mockReturnThis();
-        public closePath = vi.fn().mockReturnThis();
+    class MockGraphics {
+        // Defining as methods ensures they exist on the prototype for vi.spyOn
+        public circle() { return this; }
+        public moveTo() { return this; }
+        public lineTo() { return this; }
+        public bezierCurveTo() { return this; }
+        public roundRect() { return this; }
+        public rect() { return this; }
+        public stroke() { return this; }
+        public fill() { return this; }
+        public closePath() { return this; }
+        public destroy() {
+            // Method intentionally empty for mock purposes
+        }
+
+        public alpha = 1;
+        public visible = true;
     }
 
     // Grab the real PIXI members that don't need mocking (Color, Texture, etc.)
