@@ -1,8 +1,13 @@
 import { vi } from 'vitest';
 
-vi.mock('pixi.js', () => {
+vi.mock('pixi.js', async (importOriginal) => {
     class MockContainer {
-        public addChild = vi.fn();
+        public children: any[] = [];
+        public addChild = vi.fn((child) => {
+            if (child && !this.children.includes(child)) this.children.push(child);
+            return child;
+        });
+        public removeChildren = vi.fn(() => { this.children = []; });
         public removeChild = vi.fn();
         public destroy = vi.fn();
         public position = { set: vi.fn(), x: 0, y: 0 };
@@ -18,15 +23,26 @@ vi.mock('pixi.js', () => {
     }
 
     class MockSprite extends MockContainer {
+        public tint = 0;
+        public texture = { destroy: vi.fn() };
         public static readonly from = vi.fn().mockImplementation(() => new MockSprite());
     }
 
-    class MockText extends MockContainer {
-        public text = '';
-        public style = {};
+    class MockGraphics extends MockContainer {
+        public roundRect = vi.fn().mockReturnThis();
+        public rect = vi.fn().mockReturnThis();
+        public stroke = vi.fn().mockReturnThis();
+        public fill = vi.fn().mockReturnThis();
+        public moveTo = vi.fn().mockReturnThis();
+        public lineTo = vi.fn().mockReturnThis();
+        public closePath = vi.fn().mockReturnThis();
     }
 
+    // Grab the real PIXI members that don't need mocking (Color, Texture, etc.)
+    const actual = await importOriginal() as any;
+    // Hybrid object    
     return {
+        ...actual, // Spread real PIXI (provides Color, Matrix, etc.)
         Application: vi.fn().mockImplementation(() => ({
             init: vi.fn().mockResolvedValue(true),
             stage: new MockContainer(),
@@ -36,17 +52,22 @@ vi.mock('pixi.js', () => {
                 width: 1920,
                 height: 1080,
                 on: vi.fn(),
-                off: vi.fn()
+                off: vi.fn(),
+                generateTexture: vi.fn().mockReturnValue({ destroy: vi.fn() })
             },
         })),
         Container: MockContainer,
         Sprite: MockSprite,
-        Text: MockText,
+        Graphics: MockGraphics,
+
+        Text: class extends MockContainer {
+            public text = '';
+            public style = {};
+        },
         Assets: {
             init: vi.fn().mockResolvedValue(true),
             load: vi.fn().mockResolvedValue({}),
             add: vi.fn(),
         },
-        UPDATE_PRIORITY: { HIGH: 50, LOW: -50, DEFAULT: 0 },
     };
 });
