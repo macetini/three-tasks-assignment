@@ -1,37 +1,7 @@
 // src/core/mvcs/service/AssetService.ts
-import { extensions, Assets, ExtensionType, Sprite, Texture, type Renderer, Cache } from 'pixi.js';
+import { Assets, Cache, Sprite, Texture, type Renderer } from 'pixi.js';
 import { CardsGenerator } from '../view/util/CardsGenerator';
 import { FireGenerator } from '../view/util/FireGenerator';
-
-/**
- * PixiJS Extension Plugin: Dicebear SVG Parser.
- * Intercepts Dicebear URLs to handle them specifically as Image elements 
- * to bypass common SVG-to-Canvas rendering issues across different browsers.
- */
-const diceBearPlugin = {
-    extension: {
-        type: ExtensionType.LoadParser,
-        name: 'diceBearParser',
-    },
-    // Only intercept URLs that come from dicebear
-    test: (url: string) => typeof url === 'string' && url.includes('dicebear'),
-
-    async load(src: string) {
-        return new Promise<Texture>((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => resolve(Texture.from(img));
-            img.onerror = () => reject(new Error(`DiceBear load failed: ${src}`));
-            img.src = src;
-        });
-    },
-    unload(texture: Texture) {
-        texture.destroy(true);
-    }
-};
-
-// Register the custom plugin before application initialization
-extensions.add(diceBearPlugin);
 
 /**
  * Service responsible for asset management, remote loading, and 

@@ -1,5 +1,5 @@
 // src/core/context/GameContext.ts
-import { Application, Text } from 'pixi.js';
+import { Application, extensions, Text } from 'pixi.js';
 import { GameConfig } from '../config/GameConfig';
 import { CommandMap } from '../mvcs/controller/CommandMap';
 import { FetchMagicWordsCommand } from '../mvcs/controller/commands/FetchMagicWordsCommand';
@@ -21,6 +21,7 @@ import { MagicWordsMediator } from '../mvcs/view/mediators/MagicWordsMediator';
 import { MainMenuMediator } from '../mvcs/view/mediators/MainMenuMediator';
 import { PhoenixFlameMediator } from '../mvcs/view/mediators/PhoenixFlameMediator';
 import { RootViewMediator } from '../mvcs/view/mediators/RootViewMediator';
+import { DiceBearPlugin } from '../pixi/DiceBearPlugin';
 import { ModelSignals } from '../signal/ModelSignals';
 import { SignalBus } from '../signal/SignalBus';
 
@@ -75,23 +76,34 @@ export class GameContext {
     public async bootstrap(): Promise<void> {
         console.log("[GameContext] Bootstrap Started.");
 
-        // 1. Infrastructure Services
+        // Engine Configuration
+        this.configureEngine();
+
+        // Infrastructure Services
         await this.assetService.init();
 
-        // 2. MVCS Layer Setup
+        // MVCS Layer Setup
         this.mapModels();
         this.mapCommands();
         this.mapMediators();
 
-        // 3. Application Entry Point
+        // Application Entry Point
         this.initializeRootView();
 
-        // 4. Developer HUD
+        // Developer HUD
         if (this.cfg.DEBUG) {
             this.addDebugInfo();
         }
 
         console.log("[GameContext] Bootstrap Finished.");
+    }
+
+    /**
+    * Configures PixiJS global settings and plugins.
+    */
+    private configureEngine(): void {
+        console.log("[GameContext] Configuring PixiJS Extensions...");
+        extensions.add(DiceBearPlugin);
     }
 
     /**
