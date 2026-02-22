@@ -100,11 +100,9 @@ export class MainMenuView extends AbstractView {
     * @param width The current width of the Pixi screen
     * @param height The current height of the Pixi screen
     */
-    public override layout(width: number, height: number): void {
-        super.layout(width, height);
+    public override layout(width: number, height: number): void {        
         this.playStaggeredEntrance(width * 0.5, height * 0.25);
-
         // Too much logging (enable if needed)
-        //console.debug(`[MainMenuView] Using responsive layout. View positioned at (${this.x}, ${this.y})`);
+        console.debug(`[MainMenuView] Using responsive layout. View positioned at (${this.x}, ${this.y})`);
     }
 }

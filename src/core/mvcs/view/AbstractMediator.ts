@@ -67,7 +67,6 @@ export abstract class AbstractMediator<T extends AbstractView> {
     protected setupResponsiveLayout(): void {
         // If there's no renderer (like in a Unit Test), just skip it.
         if (!this.app?.renderer?.on) return;
-
         this.app.renderer.on('resize', this.onResize);
     }
 
@@ -95,33 +94,8 @@ export abstract class AbstractMediator<T extends AbstractView> {
      * has been added to the stage.
      */
     protected onViewAddedToRoot(): void {
-        this.triggerLayout();
         this.view.onAddedToRoot();
-    }
-
-    /**
-     * Triggers the layout of the View, checking for a valid screen size first.
-     * If the screen size is invalid, a warning is logged and the layout is skipped.
-     * Otherwise, the View is laid out at the current screen size.
-     * 
-     * @remarks
-     * This method is typically called by the Mediator in response to a resize event.
-     */
-    protected triggerLayout_old(): void {
-        const { width, height } = this.app.screen;
-
-        // A generic sanity check: don't layout if the renderer is collapsed
-        if (width <= 0 || height <= 0) {
-            console.warn('[AbstractMediator] Skipping layout update due to collapsed renderer');
-            return;
-        }
-
-        // Run the guard check. If it passes, execute the layout.
-        if (this.isLayoutValid(width, height)) {
-            this.view.layout(width, height);
-        } else {
-            console.warn('[AbstractMediator] Layout validation failed.');
-        }
+        this.triggerLayout();
     }
 
     protected triggerLayout(): void {

@@ -88,7 +88,7 @@ export class RootViewMediator extends AbstractMediator<RootView> {
         this.mediatorMap.register(view);
         this.viewComponent.setView(view);
         view.init();
-
+        
         // Called outside of mediator to avoid accidentally overriding the event
         view.emit(AbstractView.VIEW_ADDED_TO_ROOT_EVENT);
     }

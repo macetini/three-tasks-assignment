@@ -72,4 +72,15 @@ describe('AbstractMediator', () => {
         expect((testMediator as any).isLayoutValid(0, 500)).toBe(false);
         expect((testMediator as any).isLayoutValid(-10, -10)).toBe(false);
     });
+
+
+    it('should trigger layout and view lifecycle when the added-to-root callback is executed', () => {
+        testMediator.onRegister();
+
+        const onViewAddedCallback = vi.mocked(mockView.once).mock.calls[0][1];
+        onViewAddedCallback();
+
+        expect(mockView.layout).toHaveBeenCalled();
+        expect(mockView.onAddedToRoot).toHaveBeenCalled();
+    });
 });

@@ -7,11 +7,13 @@ import { AbstractView } from '../AbstractView';
  */
 export class RootView extends AbstractView {
 
+    private _activeView?: AbstractView;
+
     /**
      * Returns the currently displayed task view.
      */
     public get activeView(): AbstractView | undefined {
-        return this.children[0] as AbstractView;
+        return this._activeView;
     }
 
     /**
@@ -21,17 +23,17 @@ export class RootView extends AbstractView {
      * @param view - The new AbstractView to be displayed.
      */
     public setView(view: AbstractView): void {
-        if (this.children.length > 0) {
-            const oldView = this.children[0] as AbstractView;
+        this.cleanup();
+        this.addViewToRoot(view);
+    }
 
-            console.debug(`[RootView] Transition: Removing ${oldView.constructor.name} -> Adding ${view.constructor.name}`);
+    protected cleanup(): void {
+        this._activeView?.dispose();
+        this._activeView?.destroy({ children: true });
+    }
 
-            if (oldView.dispose) {
-                oldView.dispose();
-            }
-            oldView.destroy({ children: true });
-            this.removeChildren();
-        }
-        this.addChild(view);
+    protected addViewToRoot(newView: AbstractView): void {
+        this._activeView = newView;
+        this.addChild(this._activeView);
     }
 }
