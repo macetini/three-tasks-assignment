@@ -98,6 +98,12 @@ export abstract class AbstractMediator<T extends AbstractView> {
         this.triggerLayout();
     }
 
+    /**
+     * Triggers a layout update for the view if the application's screen is available.
+     * The layout update is skipped if the screen dimensions are invalid (i.e., width or height is less than or equal to 0),
+     * or if the layout validation fails.
+     * Logs debug messages to indicate skipped layout updates due to invalid screen dimensions or failed layout validation.
+     */
     protected triggerLayout(): void {
         if (!this.app?.screen) {
             console.debug("[AbstractMediator] Layout skipped: App/Screen not available.");
