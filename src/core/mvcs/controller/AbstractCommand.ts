@@ -5,13 +5,23 @@ import type { AssetService } from "../service/AssetService";
 import type { ICommand } from "./meta/ICommand";
 
 /**
- * Abstract class representing a command.
+ * An abstract class representing a command in the command pattern.
+ * 
+ * @template T - The type of the payload that will be passed to the execute method.
+ * @implements {ICommand}
+ * @abstract
+ * @see {@link ICommand}
+ * @see {@link https://en.wikipedia.org/wiki/Command_pattern}
+ * 
  */
 export abstract class AbstractCommand<T = unknown> implements ICommand {
     protected signalBus!: SignalBus;
     protected assetService!: AssetService;
     protected modelMap!: ModelMap;
 
+    /**
+     * The payload that will be passed to the execute method.
+     */
     protected readonly payload: T;
 
     /**
@@ -32,5 +42,10 @@ export abstract class AbstractCommand<T = unknown> implements ICommand {
         this.modelMap = deps.modelMap;
     }
 
+    /**
+     * Executes the command behaviour defined in derived classes.
+     * 
+     * @throws {Error} If the command fails to execute.
+     */
     public abstract execute(): void | Promise<void>;
 }

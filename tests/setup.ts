@@ -28,8 +28,7 @@ vi.mock('pixi.js', async (importOriginal) => {
         public static readonly from = vi.fn().mockImplementation(() => new MockSprite());
     }
 
-    class MockGraphics {
-        // Defining as methods ensures they exist on the prototype for vi.spyOn
+    class MockGraphics {        
         public circle() { return this; }
         public moveTo() { return this; }
         public lineTo() { return this; }
