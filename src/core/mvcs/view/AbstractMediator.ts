@@ -39,9 +39,18 @@ export abstract class AbstractMediator<T extends AbstractView> {
      */
     public onRegister(): void {
         console.debug(`[${this.constructor.name}] Mediator registered.`);
-
         this.setupResponsiveLayout();
         this.initListener();
+    }
+
+    /**
+     * Initializes the one-time event listener for the view added to root event.
+     * When the event is triggered, it calls the onViewAddedToRoot method to
+     * trigger a layout update and log a debug message to indicate that the
+     * view has been added to the stage.
+     */
+    protected initListener(): void {
+        this.view.once(AbstractView.VIEW_ADDED_TO_ROOT_EVENT, () => this.onViewAddedToRoot());
     }
 
     /**
@@ -52,6 +61,10 @@ export abstract class AbstractMediator<T extends AbstractView> {
      */
     public onRemove(): void {
         console.debug(`[${this.constructor.name}] Mediator removed.`);
+        this.cleanUp();
+    }
+
+    protected cleanUp(): void {
         if (this.app?.renderer?.off) {
             this.app.renderer.off('resize', this.onResize);
         }
@@ -77,16 +90,6 @@ export abstract class AbstractMediator<T extends AbstractView> {
     private readonly onResize = (): void => {
         this.triggerLayout();
     };
-
-    /**
-     * Initializes a one-time event listener for the AbstractView.VIEW_ADDED_TO_ROOT_EVENT.
-     * When the event is triggered, the onViewAddedToRoot() method is called to handle
-     * the view's addition to the stage, including responsive layout updates and
-     * logging debug messages.
-     */
-    private initListener(): void {
-        this.view.once(AbstractView.VIEW_ADDED_TO_ROOT_EVENT, () => this.onViewAddedToRoot());
-    }
 
     /**
      * Called when the view is added to the stage.

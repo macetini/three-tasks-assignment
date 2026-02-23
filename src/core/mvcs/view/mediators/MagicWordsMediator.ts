@@ -10,14 +10,14 @@ import { TaskMediator } from '../TaskMediator';
  * and the distribution of Model data to the View via functional providers.
  */
 export class MagicWordsMediator extends TaskMediator<MagicWordsView> {
-
     /**
-     * Called after the view is registered.
-     * Sets up the event listeners and performs the necessary setup.
-     * Listens for the ModelSignals.MAGIC_WORDS_LOADED signal and calls onWordsLoaded when it is emitted.
+     * Initializes the event listener for the MAGIC_WORDS_LOADED signal.
+     * When the signal is emitted, the onWordsLoaded method is called.
+     * This method is responsible for populating the MagicWordsView with the
+     * data from the MagicWordsModel and triggering a layout update.
      */
-    public override onRegister(): void {
-        super.onRegister();
+    protected override initListener(): void {
+        super.initListener();
         this.signalBus.on(ModelSignals.MAGIC_WORDS_LOADED, this.onWordsLoaded, this);
     }
 

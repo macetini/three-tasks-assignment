@@ -6,14 +6,14 @@ import type { TaskView } from "./TaskView";
 export class TaskMediator<T extends TaskView> extends AbstractMediator<T> {
     public static readonly BACK_CLICK_EVENT = 'backClickEvent';
 
-    public override onRegister(): void {
-        super.onRegister();
+    protected override initListener(): void {
+        super.initListener();
         this.view.on(TaskMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
     }
 
-    public override onRemove(): void {
-        console.debug(`[${this.constructor.name}] Mediator removed.`);
-        this.viewComponent.off(AbstractMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
+    protected override cleanUp(): void {
+        super.cleanUp();
+        this.view.off(TaskMediator.BACK_CLICK_EVENT, this.onBackClickEvent);
     }
 
     /**
