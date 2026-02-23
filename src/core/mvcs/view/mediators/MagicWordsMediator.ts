@@ -56,7 +56,6 @@ export class MagicWordsMediator extends TaskMediator<MagicWordsView> {
         this.viewComponent.playChatEntrance();
     }
 
-
     /**
      * Removes all event listeners and cleans up the mediator for garbage collection.
      * Should be called when the mediator is no longer needed.

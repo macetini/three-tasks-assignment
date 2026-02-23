@@ -3,12 +3,27 @@ import { vi } from 'vitest';
 vi.mock('pixi.js', async (importOriginal) => {
     class MockContainer {
         public children: any[] = [];
+        public width: number = 0;
+        public height: number = 0;
+        public parent: any = null;
+
         public addChild = vi.fn((child) => {
-            if (child && !this.children.includes(child)) this.children.push(child);
+            if (child && !this.children.includes(child)) {
+                this.children.push(child);
+            }
             return child;
         });
+
+        public addChildAt = vi.fn((child, index) => {
+            if (child && !this.children.includes(child)) {
+                this.children.splice(index, 0, child);
+            }
+            return child;
+        });
+
         public removeChildren = vi.fn(() => { this.children = []; });
         public removeChild = vi.fn();
+
         public destroy = vi.fn();
         public position = { set: vi.fn(), x: 0, y: 0 };
         public scale = { set: vi.fn(), x: 1, y: 1 };
@@ -16,19 +31,15 @@ vi.mock('pixi.js', async (importOriginal) => {
         public visible = true;
         public alpha = 1;
 
+
         public emit = vi.fn().mockReturnThis();
         public on = vi.fn().mockReturnThis();
         public once = vi.fn().mockReturnThis();
         public off = vi.fn().mockReturnThis();
     }
 
-    class MockSprite extends MockContainer {
-        public tint = 0;
-        public texture = { destroy: vi.fn() };
-        public static readonly from = vi.fn().mockImplementation(() => new MockSprite());
-    }
-
-    class MockGraphics {        
+    class MockGraphics extends MockContainer { // Inherit from Container to get children/width
+        public clear = vi.fn().mockReturnThis(); // Add the missing clear!
         public circle() { return this; }
         public moveTo() { return this; }
         public lineTo() { return this; }
@@ -37,13 +48,13 @@ vi.mock('pixi.js', async (importOriginal) => {
         public rect() { return this; }
         public stroke() { return this; }
         public fill() { return this; }
-        public closePath() { return this; }
-        public destroy() {
-            // Method intentionally empty for mock purposes
-        }
+        public closePath() { return this; }        
+    }
 
-        public alpha = 1;
-        public visible = true;
+    class MockSprite extends MockContainer {
+        public tint = 0;
+        public texture = { destroy: vi.fn() };
+        public static readonly from = vi.fn().mockImplementation(() => new MockSprite());
     }
 
     // Grab the real PIXI members that don't need mocking (Color, Texture, etc.)

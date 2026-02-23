@@ -16,6 +16,10 @@ import type { TaskView } from "./TaskView";
  * 
  */
 export class TaskMediator<T extends TaskView> extends AbstractMediator<T> {
+    /**
+     * The event name for the back click event.
+     * @static
+     */
     public static readonly BACK_CLICK_EVENT = 'backClickEvent';
 
     /**

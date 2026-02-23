@@ -1,8 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { FireGenerator } from '../../../../../src/core/mvcs/view/util/FireGenerator';
 import { Graphics } from 'pixi.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { FireGenerator } from '../../../../../src/core/mvcs/view/util/FireGenerator';
 
 describe('FireGenerator', () => {
+    vi.restoreAllMocks();
+
     let generator: FireGenerator;
     let mockRenderer: any;
 
@@ -50,10 +52,19 @@ describe('FireGenerator', () => {
     });
 
     it('should destroy the graphics object after baking to prevent memory leaks', () => {
-        const destroySpy = vi.spyOn(Graphics.prototype, 'destroy');
-
         generator.generateFlameTexture(mockRenderer);
 
-        expect(destroySpy).toHaveBeenCalled();
+        // 1. Verify generateTexture was called
+        expect(mockRenderer.generateTexture).toHaveBeenCalled();
+
+        // 2. Get the arguments passed to generateTexture
+        const callArgs = mockRenderer.generateTexture.mock.calls[0][0];
+
+        // 3. Extract the target (the actual Graphics instance) from the arguments
+        // If your code calls it like: renderer.generateTexture({ target: graphics, ... })
+        const actualGraphics = callArgs.target || callArgs;
+
+        // 4. Now check destroy on the actual Graphics object
+        expect(actualGraphics.destroy).toHaveBeenCalled();
     });
 });

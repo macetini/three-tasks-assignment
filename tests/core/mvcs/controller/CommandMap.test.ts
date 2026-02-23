@@ -1,7 +1,7 @@
 // tests/core/mvcs/view/controller/CommandMap.test.ts
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AbstractCommand } from '../../../../../src/core/mvcs/controller/AbstractCommand';
-import { CommandMap } from '../../../../../src/core/mvcs/controller/CommandMap';
+import { AbstractCommand } from '../../../../src/core/mvcs/controller/AbstractCommand';
+import { CommandMap } from '../../../../src/core/mvcs/controller/CommandMap';
 
 // A concrete implementation for testing
 class TestCommand extends AbstractCommand<string> {

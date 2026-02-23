@@ -1,9 +1,9 @@
 // src/core/mvcs/command/PrepareCardsCommand.test.ts
 import { Sprite } from 'pixi.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { PrepareCardsCommand } from '../../../../../../src/core/mvcs/controller/commands/PrepareCardsCommand';
-import { CardModel } from '../../../../../../src/core/mvcs/model/states/CardModel';
-import { ModelSignals } from '../../../../../../src/core/signal/ModelSignals';
+import { PrepareCardsCommand } from '../../../../../src/core/mvcs/controller/commands/PrepareCardsCommand';
+import { CardModel } from '../../../../../src/core/mvcs/model/states/CardModel';
+import { ModelSignals } from '../../../../../src/core/signal/ModelSignals';
 
 describe('PrepareCardsCommand', () => {
     let command: PrepareCardsCommand;
