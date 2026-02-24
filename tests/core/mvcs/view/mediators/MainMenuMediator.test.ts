@@ -43,7 +43,7 @@ describe('MainMenuMediator', () => {
     it('should validate layout dimensions correctly', () => {
         // Mock global window height for the sanity check
         const originalInnerHeight = window.innerHeight;
-        (window as any).innerHeight = 1000;
+        (globalThis as any).innerHeight = 1000;
 
         const isLayoutValid = (mediator as any).isLayoutValid.bind(mediator);
 
