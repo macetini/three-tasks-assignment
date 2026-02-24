@@ -1,6 +1,6 @@
 // tests/core/mvcs/model/FlameModel.test.ts
 import { describe, expect, it } from 'vitest';
-import { FlameModel } from '../../../../src/core/mvcs/model/states/FlameModel';
+import { FlameModel } from '../../../../../src/core/mvcs/model/states/FlameModel';
 
 describe('FlameModel', () => {
     it('should store and retrieve the flame texture', () => {

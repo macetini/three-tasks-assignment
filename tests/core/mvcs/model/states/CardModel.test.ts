@@ -1,6 +1,6 @@
 import { Sprite } from 'pixi.js';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { CardModel } from '../../../../src/core/mvcs/model/states/CardModel';
+import { CardModel } from '../../../../../src/core/mvcs/model/states/CardModel';
 
 describe('CardModel', () => {
     let model: CardModel;

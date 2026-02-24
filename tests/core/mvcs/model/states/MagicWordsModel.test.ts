@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { GameConfig } from '../../../../src/core/config/GameConfig';
-import { MagicWordsModel } from '../../../../src/core/mvcs/model/states/MagicWordsModel';
-import { MagicWordVO } from '../../../../src/core/mvcs/model/states/vo/MagicWordVO';
+import { GameConfig } from '../../../../../src/core/config/GameConfig';
+import { MagicWordsModel } from '../../../../../src/core/mvcs/model/states/MagicWordsModel';
+import { MagicWordVO } from '../../../../../src/core/mvcs/model/states/vo/MagicWordVO';
 
 describe('MagicWordsModel', () => {
     let model: MagicWordsModel;
