@@ -1,3 +1,4 @@
+// tests/core/mvcs/model/states/MagicWordsModel.test.ts
 import { beforeEach, describe, expect, it } from 'vitest';
 import { GameConfig } from '../../../../../src/core/config/GameConfig';
 import { MagicWordsModel } from '../../../../../src/core/mvcs/model/states/MagicWordsModel';
