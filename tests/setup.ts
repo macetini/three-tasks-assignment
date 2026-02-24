@@ -6,6 +6,12 @@ vi.mock('gsap', () => ({
         from: vi.fn(),
         killTweensOf: vi.fn(),
         set: vi.fn(),
+        timeline: vi.fn(() => ({
+            to: vi.fn().mockReturnThis(),
+            call: vi.fn().mockReturnThis(),
+            kill: vi.fn(),
+            repeat: vi.fn().mockReturnThis(),
+        })),
     },
     default: {
         to: vi.fn(),
@@ -24,13 +30,22 @@ vi.mock('pixi.js', async (importOriginal) => {
 
         public addChild = vi.fn((...children: any[]) => {
             children.forEach(child => {
-                if (child && !this.children.includes(child)) {
-                    this.children.push(child);
-                    // In PIXI, adding a child sets its parent reference
-                    child.parent = this;
+                if (child) {
+                    // If the child already has a parent, remove it from that parent first
+                    if (child.parent && child.parent !== this) {
+                        const oldParent = child.parent;
+                        const index = oldParent.children.indexOf(child);
+                        if (index > -1) {
+                            oldParent.children.splice(index, 1);
+                        }
+                    }
+
+                    if (!this.children.includes(child)) {
+                        this.children.push(child);
+                        child.parent = this;
+                    }
                 }
             });
-            // PIXI returns the first child added when calling addChild(a, b, c)
             return children[0];
         });
 
@@ -89,6 +104,14 @@ vi.mock('pixi.js', async (importOriginal) => {
             }
             return this;
         });
+
+        public toGlobal(point: { x: number, y: number }) {
+            return { x: point.x + this.x, y: point.y + this.y };
+        }
+
+        public toLocal(point: { x: number, y: number }) {
+            return { x: point.x - this.x, y: point.y - this.y };
+        }
     }
 
     class MockGraphics extends MockContainer { // Inherit from Container to get children/width
