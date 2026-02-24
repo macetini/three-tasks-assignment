@@ -6,12 +6,17 @@ vi.mock('pixi.js', async (importOriginal) => {
         public width: number = 0;
         public height: number = 0;
         public parent: any = null;
-
-        public addChild = vi.fn((child) => {
-            if (child && !this.children.includes(child)) {
-                this.children.push(child);
-            }
-            return child;
+        
+        public addChild = vi.fn((...children: any[]) => {
+            children.forEach(child => {
+                if (child && !this.children.includes(child)) {
+                    this.children.push(child);
+                    // In PIXI, adding a child sets its parent reference
+                    child.parent = this;
+                }
+            });
+            // PIXI returns the first child added when calling addChild(a, b, c)
+            return children[0];
         });
 
         public addChildAt = vi.fn((child, index) => {
@@ -21,7 +26,13 @@ vi.mock('pixi.js', async (importOriginal) => {
             return child;
         });
 
-        public removeChildren = vi.fn(() => { this.children = []; });
+        public removeChildren = vi.fn(() => {
+            const removed = [...this.children];
+            this.children.forEach(child => { child.parent = null; });
+            this.children = [];
+            return removed;
+        });
+
         public removeChild = vi.fn();
 
         public destroy = vi.fn();
@@ -30,7 +41,6 @@ vi.mock('pixi.js', async (importOriginal) => {
         public anchor = { set: vi.fn(), x: 0, y: 0 };
         public visible = true;
         public alpha = 1;
-
 
         public emit = vi.fn().mockReturnThis();
         public on = vi.fn().mockReturnThis();
@@ -48,7 +58,7 @@ vi.mock('pixi.js', async (importOriginal) => {
         public rect() { return this; }
         public stroke() { return this; }
         public fill() { return this; }
-        public closePath() { return this; }        
+        public closePath() { return this; }
     }
 
     class MockSprite extends MockContainer {

@@ -87,10 +87,8 @@ export class RichTextRow extends Container {
      * This method is called by the RichTextRow's parent when the view's layout needs to be updated, such as when the screen size changes.
      */
     private destroyTextRows(): void {
-        while (this.textContainer.children.length > 0) {
-            const child = this.textContainer.children[0];
-            child.destroy({ children: true, texture: true });
-        }
+        const children = this.textContainer.removeChildren();
+        children.forEach(child => child.destroy({ children: true, texture: true }));
     }
 
     /**
