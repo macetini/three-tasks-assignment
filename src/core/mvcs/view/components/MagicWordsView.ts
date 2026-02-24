@@ -241,13 +241,15 @@ export class MagicWordsView extends TaskView {
         console.debug(`[MagicWordsView] Built: ${words.length} new chat rows.`);
     }
 
+    /**
+     * Destroys all the children of the chatContainer, freeing up any GPU memory used by Text objects.
+     *This method is called by the buildRows method when the MagicWordsModel emits the MAGIC_WORDS_LOADED signal.
+     *It is also called by the MagicWordsView's destructor to ensure all GPU memory is released when the view is no longer needed.
+     */
     private destroyRows(): void {
-        while (this.chatContainer.children.length > 0) {
-            const child = this.chatContainer.children[0];
-            child.destroy({ children: true, texture: true });
-        }
+        const children = this.chatContainer.removeChildren();
+        children.forEach(child => child.destroy({ children: true, texture: true }));
     }
-
 
     /**
      * Animates chat rows sequentially for a "real-time" feel.

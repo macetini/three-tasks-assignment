@@ -1,12 +1,27 @@
 import { vi } from 'vitest';
 
+vi.mock('gsap', () => ({
+    gsap: {
+        to: vi.fn(),
+        from: vi.fn(),
+        killTweensOf: vi.fn(),
+        set: vi.fn(),
+    },
+    default: {
+        to: vi.fn(),
+        killTweensOf: vi.fn(),
+    }
+}));
+
 vi.mock('pixi.js', async (importOriginal) => {
     class MockContainer {
         public children: any[] = [];
+        public x: number = 0;
+        public y: number = 0;
         public width: number = 0;
         public height: number = 0;
         public parent: any = null;
-        
+
         public addChild = vi.fn((...children: any[]) => {
             children.forEach(child => {
                 if (child && !this.children.includes(child)) {
@@ -42,10 +57,38 @@ vi.mock('pixi.js', async (importOriginal) => {
         public visible = true;
         public alpha = 1;
 
-        public emit = vi.fn().mockReturnThis();
-        public on = vi.fn().mockReturnThis();
-        public once = vi.fn().mockReturnThis();
-        public off = vi.fn().mockReturnThis();
+        private _events: Record<string, Function[]> = {};
+
+        public on = vi.fn((event: string, callback: Function, context?: any) => {
+            if (!this._events[event]) this._events[event] = [];
+            // Store the callback, bound to context if provided
+            this._events[event].push(context ? callback.bind(context) : callback);
+            return this;
+        });
+
+        public once = vi.fn((event: string, callback: Function, context?: any) => {
+            const wrapper = (...args: any[]) => {
+                this.off(event, wrapper); // Remove itself when called
+                callback.apply(context, args);
+            };
+            return this.on(event, wrapper);
+        });
+
+        public emit = vi.fn((event: string, ...args: any[]) => {
+            const listeners = this._events[event];
+            if (listeners) {
+                listeners.forEach(fn => fn(...args));
+                return true;
+            }
+            return false;
+        });
+
+        public off = vi.fn((event: string, callback: Function) => {
+            if (this._events[event]) {
+                this._events[event] = this._events[event].filter(cb => cb !== callback);
+            }
+            return this;
+        });
     }
 
     class MockGraphics extends MockContainer { // Inherit from Container to get children/width
