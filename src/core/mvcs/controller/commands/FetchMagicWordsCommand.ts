@@ -52,53 +52,35 @@ export class FetchMagicWordsCommand extends AbstractCommand {
         await this.assetService.loadRemoteTexture("default", this.cfg.DICEBEAR_URL);
     }
 
+
     /**
-     * Fetches the MagicWords API and populates the MagicWordsModel with the data.
-     * It also loads the necessary assets (emoji and avatars) via the AssetService.
-     * This command is a critical path for the MagicWords feature and should not be skipped.
+     * Loads the MagicWords feature content from the SoftGames API.
+     * This includes the dialogue data, emoji assets, and avatar assets.
+     * It will load all assets simultaneously and wait for the slowest one to finish (or timeout).
+     * Once all assets are loaded, it will hydrate the MagicWordsModel with the fetched data.
      * 
-     * @returns A promise that resolves when all assets are loaded.
+     * @returns A promise that resolves when all assets are loaded and the model is hydrated.
      */
     private async loadFeatureContent(): Promise<void> {
         const response = await fetch(this.cfg.SOFTGAMES_URL);
         const json = (await response.json()) as MagicWordsResponse;
 
-        // Map requirements to "Safe Promises"
-        const emojiRequests = json.emojies.map(e => this.safeLoad(e.name, e.url));
-        const avatarRequests = json.avatars.map(a => this.safeLoad(a.name, a.url));
+        // Combine all raw data into one list
+        const allRequirements = [
+            ...json.emojies,
+            ...json.avatars
+        ];
 
-        // Wait for all to finish (either Success or Timed Out/Failed)
-        await Promise.all([...emojiRequests, ...avatarRequests]);
+        // Map them all to Safe Promises simultaneously        
+        const assetPromises = allRequirements.map(item =>
+            this.assetService.safeLoadRemoteTexture(item.name, item.url, this.cfg.ASSET_TIMEOUT_MS)
+        );
+
+        // Wait for the slowest one to finish (or timeout)
+        await Promise.all(assetPromises);
 
         this.hydrateModel(json);
     }
-
-    /**
-     * Loads a remote asset via URL and stores it in the Pixi Cache under an alias.
-     * If the request times out (after cfg.ASSET_TIMEOUT_MS milliseconds) or fails for any other reason,
-     * it will skip the asset and log a warning message.
-     * 
-     * @param key - The alias used to retrieve the texture later.
-     * @param url - The remote address of the asset.
-     * 
-     * @returns A promise that resolves when the asset is loaded or skipped.
-     */
-    private async safeLoad(key: string, url: string): Promise<void> {
-        const loadPromise = this.assetService.loadRemoteTexture(key, url);
-
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error(`Timeout: ${key}`)), this.cfg.ASSET_TIMEOUT_MS)
-        );
-
-        try {
-            await Promise.race([loadPromise, timeoutPromise]);
-        } catch (e) {
-            const errorMessage = e instanceof Error ? e.message : String(e);
-            console.warn(`[FetchMagicWordsCommand] Asset [${key}] skipped: ${errorMessage}`);
-            // Do not rethrow error, continue with the next asset.
-        }
-    }
-
     /**
      * Hydrates the MagicWordsModel with structured Value Objects (VOs) created from the API response.
      * This method is responsible for mapping the JSON response to the domain model.

@@ -44,6 +44,35 @@ export class AssetService {
         return this.fireGenerator.generateFlameTexture(renderer);
     }
 
+    
+    /**
+     * Safely loads a remote asset via URL and stores it in the Pixi Cache under an alias.
+     * If the request times out or fails, it will log a warning but not rethrow the error.
+     * This allows the application to gracefully handle individual asset failures without
+     * crashing the entire setup process.
+     * 
+     * @param key - The key used to retrieve the texture later.
+     * @param url - The remote address of the asset.
+     * @param timeout - The timeout in milliseconds after which the request is considered failed.
+     * 
+     * @returns A Promise resolving to void.
+     */
+    public async safeLoadRemoteTexture(key: string, url: string, timeout: number): Promise<void> {
+        const loadPromise = this.loadRemoteTexture(key, url);
+
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error(`Timeout: ${key}`)), timeout)
+        );
+
+        try {
+            await Promise.race([loadPromise, timeoutPromise]);
+        } catch (e) {
+            const errorMessage = e instanceof Error ? e.message : String(e);
+            console.warn(`[FetchMagicWordsCommand] Asset [${key}] skipped: ${errorMessage}`);
+            // Do not rethrow error, continue with the next asset.
+        }
+    }
+
     /**
      * Loads a remote asset via URL and stores it in the Pixi Cache under an alias.
      * Utilizes the diceBearPlugin for SVG-based avatar URLs.

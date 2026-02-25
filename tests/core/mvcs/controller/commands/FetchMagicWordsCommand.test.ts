@@ -17,19 +17,22 @@ describe('FetchMagicWordsCommand', () => {
     };
 
     beforeEach(() => {
-        vi.useFakeTimers(); // Essential for testing the 3.5s timeout
+        vi.useFakeTimers();
         vi.restoreAllMocks();
 
+        // Mock API response
         globalThis.fetch = vi.fn().mockResolvedValue({
             json: vi.fn().mockResolvedValue(mockApiResponse)
         });
 
+        // Mock AssetService with both strict and safe methods
         mockAssetService = {
-            loadRemoteTexture: vi.fn().mockResolvedValue({ mock: 'texture' })
+            loadRemoteTexture: vi.fn().mockResolvedValue({ mock: 'texture' }),
+            safeLoadRemoteTexture: vi.fn().mockResolvedValue(true)
         };
 
+        // Mock Model and Signals
         mockSignalBus = { emit: vi.fn() };
-
         mockModel = {
             setData: vi.fn(),
             setAvatarData: vi.fn(),
@@ -39,10 +42,11 @@ describe('FetchMagicWordsCommand', () => {
             get: vi.fn().mockReturnValue(mockModel)
         };
 
-        // Default Cache behavior: everything exists
+        // Mock PIXI Cache
         vi.spyOn(Cache, 'has').mockReturnValue(true);
         vi.spyOn(Cache, 'get').mockReturnValue({ mock: 'pixi-texture' } as any);
 
+        // Initialize Command and inject dependencies
         command = new FetchMagicWordsCommand(undefined);
         (command as any).assetService = mockAssetService;
         (command as any).signalBus = mockSignalBus;
@@ -53,61 +57,60 @@ describe('FetchMagicWordsCommand', () => {
         vi.useRealTimers();
     });
 
-    it('should execute the full setup sequence successfully', async () => {
+    it('should execute the full parallel setup sequence successfully', async () => {
         await command.execute();
 
+        // Check fail-safe asset (Strict load)
         expect(mockAssetService.loadRemoteTexture).toHaveBeenCalledWith('default', expect.any(String));
-        expect(globalThis.fetch).toHaveBeenCalled();
+
+        // Check dynamic assets (Safe parallel loads)
+        expect(mockAssetService.safeLoadRemoteTexture).toHaveBeenCalledWith('smile', 'url1', expect.any(Number));
+        expect(mockAssetService.safeLoadRemoteTexture).toHaveBeenCalledWith('user1', 'url2', expect.any(Number));
+
+        // Verify signal emitted
+        expect(mockSignalBus.emit).toHaveBeenCalledWith(ModelSignals.MAGIC_WORDS_LOADED);
+    });
+
+    it('should continue to hydrate model even if some safe loads return false', async () => {
+        // Mock safeLoad to return false (failed/timeout) for one asset
+        mockAssetService.safeLoadRemoteTexture.mockImplementation((key: string) => {
+            return Promise.resolve(key !== 'smile');
+        });
+
+        await command.execute();
+
+        // Hydration should still happen
         expect(mockModel.setData).toHaveBeenCalled();
         expect(mockSignalBus.emit).toHaveBeenCalledWith(ModelSignals.MAGIC_WORDS_LOADED);
     });
 
-    it('should handle individual asset timeouts gracefully and continue', async () => {
-        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
-
-        // Mock one asset to hang forever
-        mockAssetService.loadRemoteTexture.mockImplementation((key: string) => {
-            if (key === 'smile') return new Promise(() => { }); // Never resolves
-            return Promise.resolve({ mock: 'texture' });
-        });
-
-        const executePromise = command.execute();
-
-        // Fast-forward time to trigger the 3.5s timeout
-        await vi.advanceTimersByTimeAsync(4000);
-        await executePromise;
-
-        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Asset [smile] skipped: Timeout'));
-        // Crucial: The command should still finish and emit success
-        expect(mockSignalBus.emit).toHaveBeenCalledWith(ModelSignals.MAGIC_WORDS_LOADED);
-    });
-
-    it('should fallback to "default" texture if an asset is missing from Cache', async () => {
-        // 'default' exists, but 'user1' failed to load/cache
-        vi.spyOn(Cache, 'has').mockImplementation((key) => key === 'default');
-
+    it('should implement architectural fallback to "default" texture in getTextureMap', async () => {
         const mockDefaultTexture = { name: 'default_tex' };
+
+        // Simulate Cache missing 'user1' and 'smile' but having 'default'
+        vi.spyOn(Cache, 'has').mockImplementation((key) => key === 'default');
         vi.spyOn(Cache, 'get').mockImplementation((key) => {
             if (key === 'default') return mockDefaultTexture as any;
-            return null;
+            return undefined;
         });
 
         await command.execute();
 
         const textureMap: Map<string, any> = mockModel.setTextures.mock.calls[0][0];
 
-        // Even though user1 failed, it should have the default texture in the map
+        // Ensure missing keys point to the default texture
         expect(textureMap.get('user1')).toBe(mockDefaultTexture);
         expect(textureMap.get('smile')).toBe(mockDefaultTexture);
+        expect(textureMap.get('default')).toBe(mockDefaultTexture);
     });
 
-    it('should handle fetch errors gracefully', async () => {
+    it('should log an error and not emit success if the fetch fails', async () => {
         const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-        globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network Fail'));
+        globalThis.fetch = vi.fn().mockRejectedValue(new Error('API Offline'));
 
         await command.execute();
 
         expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Setup failed:'), expect.any(Error));
-        expect(mockSignalBus.emit).not.toHaveBeenCalledWith(ModelSignals.MAGIC_WORDS_LOADED);
+        expect(mockSignalBus.emit).not.toHaveBeenCalled();
     });
 });

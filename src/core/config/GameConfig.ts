@@ -5,7 +5,7 @@ export const GameConfig = {
         BACK_BUTTON_X: 20,
         BACK_BUTTON_Y: 30,
         BACK_BUTTON_GRAPHIC: '◀'
-    },
+    },    
     MAIN: {
         BUTTON_WIDTH: 240,
         BUTTON_HEIGHT: 50,
