@@ -28,8 +28,8 @@ describe('CardsGenerator', () => {
     it('should generate the correct number of template textures based on config', () => {
         const templates = generator.generateMainTextures(mockRenderer);
 
-        expect(templates.length).toBe(GameConfig.CARDS.TEMPLATES_COUNT);
-        expect(mockRenderer.generateTexture).toHaveBeenCalledTimes(GameConfig.CARDS.TEMPLATES_COUNT);
+        expect(templates.length).toBe(GameConfig.CARDS.CARDS_TEMPLATE_COUNT);
+        expect(mockRenderer.generateTexture).toHaveBeenCalledTimes(GameConfig.CARDS.CARDS_TEMPLATE_COUNT);
     });
 
     it('should bake the final stack of 144 card sprites', () => {
@@ -39,9 +39,9 @@ describe('CardsGenerator', () => {
         const sprites = generator.bakeCardTextures(mockRenderer, mockOutline, mockTemplates);
 
         // Verify total count
-        expect(sprites.length).toBe(GameConfig.CARDS.TOTAL_COUNT);
+        expect(sprites.length).toBe(GameConfig.CARDS.CARDS_TOTAL_COUNT);
         // Verify that renderer was called for every single card
-        expect(mockRenderer.generateTexture).toHaveBeenCalledTimes(GameConfig.CARDS.TOTAL_COUNT);
+        expect(mockRenderer.generateTexture).toHaveBeenCalledTimes(GameConfig.CARDS.CARDS_TOTAL_COUNT);
         // Check that result contains Sprites
         expect(sprites[0]).toBeInstanceOf(Sprite);
     });

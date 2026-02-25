@@ -10,6 +10,7 @@ export class Game {
 
     constructor() {
         this.app = new PIXI.Application();
+        //globalThis.__PIXI_APP__ = this.app;
         this.gameContext = new GameContext(this.app);
     }
 

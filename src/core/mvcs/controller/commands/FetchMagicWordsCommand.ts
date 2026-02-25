@@ -45,6 +45,7 @@ export class FetchMagicWordsCommand extends AbstractCommand {
     /**
      * Loads the fail-safe assets required for the MagicWords feature.
      * This currently only includes the Dicebear emoji asset.
+     * 
      * @returns A promise that resolves when all assets are loaded.
      */
     private async loadFailSafeAssets(): Promise<void> {
@@ -55,26 +56,64 @@ export class FetchMagicWordsCommand extends AbstractCommand {
      * Fetches the MagicWords API and populates the MagicWordsModel with the data.
      * It also loads the necessary assets (emoji and avatars) via the AssetService.
      * This command is a critical path for the MagicWords feature and should not be skipped.
+     * 
+     * @returns A promise that resolves when all assets are loaded.
      */
     private async loadFeatureContent(): Promise<void> {
         const response = await fetch(this.cfg.SOFTGAMES_URL);
         const json = (await response.json()) as MagicWordsResponse;
 
-        const assetPromises: Promise<any>[] = [];
+        // Map requirements to "Safe Promises"
+        const emojiRequests = json.emojies.map(e => this.safeLoad(e.name, e.url));
+        const avatarRequests = json.avatars.map(a => this.safeLoad(a.name, a.url));
 
-        json.emojies.forEach(emoji => {
-            assetPromises.push(this.assetService.loadRemoteTexture(emoji.name, emoji.url));
-        });
-        json.avatars.forEach(avatar => {
-            assetPromises.push(this.assetService.loadRemoteTexture(avatar.name, avatar.url));
-        });
+        // Wait for all to finish (either Success or Timed Out/Failed)
+        await Promise.all([...emojiRequests, ...avatarRequests]);
 
-        await Promise.all(assetPromises);
+        this.hydrateModel(json);
+    }
 
-        // Hydrate the Model
+    /**
+     * Loads a remote asset via URL and stores it in the Pixi Cache under an alias.
+     * If the request times out (after cfg.ASSET_TIMEOUT_MS milliseconds) or fails for any other reason,
+     * it will skip the asset and log a warning message.
+     * 
+     * @param key - The alias used to retrieve the texture later.
+     * @param url - The remote address of the asset.
+     * 
+     * @returns A promise that resolves when the asset is loaded or skipped.
+     */
+    private async safeLoad(key: string, url: string): Promise<void> {
+        const loadPromise = this.assetService.loadRemoteTexture(key, url);
+
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error(`Timeout: ${key}`)), this.cfg.ASSET_TIMEOUT_MS)
+        );
+
+        try {
+            await Promise.race([loadPromise, timeoutPromise]);
+        } catch (e) {
+            const errorMessage = e instanceof Error ? e.message : String(e);
+            console.warn(`[FetchMagicWordsCommand] Asset [${key}] skipped: ${errorMessage}`);
+            // Do not rethrow error, continue with the next asset.
+        }
+    }
+
+    /**
+     * Hydrates the MagicWordsModel with structured Value Objects (VOs) created from the API response.
+     * This method is responsible for mapping the JSON response to the domain model.
+     * It creates an array of MagicWordVOs from the dialogue data and sets it on the MagicWordsModel.
+     * It also maps all asset keys (default, emojis, avatars) to their cached Textures and sets it on the MagicWordsModel.
+     * If an asset key is not found in the Cache, it is skipped.
+     * 
+     * @param json The JSON response containing the Magic Words data.
+     * 
+     */
+    private hydrateModel(json: MagicWordsResponse): void {
         const model = this.modelMap.get<MagicWordsModel>(MagicWordsModel.NAME);
-        const voArray = json.dialogue.map(item => new MagicWordVO(item.name, item.text));
 
+        // Value Object creation
+        const voArray = json.dialogue.map(item => new MagicWordVO(item.name, item.text));
         model.setData(voArray);
         model.setAvatarData(json.avatars);
 
@@ -82,25 +121,29 @@ export class FetchMagicWordsCommand extends AbstractCommand {
         model.setTextures(textureMap);
     }
 
+
     /**
-     * Maps all asset keys (default, emojis, avatars) to their cached Textures.
-     * If an asset key is not found in the Cache, it is skipped.
+     * Maps the required asset keys (default, emojis, avatars) to their cached Textures.
+     * If an asset key is not found in the Cache, it is skipped and the 'default' texture is used as a fallback.
+     * This method is responsible for mapping the JSON response to the domain model.
+     * It is called by the hydrateModel method.
      * 
      * @param json The JSON response containing the Magic Words data.
-     * 
-     * @returns A Map containing all asset keys mapped to their Textures.
+     * @returns A Map of asset keys to their cached Textures.
      */
     private getTextureMap(json: MagicWordsResponse): Map<string, Texture> {
+        // Map what we actually got in the Cache
         const textureMap = new Map<string, Texture>();
-
-        const allAssetKeys = [
-            "default",
+        const keys = ["default",
             ...json.emojies.map(e => e.name),
-            ...json.avatars.map(a => a.name)
-        ];
-        allAssetKeys.forEach(key => {
+            ...json.avatars.map(a => a.name)];
+
+        keys.forEach(key => {
             if (Cache.has(key)) {
                 textureMap.set(key, Cache.get(key));
+            } else {
+                // Architectural fallback: use the 'default' if a specific avatar failed
+                textureMap.set(key, Cache.get("default"));
             }
         });
 

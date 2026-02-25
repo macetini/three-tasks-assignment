@@ -13,13 +13,16 @@ export const GameConfig = {
         BUTTON_COLOR: 0x222222
     },
     CARDS: {
-        TEMPLATES_COUNT: 12,
-        TOTAL_COUNT: 144,
+        CARDS_TEMPLATE_COUNT: 12,   // If number of templates is equal to total number of cards,
+                                    // then all cards will have a unique texture.
+                                    // Not recommended for performance reasons.
+        CARDS_TOTAL_COUNT: 144,
         WIDTH: 200,
         HEIGHT: 280,
         RECT_RADIUS: 10,
         OUTLINE_THICKNESS: 4,
         VORONOI_POINT_COUNT: 10,
+        VORONOI_TINTED_COLOR: 0x222222, // deep charcoal, good for tinting
         GAP: 500,
         ROTATION_VARIANCE: 0.5,
         X_Y_INITIAL_POSITION: 200,
@@ -33,6 +36,7 @@ export const GameConfig = {
         SOFTGAMES_URL: 'https://private-624120-softgamesassignment.apiary-mock.com/v2/magicwords',
         DICEBEAR_URL: 'https://api.dicebear.com/9.x/fun-emoji/png?seed=default',
         DICEBEAR_BASE_URL: 'dicebear.com',
+        ASSET_TIMEOUT_MS: 3750, // After 3.75 seconds, skip the asset and log a warning message
         DEFAULT_AVATAR_POSITION: "left",
         TOKEN_REGEX: /\{([^}]+)\}/g,
         AVATAR_SIZE: 56,
