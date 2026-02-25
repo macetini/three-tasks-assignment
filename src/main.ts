@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import styles from './style/game.module.css';
 import { GameContext } from './core/context/GameContext';
+import styles from './style/game.module.css';
 
 console.log('[main] Three Tasks Assignment Started');
 
@@ -9,8 +9,7 @@ export class Game {
     private readonly gameContext: GameContext;
 
     constructor() {
-        this.app = new PIXI.Application();
-        //globalThis.__PIXI_APP__ = this.app;
+        this.app = new PIXI.Application();        
         this.gameContext = new GameContext(this.app);
     }
 
