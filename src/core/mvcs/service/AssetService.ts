@@ -32,7 +32,7 @@ export class AssetService {
         const outlineTexture: Texture = this.cardsGenerator.generateOutlineTexture(renderer);
         const cardTextures: Texture[] = this.cardsGenerator.generateMainTextures(renderer);
 
-        return this.cardsGenerator.bakeCardTextures(renderer, outlineTexture, cardTextures);
+        return this.cardsGenerator.bakeCardTextures(outlineTexture, cardTextures);
     }
 
     /**

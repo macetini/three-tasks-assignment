@@ -147,40 +147,34 @@ export class CardsGenerator {
      * 
      * @returns An array of procedurally generated Sprite objects, each representing a single card.
      */
-    public bakeCardTextures(renderer: Renderer, outlineTexture: Texture, templateTextures: Texture[]): Sprite[] {
+    public bakeCardTextures(outlineTexture: Texture, templateTextures: Texture[]): Sprite[] {
         const bakedSprites: Sprite[] = [];
 
-        const bakeContainer = new Container();
-        const patternLayer = new Sprite();
-        const outlineLayer = new Sprite(outlineTexture);
-
-        patternLayer.anchor.set(0.5);
-        outlineLayer.anchor.set(0.5);
-
-        bakeContainer.addChild(patternLayer);
-        bakeContainer.addChild(outlineLayer);
-
-        const useRandomTemplate: boolean =
-            (this.cfg.CARDS_TEMPLATE_COUNT as number) !== (this.cfg.CARDS_TOTAL_COUNT as number);
-
         for (let i = 0; i < this.cfg.CARDS_TOTAL_COUNT; i++) {
-            const templateIndex = useRandomTemplate ? i % this.cfg.CARDS_TEMPLATE_COUNT : i;
-            patternLayer.texture = templateTextures[templateIndex];
+            const card = new Container() as any; // Cast to 'any' to bypass the .anchor crash
+
+            // fake 'anchor' object so AceOfShadowsView.ts:78 doesn't crash            
+            card.anchor = {
+                set: (x: number, y?: number) => {
+                    patternLayer.anchor.set(x, y ?? x);
+                    outlineLayer.anchor.set(x, y ?? x);
+                }
+            };
+
+            // Create the Pattern (Tinted)
+            const templateIndex = i % templateTextures.length;
+            const patternLayer = new Sprite(templateTextures[templateIndex]);
             const randomSeed = Math.floor(Math.random() * 1000000);
-            patternLayer.tint = this.getTint(randomSeed); // Tinting the pattern
+            patternLayer.tint = this.getTint(randomSeed);
 
-            const finalTexture = renderer.generateTexture({
-                target: bakeContainer,
-                resolution: 1,
-                antialias: true
-            });
+            // Create the Outline (NOT Tinted)
+            const outlineLayer = new Sprite(outlineTexture);
 
-            const cardSprite = new Sprite(finalTexture);
-            cardSprite.anchor.set(0.5);
-            bakedSprites.push(cardSprite);
+            card.addChild(patternLayer, outlineLayer);
+
+            bakedSprites.push(card);
         }
 
-        bakeContainer.destroy({ children: true });
         return bakedSprites;
     }
 
