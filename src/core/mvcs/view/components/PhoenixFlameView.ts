@@ -1,5 +1,5 @@
 // src/core/mvcs/view/components/PhoenixFlameView.ts
-import { Point, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Container, Point, Rectangle, Sprite, Texture } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
 import { TaskView } from '../TaskView';
 import type { IFlameParticle } from './meta/IFlameParticle';
@@ -19,6 +19,8 @@ export class PhoenixFlameView extends TaskView {
 
     private readonly emitterPos = { x: 0, y: 0 };
 
+    private readonly particleContainer = new Container();
+
     /**
      * Initializes the PhoenixFlameView.
      * Sets the event mode to 'static' and adds event listeners for pointer movement and pointer down events.
@@ -27,6 +29,8 @@ export class PhoenixFlameView extends TaskView {
         super.init();
 
         this.eventMode = 'static';
+
+        this.addChild(this.particleContainer);
 
         this.on('pointermove', this.onPointerHandler, this);
         this.on('pointerdown', this.onPointerHandler, this);
@@ -69,7 +73,7 @@ export class PhoenixFlameView extends TaskView {
             };
 
             this.resetParticle(particle);
-            this.addChild(sprite);
+            this.particleContainer.addChild(sprite);
             this.particles.push(particle);
         }
     }
