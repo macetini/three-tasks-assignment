@@ -1,4 +1,4 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container } from 'pixi.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GameConfig } from '../../../../../src/core/config/GameConfig';
 import { CardsGenerator } from '../../../../../src/core/mvcs/view/util/CardsGenerator';
