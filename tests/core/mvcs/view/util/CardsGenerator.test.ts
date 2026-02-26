@@ -1,4 +1,4 @@
-import { Sprite } from 'pixi.js';
+import { Container, Sprite } from 'pixi.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GameConfig } from '../../../../../src/core/config/GameConfig';
 import { CardsGenerator } from '../../../../../src/core/mvcs/view/util/CardsGenerator';
@@ -36,14 +36,14 @@ describe('CardsGenerator', () => {
         const mockOutline = { destroy: vi.fn() } as any;
         const mockTemplates = [{}, {}, {}] as any; // Dummy templates
 
-        const sprites = generator.bakeCardTextures(mockRenderer, mockOutline, mockTemplates);
+        const sprites = generator.bakeCardTextures(mockOutline, mockTemplates);
 
         // Verify total count
         expect(sprites.length).toBe(GameConfig.CARDS.CARDS_TOTAL_COUNT);
         // Verify that renderer was called for every single card
-        expect(mockRenderer.generateTexture).toHaveBeenCalledTimes(GameConfig.CARDS.CARDS_TOTAL_COUNT);
+        //expect(mockRenderer.generateTexture).toHaveBeenCalledTimes(GameConfig.CARDS.CARDS_TOTAL_COUNT);
         // Check that result contains Sprites
-        expect(sprites[0]).toBeInstanceOf(Sprite);
+        expect(sprites[0]).toBeInstanceOf(Container);
     });
 
     it('should generate unique tints for cards', () => {
