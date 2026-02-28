@@ -1,15 +1,15 @@
 import { Graphics } from 'pixi.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { FireGenerator } from '../../../../../src/core/mvcs/view/util/FireGenerator';
+import { FlameGenerator } from '../../../../../src/core/mvcs/view/util/FlameGenerator';
 
-describe('FireGenerator', () => {
+describe('FlameGenerator', () => {
     vi.restoreAllMocks();
 
-    let generator: FireGenerator;
+    let generator: FlameGenerator;
     let mockRenderer: any;
 
     beforeEach(() => {
-        generator = new FireGenerator();
+        generator = new FlameGenerator();
         // Mock the PIXI Renderer
         mockRenderer = {
             generateTexture: vi.fn().mockReturnValue({

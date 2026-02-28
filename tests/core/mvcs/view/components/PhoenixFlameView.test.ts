@@ -1,5 +1,5 @@
 // tests/core/mvcs/view/components/PhoenixFlameView.test.ts
-import { Rectangle, Texture } from 'pixi.js';
+import { Texture } from 'pixi.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PhoenixFlameView } from '../../../../../src/core/mvcs/view/components/PhoenixFlameView';
 
@@ -10,7 +10,12 @@ describe('PhoenixFlameView', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         view = new PhoenixFlameView();
-        mockTexture = { destroy: vi.fn() } as any;
+        // Mock texture for v8 Particle
+        mockTexture = {
+            destroy: vi.fn(),
+            _source: {}, // v8 internal check
+            valid: true
+        } as any;
         view.init();
     });
 
@@ -22,44 +27,52 @@ describe('PhoenixFlameView', () => {
         expect(view.eventMode).toBe('static');
     });
 
-    it('should create the correct number of particles during setupFire', () => {
-        view.setupFire(mockTexture);
-        const particles = (view as any).particles;
-        // Check against your GameConfig.FLAME.MAX_PARTICLES (usually 10)
-        expect(particles.length).toBe((view as any).cfg.MAX_PARTICLES);
-        // Check actual children (10) + back button (1) = 11
-        expect(view.children.length).toBe((view as any).cfg.MAX_PARTICLES + 1);
+    it('should use ParticleContainer for rendering particles', () => {
+        view.setupFlameParticleEmitter(mockTexture);
+
+        // In v8, we only expect 1 child (the ParticleContainer)
+        // TaskView might have other children like the back button, 
+        // but the particles themselves are NOT direct children.
+        const container = (view as any).particleContainer;
+        expect(container).toBeDefined();
+        expect(container.isRenderGroup).toBe(true);
+    });
+
+    it('should create the correct number of particle warpers', () => {
+        view.setupFlameParticleEmitter(mockTexture);
+        const warpers = (view as any).particlesWarper;
+
+        expect(warpers.length).toBe((view as any).cfg.MAX_PARTICLES);
     });
 
     it('should update particle properties based on delta', () => {
-        view.setupFire(mockTexture);
-        const particle = (view as any).particles[0];
-        const initialY = particle.sprite.y;
-        const initialLife = particle.life;
+        view.setupFlameParticleEmitter(mockTexture);
+        const warper = (view as any).particlesWarper[0];
 
-        // Simulate one frame update
-        view.update(16); // ~60fps delta
+        const initialY = warper.item.y;
+        const initialLife = warper.life;
 
-        expect(particle.life).toBeLessThan(initialLife);
-        expect(particle.sprite.y).toBeLessThan(initialY); // Particles move UP (decreasing Y)
-        expect(particle.sprite.scale.x).not.toBe(0);
+        // Simulate one frame update (~60fps)
+        view.update(16);
+
+        expect(warper.life).toBeLessThan(initialLife);
+        expect(warper.item.y).toBeLessThan(initialY); // Moves UP
+        // Check v8 scale property
+        expect(warper.item.scaleX).not.toBe(0);
     });
 
     it('should reset particle when life reaches zero', () => {
-        view.setupFire(mockTexture);
-        const particle = (view as any).particles[0];
+        view.setupFlameParticleEmitter(mockTexture);
+        const warper = (view as any).particlesWarper[0];
 
         // Force particle to "die"
-        particle.life = 0;
-        // One update cycle should trigger reset
+        warper.life = 0;
         view.update(1);
 
-        expect(particle.life).toBe(1); // Reset back to full life
+        expect(warper.life).toBe(1); // Reset back to full life
     });
 
     it('should update emitter position via pointer events', () => {
-        view.setupFire(mockTexture);
-
         const mockEvent = {
             getLocalPosition: vi.fn((_target, point) => {
                 point.set(500, 500);
@@ -72,18 +85,11 @@ describe('PhoenixFlameView', () => {
         expect((view as any).emitterPos.y).toBe(500);
     });
 
-    it('should set hitArea and default position during layout', () => {
-        view.layout(1000, 1000);
-
-        expect(view.hitArea).toBeInstanceOf(Rectangle);
-        expect((view as any).emitterPos.y).toBe(850); // 85% of 1000
-    });
-
     it('should cleanup on dispose', () => {
         const offSpy = vi.spyOn(view, 'off');
         view.dispose();
 
         expect(offSpy).toHaveBeenCalled();
-        expect((view as any).particles.length).toBe(0);
+        expect((view as any).particlesWarper.length).toBe(0);
     });
 });

@@ -49,7 +49,7 @@ export class PhoenixFlameMediator extends TaskMediator<PhoenixFlameView> {
      */
     private readonly onFlamePrepared = (): void => {
         const flameTexture = this.modelMap.get<FlameModel>(FlameModel.NAME).flameTexture;
-        this.view.setupFire(flameTexture);
+        this.view.setupFlameParticleEmitter(flameTexture);
     }
 
     /**

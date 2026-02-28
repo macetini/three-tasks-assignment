@@ -68,6 +68,7 @@ export const GameConfig = {
         FLAME_BASE_COLOR: 0xFFFFCC, // White hot base
         FLAME_CORE_COLOR: 0xFF8800, // Orange core
         FLAME_EMBERS_COLOR: 0xAA0000, // Cooling red embers            
-        FLAME_BLEND_MODE: 'add'
+        FLAME_BLEND_MODE: 'add',
+        FLAME_DRIFT_SPEED: 1.5
     }
 } as const;

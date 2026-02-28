@@ -1,7 +1,7 @@
 // src/core/mvcs/service/AssetService.ts
 import { Assets, Cache, Sprite, Texture, type Renderer } from 'pixi.js';
 import { CardsGenerator } from '../view/util/CardsGenerator';
-import { FireGenerator } from '../view/util/FireGenerator';
+import { FlameGenerator } from '../view/util/FlameGenerator';
 
 /**
  * Service responsible for asset management, remote loading, and 
@@ -10,7 +10,7 @@ import { FireGenerator } from '../view/util/FireGenerator';
  */
 export class AssetService {
     private readonly cardsGenerator = new CardsGenerator();
-    private readonly fireGenerator = new FireGenerator();
+    private readonly fireGenerator = new FlameGenerator();
 
     /**
      * Initializes the PixiJS Assets system.

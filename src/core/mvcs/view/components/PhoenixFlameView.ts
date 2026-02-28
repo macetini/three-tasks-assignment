@@ -1,5 +1,5 @@
 // src/core/mvcs/view/components/PhoenixFlameView.ts
-import { Container, Point, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Particle, ParticleContainer, Point, Rectangle, Texture } from 'pixi.js';
 import { GameConfig } from '../../../config/GameConfig';
 import { TaskView } from '../TaskView';
 import type { IFlameParticle } from './meta/IFlameParticle';
@@ -14,12 +14,10 @@ export class PhoenixFlameView extends TaskView {
     private readonly tempPoint = new Point(); // PRE-ALLOCATED: No GC on mouse move
     private readonly PI = Math.PI; // Cached PI
 
-    private readonly particles: IFlameParticle[] = [];
-    private fireTexture!: Texture;
+    private particleContainer!: ParticleContainer;
 
+    private readonly particlesWarper: IFlameParticle[] = [];
     private readonly emitterPos = { x: 0, y: 0 };
-
-    private readonly particleContainer = new Container();
 
     /**
      * Initializes the PhoenixFlameView.
@@ -28,12 +26,59 @@ export class PhoenixFlameView extends TaskView {
     public override init(): void {
         super.init();
 
-        this.eventMode = 'static';
+        this.initEvents();
+        this.initParticlesContainer();
+    }
 
-        this.addChild(this.particleContainer);
+    /**
+     * Initializes the event listeners for the PhoenixFlameView.
+     * Sets the event mode to 'static' and adds event listeners for the 'pointermove' and 'pointerdown' events.
+     * The event handler for these events is onPointerHandler.
+     */
+    private initEvents(): void {
+        this.eventMode = 'static';
 
         this.on('pointermove', this.onPointerHandler, this);
         this.on('pointerdown', this.onPointerHandler, this);
+    }
+
+    /**
+     * Initializes the ParticleContainer instance used by the PhoenixFlameView.
+     * By default, the ParticleContainer has dynamic properties enabled for position, rotation, vertex, UVs, and color.
+     * The ParticleContainer is also set as a render group and uses the 'add' blend mode.
+     * Finally, the ParticleContainer is added as a child to the PhoenixFlameView.
+     */
+    private initParticlesContainer(): void {
+        console.debug("[PhoenixFlameView] Creating particle container.");
+
+        this.particleContainer = new ParticleContainer({
+            dynamicProperties: {
+                // (dynamic for maximum speed)
+                position: true, // change x and y
+                rotation: true, // change rotation
+                color: true,    // This handles both TINT and ALPHA in one buffer
+                vertex: true,   // Required for scaling (scaleX/scaleY)
+                // (static for maximum speed)
+                uvs: false,
+                texture: false, // All particles use the same flame texture
+                blendMode: false,// All particles use 'add'
+                anchor: false,  // Anchors are set once at init
+            }
+        });
+
+        // Set default particle options
+        Particle.defaultOptions = {
+            anchorX: 0.5,
+            anchorY: 0.5,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1
+        };
+
+        this.particleContainer.isRenderGroup = true;
+        this.particleContainer.blendMode = this.cfg.FLAME_BLEND_MODE;
+
+        this.addChild(this.particleContainer);
     }
 
     /**
@@ -47,7 +92,7 @@ export class PhoenixFlameView extends TaskView {
         this.off('pointerdown', this.onPointerHandler, this);
 
         // Clear references for GC
-        this.particles.length = 0;
+        this.particlesWarper.length = 0;
     }
 
     /**
@@ -57,24 +102,22 @@ export class PhoenixFlameView extends TaskView {
      * 
      * @param texture - Texture to use for the flame effect.
      */
-    public setupFire(texture: Texture): void {
-        this.fireTexture = texture;
+    public setupFlameParticleEmitter(flameTexture: Texture): void {
+        console.debug("[PhoenixFlameView] Setting up flame particle emitter.");
 
         for (let i = 0; i < this.cfg.MAX_PARTICLES; i++) {
-            const sprite = new Sprite(this.fireTexture);
-            sprite.anchor.set(0.5);
-            sprite.blendMode = this.cfg.FLAME_BLEND_MODE; // Additive blending creates the white-hot core
-
-            const particle: IFlameParticle = {
-                sprite,
+            const particle = new Particle(flameTexture);
+            const flameParticleWarper: IFlameParticle = {
+                item: particle,
                 life: Math.random(), // Staggered start so particles don't sync
-                speed: 1 + Math.random() * 1.5,
+                speed: 1 + Math.random() * this.cfg.FLAME_DRIFT_SPEED,
                 xOffset: 0
             };
 
-            this.resetParticle(particle);
-            this.particleContainer.addChild(sprite);
-            this.particles.push(particle);
+            this.resetParticle(flameParticleWarper);
+            this.particlesWarper.push(flameParticleWarper);
+
+            this.particleContainer.addParticle(particle);
         }
     }
 
@@ -88,28 +131,28 @@ export class PhoenixFlameView extends TaskView {
     public update(delta: number): void {
         const driftForce = 0.008 * delta;
         // Classic loop for performance
-        const particlesLength = this.particles.length;
+        const particlesLength = this.particlesWarper.length;
         for (let i = 0; i < particlesLength; i++) {
-            const particle = this.particles[i];
+            const particle = this.particlesWarper[i];
             particle.life -= driftForce * particle.speed;
 
-            particle.sprite.y -= particle.speed * delta * 2.5;
-            particle.sprite.x = particle.xOffset + Math.sin(particle.sprite.y * 0.05) * 15;
+            particle.item.y -= particle.speed * delta * 2.5;
+            particle.item.x = particle.xOffset + Math.sin(particle.item.y * 0.05) * 15;
 
             const size = Math.sin(particle.life * this.PI) * 2.5;
-            particle.sprite.scale.set(size);
+            particle.item.scaleX = particle.item.scaleY = size;
 
-            particle.sprite.alpha = particle.life;
+            particle.item.alpha = particle.life;
 
             if (particle.life > 0.6) {
-                particle.sprite.tint = this.cfg.FLAME_BASE_COLOR; // White hot base
+                particle.item.tint = this.cfg.FLAME_BASE_COLOR; // White hot base
             } else if (particle.life > 0.3) {
-                particle.sprite.tint = this.cfg.FLAME_CORE_COLOR; // Orange core
+                particle.item.tint = this.cfg.FLAME_CORE_COLOR; // Orange core
             } else {
-                particle.sprite.tint = this.cfg.FLAME_EMBERS_COLOR; // Cooling red embers
+                particle.item.tint = this.cfg.FLAME_EMBERS_COLOR; // Cooling red embers
             }
 
-            particle.sprite.rotation = Math.cos(particle.sprite.y * 0.05) * 0.2;
+            particle.item.rotation = Math.cos(particle.item.y * 0.05) * 0.2;
 
             if (particle.life <= 0) {
                 this.resetParticle(particle);
@@ -124,12 +167,12 @@ export class PhoenixFlameView extends TaskView {
      * 
      * @param particle - The particle to reset.
      */
-    private resetParticle(particle: any): void {
+    private resetParticle(particle: IFlameParticle): void {
         particle.life = 1;
         // Particles spawn at the emitter position with a slight random spread
         particle.xOffset = this.emitterPos.x + (Math.random() - 0.5) * 30;
-        particle.sprite.x = particle.xOffset;
-        particle.sprite.y = this.emitterPos.y;
+        particle.item.x = particle.xOffset;
+        particle.item.y = this.emitterPos.y;
         particle.speed = 1 + Math.random() * 1.5;
     }
 

@@ -2,7 +2,7 @@
 import { Graphics, Texture, type Renderer } from "pixi.js";
 import { GameConfig } from "../../../config/GameConfig";
 
-export class FireGenerator {
+export class FlameGenerator {
     private readonly cfg = GameConfig.FLAME;
 
     /**

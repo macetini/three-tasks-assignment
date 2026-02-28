@@ -1,3 +1,4 @@
+// tests/core/mvcs/view/mediators/PhoenixFlameMediator.test.ts
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FlameModel } from '../../../../../src/core/mvcs/model/states/FlameModel';
 import { PhoenixFlameView } from '../../../../../src/core/mvcs/view/components/PhoenixFlameView';
@@ -14,9 +15,9 @@ describe('PhoenixFlameMediator', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
 
-        mockView = new PhoenixFlameView();
-        vi.spyOn(mockView, 'setupFire');
-        vi.spyOn(mockView, 'update');
+        mockView = new PhoenixFlameView();        
+        vi.spyOn(mockView, 'setupFlameParticleEmitter').mockImplementation(() => { });
+        vi.spyOn(mockView, 'update').mockImplementation(() => { });
 
         mockSignalBus = {
             on: vi.fn(),
@@ -62,10 +63,7 @@ describe('PhoenixFlameMediator', () => {
     it('should call view.update during ticker update', () => {
         mediator.onRegister();
 
-        // Get the update function that was passed to the ticker
         const updateCallback = mockApp.ticker.add.mock.calls[0][0];
-
-        // Trigger the update
         updateCallback();
 
         expect(mockView.update).toHaveBeenCalledWith(mockApp.ticker.deltaTime);
@@ -81,8 +79,8 @@ describe('PhoenixFlameMediator', () => {
 
         preparedCallback();
 
-        expect(mockModelMap.get).toHaveBeenCalledWith(FlameModel.NAME);
-        expect(mockView.setupFire).toHaveBeenCalledWith(expect.any(Object));
+        expect(mockModelMap.get).toHaveBeenCalledWith(FlameModel.NAME);        
+        expect(mockView.setupFlameParticleEmitter).toHaveBeenCalledWith(expect.any(Object));
     });
 
     it('should cleanup ticker and signals on remove', () => {

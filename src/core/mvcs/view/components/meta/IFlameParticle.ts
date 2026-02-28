@@ -1,5 +1,5 @@
 // src/core/mvcs/view/components/meta/IFlameParticle.ts
-import type { Sprite } from "pixi.js";
+import type { Particle } from "pixi.js";
 
 /**
  * Interface representing the state of a single particle within the flame effect.
@@ -8,7 +8,7 @@ import type { Sprite } from "pixi.js";
  */
 export interface IFlameParticle {
     /** The visual representation of the particle on the PixiJS stage. */
-    sprite: Sprite;
+    item: Particle;
 
     /**
      * Current normalized life of the particle (1.0 to 0.0). 
